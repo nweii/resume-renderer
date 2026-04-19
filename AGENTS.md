@@ -1,5 +1,5 @@
 <!-- BEGIN:nextjs-agent-rules -->
-# This is NOT the Next.js you know
+This is NOT the Next.js you know
 
 This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices.
 <!-- END:nextjs-agent-rules -->
@@ -10,7 +10,7 @@ An agent-operable primitive: one JSON file in, rendered resume out (web page + p
 
 ## Purpose
 
-Close the loop between "agent chat about Nathan's positioning" and "a resume draft that looks right." The value is iteration velocity — edit JSON, hot-reload, eyeball, repeat — not chat-pane UX. No GUI. Claude Code (or any MCP-enabled client later) is the operator.
+Close the loop between "agent chat about the user's positioning" and "a resume draft that looks right." The value is iteration velocity — edit JSON, hot-reload, eyeball, repeat — not chat-pane UX. No GUI. Claude Code (or any MCP-enabled client later) is the operator.
 
 ## What exists
 
