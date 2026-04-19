@@ -43,6 +43,10 @@ Close the loop between "agent chat about the user's positioning" and "a resume d
 - Print layout is a first-class design target, not a de-responsified web view. Tune `@page`, `break-inside`, and typography explicitly.
 - Keep templates free of data-shaping logic. If a bullet needs trimming for a variant, edit the variant file.
 
+## Commits
+
+The public git history is part of the portfolio — treat it as a curated change log, not a save stream. Group meaningful edits into single commits with descriptive messages. Squash local WIP before pushing. Prefer `Reframe TALtech bullet around UX pain points` over `edit`, `fix`, `more`, `word change`. Twenty thoughtful commits over six months tell a story; two hundred noisy commits feel like jitter.
+
 ## Session start
 
 Before replying substantively to the first message in any session, orient from:

@@ -1,9 +1,17 @@
+import master from "@/resumes/master.json";
+import { resumeSchema, type EducationSection, type ExperiencesSection, type ProjectsSection, type SkillsSection } from "@/lib/schema";
+import { PageEdge } from "./PageEdge";
+
 type Theme = {
   heading: string;
   bullet: string;
   line: string;
 };
 
+// Theme colors live in the template, not the JSON. Each section kind owns a
+// `{ heading, bullet, line }` hex triple; resume data only tags sections by
+// kind. Tailwind v4's directional border-color utilities don't reliably
+// extend custom color tokens, so these are applied via inline `style`.
 const themes = {
   skills: { heading: "#074F3B", bullet: "#065F46", line: "#D1EADE" },
   projects: { heading: "#4C1D95", bullet: "#6E28D9", line: "#E0DAFE" },
@@ -11,24 +19,54 @@ const themes = {
   education: { heading: "#7D2D12", bullet: "#C2410C", line: "#F4E1CA" },
 } satisfies Record<string, Theme>;
 
-const PAGE_PX = "px-[0.4in]";
+const PAGE_PX = "px-[0.35in]";
+
+// Inline rich text: bullet strings may contain `**bold**` runs. Split on the
+// marker and alternate plain / strong nodes. Single convention, no nesting,
+// no other inline formatting — widen here if that changes.
+function renderRichText(text: string) {
+  const parts = text.split(/\*\*(.+?)\*\*/g);
+  return parts.map((part, i) =>
+    i % 2 === 1 ? (
+      <strong key={i} className="font-semibold">
+        {part}
+      </strong>
+    ) : (
+      <span key={i}>{part}</span>
+    ),
+  );
+}
 
 function Bullet({ theme, children }: { theme: Theme; children: React.ReactNode }) {
   return (
-    <li className="grid grid-cols-[10px_1fr] gap-x-1.5">
-      <span aria-hidden className="select-none text-[6pt] leading-[1.6]" style={{ color: theme.bullet }}>
+    <li className="grid grid-cols-[14px_1fr] items-start gap-x-1.5">
+      <span aria-hidden className="select-none pt-[0.1em] text-center text-[7.5pt] leading-[1.4]" style={{ color: theme.bullet }}>
         •
       </span>
-      <span>{children}</span>
+      <span className="min-w-0 leading-[1.4]">{children}</span>
     </li>
+  );
+}
+
+function BulletList({ theme, bullets }: { theme: Theme; bullets: string[] }) {
+  return (
+    <ul className="space-y-[1.5pt]">
+      {bullets.map((text, i) => (
+        <Bullet key={i} theme={theme}>
+          {renderRichText(text)}
+        </Bullet>
+      ))}
+    </ul>
   );
 }
 
 function Section({ label, theme, children }: { label: string; theme: Theme; children: React.ReactNode }) {
   return (
-    <section className="border-t-[1.75pt]" style={{ borderTopColor: theme.line }}>
+    // `last:[&>div]:pb-0`: bottom inset on <article> already provides outer margin;
+    // skipping section pb on the last block avoids stacking ~0.2in + article pb.
+    <section className="border-t-[1.75pt] last:[&>div]:pb-0" style={{ borderTopColor: theme.line }}>
       <div className={`grid grid-cols-[0.85in_1fr] gap-x-[0.3in] ${PAGE_PX} pb-[0.2in] pt-[0.2in]`}>
-        <div className="text-[8pt] font-bold uppercase tracking-[0.05em]" style={{ color: theme.heading }}>
+        <div className="text-[8.5pt] font-bold uppercase tracking-[0.05em]" style={{ color: theme.heading }}>
           {label}
         </div>
         <div className="space-y-[0.14in]">{children}</div>
@@ -39,194 +77,152 @@ function Section({ label, theme, children }: { label: string; theme: Theme; chil
 
 function EntryHead({ left, right }: { left: React.ReactNode; right?: React.ReactNode }) {
   return (
-    <div className="flex items-baseline justify-between gap-4">
+    <div className="flex items-baseline justify-between gap-4 text-black">
       <div className="font-semibold">{left}</div>
       {right && <div className="shrink-0 font-semibold">{right}</div>}
     </div>
   );
 }
 
+function SkillsBlock({ section }: { section: SkillsSection }) {
+  return (
+    <Section label={section.label} theme={themes.skills}>
+      <BulletList theme={themes.skills} bullets={section.bullets} />
+    </Section>
+  );
+}
+
+function ProjectsBlock({ section }: { section: ProjectsSection }) {
+  const theme = themes.projects;
+  return (
+    <Section label={section.label} theme={theme}>
+      {section.entries.map((entry, i) => (
+        <div key={i} className="space-y-[4pt] print:break-inside-avoid">
+          <EntryHead left={entry.title} right={entry.dateRange} />
+          <BulletList theme={theme} bullets={entry.bullets} />
+        </div>
+      ))}
+    </Section>
+  );
+}
+
+function ExperiencesBlock({ section }: { section: ExperiencesSection }) {
+  const theme = themes.experiences;
+  return (
+    <Section label={section.label} theme={theme}>
+      {section.entries.map((entry, i) => {
+        const left = entry.organization ? (
+          <>
+            {entry.title} <span className="font-normal">at</span> {entry.organization}
+          </>
+        ) : (
+          entry.title
+        );
+        return (
+          <div key={i} className="space-y-[3pt] print:break-inside-avoid">
+            <EntryHead left={left} right={entry.dateRange} />
+            {entry.summary && <p>{entry.summary}</p>}
+            <BulletList theme={theme} bullets={entry.bullets} />
+          </div>
+        );
+      })}
+    </Section>
+  );
+}
+
+function EducationBlock({ section }: { section: EducationSection }) {
+  const theme = themes.education;
+  return (
+    <Section label={section.label} theme={theme}>
+      {section.entries.map((entry, i) => (
+        <div key={i} className="space-y-[3pt] print:break-inside-avoid">
+          <EntryHead left={entry.title} right={entry.dateRange} />
+          {entry.bullets && entry.bullets.length > 0 && <BulletList theme={theme} bullets={entry.bullets} />}
+        </div>
+      ))}
+    </Section>
+  );
+}
+
 export default function Home() {
-  const { skills, projects, experiences, education } = themes;
+  const parsed = resumeSchema.safeParse(master);
+  if (!parsed.success) {
+    // Fail loud and readable. This is the error path the agent loop sees
+    // when JSON drifts from the schema — surface z.prettifyError so edits
+    // can be fixed without round-tripping through the console.
+    return (
+      <main className="min-h-screen bg-red-50 p-8 font-mono text-sm text-red-900">
+        <h1 className="mb-4 text-lg font-bold">resumes/master.json failed schema validation</h1>
+        <pre className="whitespace-pre-wrap">{JSON.stringify(parsed.error.issues, null, 2)}</pre>
+      </main>
+    );
+  }
+
+  const { header, sections } = parsed.data;
 
   return (
     <main className="flex min-h-screen justify-center bg-zinc-100 py-8 print:block print:bg-white print:p-0">
       <article
-        className="h-[11in] w-[8.5in] overflow-hidden bg-white py-[0.4in] font-sans text-[8pt] leading-[1.4] tracking-[0.03em] shadow-md [zoom:min(1,calc((100vw_-_2rem)/816px))] print:shadow-none print:[zoom:1]"
+        className="relative min-h-[11in] w-[8.5in] bg-white pb-[0.4in] pt-[0.35in] font-sans text-[8.5pt] leading-[1.4] shadow-md [zoom:min(1,calc((100vw-2rem)/816px))] print:shadow-none print:[zoom:1]"
         style={{ color: "#3F3F46" }}>
+        {/*
+          Dev-only overflow warning. The template targets a single 8.5×11
+          sheet; when content spills past 11in, PageEdge renders a red dashed
+          rule at the boundary with the overflow magnitude. Stripped in
+          production so the deployed page stays clean. Manual eyeballing /
+          Chrome print preview remain the check in prod; a shared fit signal
+          for `bun test` is deferred until pretext ships server-side.
+        */}
+        {process.env.NODE_ENV === "development" && <PageEdge />}
         <div className={`${PAGE_PX} pb-[0.16in]`}>
           <div className="grid grid-cols-[0.85in_1fr_auto] items-start gap-x-[0.3in]">
             <div />
             <div>
-              <h1
-                className="text-[16pt] font-semibold leading-[1.1] tracking-[0] text-zinc-900"
-                style={{
-                  fontFamily: "var(--font-display)",
-                  fontStretch: "125%",
-                }}>
-                Nathan Cheng
+              <h1 className="text-[16pt] font-bold leading-[1.1] tracking-[0] text-zinc-900" style={{ fontFamily: "var(--font-display)" }}>
+                {header.name}
               </h1>
               <p className="mt-[5pt] max-w-[4.9in] font-semibold italic leading-[1.35]">
-                Designer who codes, with a background in film studies and graphic design.
-                <br />
-                Bridges design, development, and business needs to make complex systems legible.
+                {header.subtitle.map((line, i) => (
+                  <span key={i}>
+                    {line}
+                    {i < header.subtitle.length - 1 && <br />}
+                  </span>
+                ))}
               </p>
             </div>
             <div className="flex flex-col items-end gap-[5pt]">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/monomark.svg" alt="Nathan Cheng monomark" className="h-[18pt] w-auto" />
+              {header.monomark && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={header.monomark} alt={`${header.name} monomark`} className="h-[18pt] w-auto" />
+              )}
               <div className="text-right font-semibold leading-[1.35]">
                 <div>
-                  <a href="mailto:nthn.wei@gmail.com">nthn.wei@gmail.com</a>
+                  <a href={`mailto:${header.contact.email}`}>{header.contact.email}</a>
                 </div>
-                <div>
-                  <a href="https://nathancheng.work" target="_blank" rel="noopener noreferrer">
-                    nathancheng.work
-                  </a>
-                </div>
+                {header.contact.website && (
+                  <div>
+                    <a href={header.contact.website.url} target="_blank" rel="noopener noreferrer">
+                      {header.contact.website.label}
+                    </a>
+                  </div>
+                )}
               </div>
             </div>
           </div>
         </div>
 
-        <Section label="Skills" theme={skills}>
-          <ul className="space-y-[1.5pt]">
-            <Bullet theme={skills}>
-              <strong className="font-semibold">Design &amp; UX:</strong> Interface design, Design systems, Information architecture, Prototyping, Visual design
-            </Bullet>
-            <Bullet theme={skills}>
-              <strong className="font-semibold">Development:</strong> JavaScript/React, HTML/CSS, Tailwind, Next.js, Git, Responsive design, AI workflows, MCPs
-            </Bullet>
-            <Bullet theme={skills}>
-              <strong className="font-semibold">Tools &amp; Platforms:</strong> Cursor, Figma, Sanity CMS, Notion, Obsidian; Prompt engineering, Production LLMs
-            </Bullet>
-          </ul>
-        </Section>
-
-        <Section label="Projects" theme={projects}>
-          <div className="space-y-[4pt]">
-            <EntryHead left="Full-stack portfolio website" right="2024 - 2025" />
-            <ul className="space-y-[1.5pt]">
-              <Bullet theme={projects}>
-                <strong className="font-semibold">Built portfolio system</strong> (Next.js + Sanity CMS) presenting multi-medium career collections
-              </Bullet>
-              <Bullet theme={projects}>
-                <strong className="font-semibold">Designed flexible content architecture separating project data from presentation:</strong> Built schemas supporting mixed media with metadata-driven
-                filtering, enabling layout changes without content migration
-              </Bullet>
-              <Bullet theme={projects}>
-                <strong className="font-semibold">Implemented iOS-quality interactions:</strong> Custom lightbox with origin-aware transitions, scroll-driven animations for card stacking effects,
-                URL-based filter sharing; prioritized perceived performance with motion timing + progressive loading
-              </Bullet>
-              <Bullet theme={projects}>
-                <strong className="font-semibold">Shipped to production replacing legacy Cargo site:</strong> Handled full deployment including Vercel hosting, Sanity Studio configuration, DNS setup,
-                and cache revalidation webhooks
-              </Bullet>
-            </ul>
-          </div>
-          <div className="space-y-[4pt]">
-            <EntryHead left="Personal digital infrastructure and tools" right="Ongoing" />
-            <ul className="space-y-[1.5pt]">
-              <Bullet theme={projects}>
-                <strong className="font-semibold">Designed information architecture for personal knowledge system:</strong> Created metadata schema and linking structure across 1000+ notes supporting
-                exploratory browsing, maintainability, and long-term retrieval (nathancheng.fyi)
-              </Bullet>
-              <Bullet theme={projects}>
-                <strong className="font-semibold">AI workflows:</strong> 80+ prompts following best practices (reasoning considerations, examples, multi-phase frameworks)
-              </Bullet>
-            </ul>
-          </div>
-        </Section>
-
-        <Section label="Experiences" theme={experiences}>
-          <div className="space-y-[3pt]">
-            <EntryHead
-              left={
-                <>
-                  Design and Systems Manager <span className="font-normal">at</span> TALtech
-                </>
-              }
-              right="2021 - Present"
-            />
-            <p>Solo designer / systems manager at family-run B2B software company (users at 3M, EPA, Lilly, PepsiCo).</p>
-            <ul className="space-y-[1.5pt]">
-              <Bullet theme={experiences}>
-                <strong className="font-semibold">Designed workflow builder interface unifying 40+ configuration options:</strong> Studied Windows UI patterns, created component system with
-                progressive disclosure for serial device communication
-              </Bullet>
-              <Bullet theme={experiences}>
-                <strong className="font-semibold">Reduced recurring setup questions ~30%</strong> by producing walkthrough video series replacing 90s-era documentation—scripted, recorded, and edited
-                with motion graphics
-              </Bullet>
-              <Bullet theme={experiences}>
-                <strong className="font-semibold">Led website redesign (500+ pages → focused content):</strong> Created wireframes, partnered with agency on WordPress build, refined typography and
-                layout with custom CSS
-              </Bullet>
-              <Bullet theme={experiences}>
-                <strong className="font-semibold">Planned e-commerce platform architecture:</strong> Data models, offline licensing flows, and Stripe integration to replace legacy store with modern
-                stack supporting B2B/reseller workflows
-              </Bullet>
-              <Bullet theme={experiences}>
-                <strong className="font-semibold">Leveraged direct customer support experience</strong> to identify UX pain points, shaping design and documentation priorities
-              </Bullet>
-            </ul>
-          </div>
-          <div className="space-y-[3pt]">
-            <EntryHead
-              left={
-                <>
-                  Designer and Developer <span className="font-normal">at</span> Foundation Studio
-                </>
-              }
-              right="2024"
-            />
-            <ul className="space-y-[1.5pt]">
-              <Bullet theme={experiences}>
-                <strong className="font-semibold">Built React/Next.js config generator for LLM interview chatbot:</strong> Form validation &amp; conditional logic reducing setup errors for screening
-                question flows
-              </Bullet>
-              <Bullet theme={experiences}>
-                <strong className="font-semibold">Wrote Python script workaround to preserve image fidelity</strong> when late-notice Techstars delivery requirements revealed Google Slides compression
-                would degrade designs
-              </Bullet>
-              <Bullet theme={experiences}>
-                <strong className="font-semibold">Led pitch deck strategy (3 startups):</strong> Competitor analysis, market positioning, visual direction for investor presentations
-              </Bullet>
-            </ul>
-          </div>
-          <div className="space-y-[3pt]">
-            <EntryHead left="Fellowship at Venture for America (now Ember Fellowship)" right="2023 - 2024" />
-            <ul className="space-y-[1.5pt]">
-              <Bullet theme={experiences}>
-                <strong className="font-semibold">Selected for competitive entrepreneurship fellowship (10% acceptance);</strong> trained in product strategy and design thinking with IDEO and Frog
-                Design workshops
-              </Bullet>
-              <Bullet theme={experiences}>
-                <strong className="font-semibold">Led 5-person team to win Judge Pick and Crowd Favorite in 3-day product sprint:</strong> Defined MVP scope, designed UI prototypes, pitched city
-                exploration app to VC/executive panel
-              </Bullet>
-            </ul>
-          </div>
-        </Section>
-
-        <Section label="Education" theme={education}>
-          <div className="space-y-[3pt]">
-            <EntryHead left="Web development foundations (The Odin Project) + Animations on the Web (Emil Kowalski)" right="2022 - 2024" />
-          </div>
-          <div className="space-y-[3pt]">
-            <EntryHead left="Wesleyan University - B.A. in Film Studies, Minor in Integrated Design and Engineering" right="2016 - 2020" />
-            <ul className="space-y-[1.5pt]">
-              <Bullet theme={education}>
-                <strong className="font-semibold">3.71 GPA;</strong> Honors, Dean&apos;s List; Frank Capra Prize for technical excellence in filmmaking and humor
-              </Bullet>
-              <Bullet theme={education}>
-                <strong className="font-semibold">Led team to first place in videogame dev intensive led by Bethesda founder:</strong> Managed 4-person team from concept to iOS demo, planned level
-                structure and art direction, enhanced visuals in Unity game engine, pitched to industry jury (Harmonix, Warner Bros. Games, Demiurge)
-              </Bullet>
-              <Bullet theme={education}>Relevant coursework: How to Design Programs (Pyret), Data Visualization (R/Shiny), Form and Code (Processing)</Bullet>
-            </ul>
-          </div>
-        </Section>
+        {sections.map((section, i) => {
+          switch (section.kind) {
+            case "skills":
+              return <SkillsBlock key={i} section={section} />;
+            case "projects":
+              return <ProjectsBlock key={i} section={section} />;
+            case "experiences":
+              return <ExperiencesBlock key={i} section={section} />;
+            case "education":
+              return <EducationBlock key={i} section={section} />;
+          }
+        })}
       </article>
     </main>
   );

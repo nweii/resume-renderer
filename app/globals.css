@@ -1,45 +1,15 @@
 @import "tailwindcss";
 
-@font-face {
-  font-family: "Saans";
-  src:
-    local("Saans"),
-    local("Saans TRIAL"),
-    local("Saans-Regular"),
-    url("/fonts/Saans.ttf") format("truetype");
-  font-weight: 100 900;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Saans";
-  src:
-    local("Saans Italic"),
-    local("Saans-Italic"),
-    local("Saans-LightItalic"),
-    url("/fonts/Saans-Italic.ttf") format("truetype");
-  font-weight: 100 900;
-  font-style: italic;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "SF Pro";
-  src:
-    local("SF Pro"),
-    local("SFPro-Regular"),
-    local(".SF NS"),
-    url("/fonts/SF-Pro.ttf") format("truetype");
-  font-weight: 100 900;
-  font-stretch: 50% 150%;
-  font-style: normal;
-  font-display: swap;
-}
+/*
+  Fonts are loaded via `next/font` in `lib/fonts.ts`; the resulting CSS
+  variables (`--font-funnel`, `--font-nimbus`) are applied to <html> in
+  `app/layout.tsx`. This file only maps those into the Tailwind theme tokens
+  that components consume.
+*/
 
 @theme inline {
-  --font-sans: "Saans", ui-sans-serif, system-ui, -apple-system, sans-serif;
-  --font-display: "SF Pro", "Saans", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-funnel), ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-display: var(--font-nimbus), "Impact", ui-sans-serif, sans-serif;
 
   --color-body: #3f3f46;
 

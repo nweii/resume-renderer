@@ -1,36 +1,100 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Resume renderer
 
-## Getting Started
+JSON file in, rendered resume out (web page + print-ready PDF via browser print). Built for iteration velocity in an agent loop (edit JSON, hot-reload, eyeball, repeat).The template is plain React and Tailwind.
 
-First, run the development server:
+This is primarily a personal tool. The code is public as portfolio evidence and as a reference for anyone who wants to fork the same shape for themselves.
+
+## Running it
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
+bun install
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open `http://localhost:3000`. Edit `resumes/master.json` and the page hot-reloads.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Export PDF
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Open the rendered page in Chrome → `⌘P` → **Margins: None**, **Scale: 100**, **Background graphics: on** → Save as PDF. The `@page { size: letter; margin: 0 }` rule in `app/globals.css` takes care of the page box; without the "Margins: None" setting Chrome stacks its own margins on top and the layout doubles up.
 
-## Learn More
+## The data model
 
-To learn more about Next.js, take a look at the following resources:
+`resumes/master.json` is the canonical resume content. It's validated at render time against the Zod schema in `lib/schema.ts`; schema failures surface as a readable error page with a list of issues.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Top-level shape:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```ts
+{
+  header: { name, subtitle: string[], monomark?, contact: { email, website? } },
+  sections: Section[]  // discriminated union on `kind`
+}
+```
 
-## Deploy on Vercel
+Four section kinds, each with its own entry shape:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- `skills` — `bullets: string[]`
+- `projects` — `entries: { title, dateRange?, bullets }[]`
+- `experiences` — `entries: { title, organization?, dateRange?, summary?, bullets }[]`
+- `education` — `entries: { title, dateRange?, bullets? }[]`
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Every section and entry can optionally carry `source` / `derivedFrom` fields. Nothing consumes them today — they're a hook for future authoring tools (e.g. a narrative system that produces resume JSON) to leave provenance breadcrumbs.
+
+### Inline bold in bullets
+
+Bullet strings support a single inline convention: `**text**` renders as bold. The template parses this at render time. No other inline formatting (italics, links, code) is supported; widen the convention in `renderRichText` in `app/page.tsx` if you need more.
+
+```json
+"**Built portfolio system** (Next.js + Sanity CMS) presenting multi-medium career collections"
+```
+
+Read `resumes/master.json` for a full worked example of every section kind.
+
+## Customizing this for yourself
+
+Five knobs. Everything else is framework.
+
+1. **Your content** — rewrite `resumes/master.json`. See the schema in `lib/schema.ts` for the exact shape.
+2. **Your monomark / logo** — replace `public/monomark.svg`. Update the reference in `resumes/master.json` (`header.monomark`) if you rename the file.
+3. **Theme colors** — the four `{ heading, bullet, line }` hex triples in the `themes` object at the top of `app/page.tsx`. Each section kind gets one triple.
+4. **Page metadata** — `app/layout.tsx` sets the `<title>` and `<meta description>`. Update to your name.
+5. **Fonts** — `lib/fonts.ts` wires up fonts via `next/font`. Funnel Sans (Google Fonts) for body, Nimbus Sans Extended (local woff2 files in `public/fonts/`) for the display `<h1>`. Swap either or both; the Tailwind theme tokens in `app/globals.css` (`--font-sans`, `--font-display`) are the mapping layer.
+
+Beyond these knobs, everything is regular React and Tailwind. Restyling section headers, changing the grid, adding print-only elements, swapping in a different font stack — all of it is component work against `app/page.tsx` and `app/globals.css`, not template configuration.
+
+The agent feedback toolbar (`Agentation` in `app/layout.tsx`) is dev-only and can be removed if you don't use it.
+
+## Adding a new section kind
+
+Three touchpoints. The discriminated union in the schema keeps all three in type-lockstep.
+
+1. **`lib/schema.ts`** — add a new section variant to the `sectionSchema` discriminated union. Give it a unique `kind` literal and whatever entry shape you need.
+2. **`app/page.tsx`** — add a theme triple to the `themes` object and a block component (e.g. `PublicationsBlock`) that renders your section.
+3. **`app/page.tsx`** — add a `case` to the `switch` in `Home()` that dispatches your `kind` to the block component.
+
+TypeScript will tell you if you miss one — the switch is exhaustive against the union.
+
+## Variants
+
+`resumes/master.json` is the canonical public resume. Tailored-per-role variants (`backend-staff.json`, `design-lead.json`, etc.) are gitignored by convention — see `.gitignore`. They live in the same folder on your machine but don't land in public git history.
+
+Variants are independent artifacts, not filtered views of master. Each one is a hand-tuned whole file. Duplication is intentional; it buys freedom to trim, reorder, and re-emphasize per role without side effects on other variants.
+
+## Overflow and page fit
+
+The template targets a single 8.5 × 11 inch page (US letter). In `bun dev`, `app/PageEdge.tsx` measures the article on render and, if content exceeds 11 inches, draws a red dashed rule at the boundary labelled with the overflow magnitude (e.g. `OVERFLOWS BY 0.42IN`). When content fits, nothing appears. The indicator is stripped from production builds so the deployed page stays clean. Chrome's print pipeline paginates naturally if content spills past; `print:break-inside-avoid` on entry wrappers keeps chunks from splitting mid-entry.
+
+A measurement signal shared with `bun test` is planned but deferred: [`@chenglou/pretext`](https://www.npmjs.com/package/@chenglou/pretext) is the right primitive, but its server-side story isn't yet shipped (as of v0.0.5). When it lands, the plan is a `lib/measure.ts` shared by the dev-only overlay and a test assertion — so an agent iterating on content can fail a test rather than needing to look at a screen.
+
+## Project docs
+
+- `AGENTS.md` — conventions for agents (including humans) working in this repo.
+- `docs/working-log.md` — living record of implementation decisions. Append when finishing meaningful blocks.
+- `docs/usage/` — standalone notes on design thinking and open questions.
+
+## Stack
+
+Next.js 16 (App Router, static export), React 19, Tailwind v4, Zod 4, Bun as the runtime / package manager.
+
+## License
+
+MIT. See `LICENSE`.

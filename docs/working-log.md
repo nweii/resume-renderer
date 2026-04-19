@@ -63,3 +63,74 @@ Followup items:
 - Extract hardcoded content to `resumes/master.json` + write `lib/schema.ts` Zod schema.
 - Wire `?mode=print` toggle (still open from prior session).
 - Post-MVP: true responsive `?mode=web` + configurable page size.
+
+---
+
+## 2026-04-19 — Extracted content to `resumes/master.json` and `lib/schema.ts`
+
+**Agent**: Cursor / Claude Opus 4.7
+**Scope**: schema, data
+
+Template-first schema inferred backwards from `app/page.tsx`. Installed `zod@4`. Page now reads `resumes/master.json`, validates with `resumeSchema.safeParse` at render time, and shows a readable error page (red-tinted `<pre>` of `issues`) on schema failure. No visual changes to the template.
+
+**Schema shape** (`lib/schema.ts`):
+
+- `Resume = { header, sections[] }`.
+- `header = { name, subtitle: string[], monomark?, contact: { email, website? { url, label } } }`. Subtitle is an array of lines (joined by `<br />` at render). URL/email kept as plain strings for now — no URL validation since `mailto:` and relative paths would fail `z.url()` and the pain isn't worth the cost yet.
+- `sections: DiscriminatedUnion<"kind", [skills, projects, experiences, education]>`.
+  - `skills`: `{ kind, label, bullets: string[] }`.
+  - `projects`: `entries: { title, dateRange?, bullets }[]`.
+  - `experiences`: `entries: { title, organization?, dateRange?, summary?, bullets }[]`. When `organization` is present, the template renders `{title} at {organization}` with "at" in `font-normal`; when absent (e.g. VfA fellowship), `title` renders whole. This is a template concern, not a data concern — the JSON stays clean.
+  - `education`: `entries: { title, dateRange?, bullets? }[]`. Bullets optional because the Odin Project / Emil Kowalski row has none.
+- Optional `source` / `derivedFrom` on every section and entry per AGENTS.md Strata hook. No render logic depends on them.
+- Theme colors stay in `app/page.tsx`; JSON only tags sections by `kind`.
+
+**Inline-markup decision**: `**bold**` convention inside plain bullet strings. Parser at render time is one line (`split(/\*\*(.+?)\*\*/g)`, alternate runs → `<strong>`/`<span>`). Arrays of `{ text, bold? }` runs were considered and rejected — every current bullet uses at most a single bold prefix or mid-sentence emphasis, and forcing structured runs would slow down the "edit JSON, see change" loop for zero authoring benefit. If a bullet ever needs italics / links / code, widen the convention (and parser) then. Nesting is explicitly unsupported.
+
+**Validation surface**: `safeParse` at the top of `Home()`. On failure, a red error page dumps `issues` as JSON. This is the agent loop's error path — it shows up on the same URL, no console round-trip needed. Considered `z.prettifyError` but raw `issues` is more actionable for now (path + message + code per issue).
+
+Followup items:
+- Same four theme-color hexes still need Nathan's confirmation; unchanged by this work.
+- Variant files (`backend-staff.json` etc.) can now be created as copies of `master.json` when needed — same schema, independent tuning.
+- Multi-page overflow behavior is unaddressed. Current template hard-clips at `h-[11in] overflow-hidden`; if `master.json` gains enough content to spill, the overflow silently disappears. Not blocking for the MVP deliverable but will bite eventually.
+- `?mode=print` toggle still open from prior sessions.
+- Consider a tiny `lib/richText.ts` if `renderRichText` grows beyond the current ~5 lines — keeping it inline in `page.tsx` for now since it's template-only concern.
+
+---
+
+## 2026-04-19 — Locked architecture for integration, hosting, privacy, overflow, and commit discipline
+
+**Agent**: Cursor / Claude Opus 4.7
+**Scope**: architecture / planning
+
+Long conversation settling several cross-cutting decisions before more implementation. No code yet, just the decision record.
+
+**Portfolio integration: link + additive JSON endpoint, not dual renderer.**
+Portfolio (`nathancheng.work`, deployed on Vercel) links to the deployed renderer as the canonical resume page. The portfolio does *not* get its own resume rendering — the existing design on this repo is exactly what Nathan wants everywhere. Additively, the renderer exposes `/resume.json` so programmatic consumers (future Strata, OG image generators, agents) can read the data contract directly. Variants post-MVP would add sibling routes (`/backend-staff`, `/api/backend-staff.json`). Public portfolio links only to the canonical — tailored variants are private (see below).
+
+**Path-based URL via cross-provider rewrite.**
+Target URL is `nathancheng.work/resume`, not `resume.nathancheng.work`. Achieved by Vercel `next.config.ts` rewrites on the portfolio proxying `/resume*` to the deployed renderer, paired with `basePath: '/resume'` in the renderer's Next config so asset paths resolve under the rewrite. Implementation deferred until the deploy step.
+
+**Hosting: Cloudflare Workers, static export.**
+App is effectively static — `master.json` is imported at build time, no runtime mutation. `next build` with `output: "export"` produces HTML + the JSON file, served from Cloudflare's CDN with zero Worker execution cost. Free tier trivially covers this. Cloudflare Pages is being subsumed into Workers Static Assets, so we deploy directly to Workers. Consolidates with Nathan's existing Cloudflare infrastructure (tunnels, DNS on `nthn.fyi`, Zero Trust auth for `bmcp.nthn.fyi`). One consequence: schema validation failures become build failures (readable in build logs) rather than runtime red error pages — better for the agent loop, worth noting.
+
+**Read API via HTTP; write API deferred to MCP.**
+Read surface is plain HTTP — `/resume.json`, later `/resume.pdf`, `/api/schema`, `/api/measure` (once pretext lands server-side). Any client can consume with zero protocol overhead. Writes are *not* REST endpoints: a write-REST-API would duplicate what MCP does better (tool discovery + typed schemas surfaced to the agent without external docs). When remote writes matter, build an MCP server on Lola using the existing `obsidian-remote-mcp` pattern (Cloudflare Zero Trust + OAuth 2.1). For now, writes happen via Claude Code on Mac editing files directly; NTHNbot covers remote-write fallback.
+
+**Overflow: manual eyeballing for now; pretext server-side deferred.**
+Pretext (`@chenglou/pretext` v0.0.5) has the right API for measurement but currently requires browser canvas (`measureText`). Its server-side story is "soon" per the npm README. Nathan explicitly prefers to wait rather than hack in a `@napi-rs/canvas` polyfill in bun tests — this is personal use, manual "is it two pages?" eyeballing is fine. When server-side lands, the path is `lib/measure.ts` (pretext for variable-height text, CSS constants for structural heights) shared between `tests/fit.test.ts` (agent signal) and a dev-only on-screen badge (human signal). In the meantime, adding a visible dashed rule at the 11in page boundary so overflow is at least *visible* to the eye — captured in this block's implementation.
+
+**Public master, private variants.**
+`resumes/master.json` stays public — canonical for the portfolio link, reference shape for forkers, and its history reads as craft iteration. Variants (`backend-staff.json`, etc.) are gitignored — tailoring-for-specific-role feels more exposed in public history and also makes the targeting machinery more legible than is comfortable. Forkers get `master.json` as the working example; variants are a convention they can adopt locally. For private variant version history, Nathan can use a sibling private repo pattern (his existing `nthnOS-configs` shape) when needed.
+
+**Commit discipline as authoring layer.**
+Public repo + public master means the git history is part of the portfolio. Treat commits as a curated change log: group meaningful edits into single commits with descriptive messages, squash local WIP before pushing. Noise commits (`edit`, `fix typo`, `more`) should not land publicly. Added to `AGENTS.md` as a convention so agents working in this repo follow it. Professional optics take: the risk of bad-faith git archaeology exists but is small; the benefit of visible iteration is real and compounds. The framing that closes the loop — the repo is a portfolio of the *system*, not an archive of the resume.
+
+**Scope for the next block**: README pass (including the five fork knobs and section-kind extension recipe), `.gitignore` for variants, AGENTS.md commit-discipline note, and the overflow dashed rule. Static export + Workers deploy is a separate block because it involves deploy config. `/resume.json` route piggybacks on static export.
+
+Followup items:
+- `/resume.json` route + static export + Cloudflare Workers deploy (separate block).
+- Portfolio-side Vercel rewrites + `basePath: '/resume'` in renderer (after Workers deploy is live).
+- Pretext server-side: revisit when `@chenglou/pretext` ships the promised non-canvas path; then build `lib/measure.ts` + `tests/fit.test.ts` + dev-only overflow badge.
+- Schema contract tests in `bun test` (assert master validates, section counts, balanced `**bold**` pairs) — cheap guardrail that doesn't need pretext, deferred until a block where we're writing tests anyway.
+- MCP server on Lola if/when remote structured writes become friction-worthy.

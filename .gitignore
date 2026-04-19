@@ -39,3 +39,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# resume variants — keep master public, variants stay local.
+# Tailored-per-role variants expose targeting machinery in a way that's less
+# comfortable to have in public git history. Master is the canonical, variants
+# are personal drafts.
+resumes/*.json
+!resumes/master.json

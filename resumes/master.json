@@ -1,0 +1,103 @@
+{
+  "header": {
+    "name": "Nathan Cheng",
+    "subtitle": ["Designer who codes, with a background in film studies and graphic design.", "Bridges design, development, and business needs to make complex systems legible."],
+    "monomark": "/monomark.svg",
+    "contact": {
+      "email": "nthn.wei@gmail.com",
+      "website": {
+        "url": "https://nathancheng.work",
+        "label": "nathancheng.work"
+      }
+    }
+  },
+  "sections": [
+    {
+      "kind": "skills",
+      "label": "Skills",
+      "bullets": [
+        "**Design & UX:** Interface design, Design systems, Information architecture, Prototyping, Visual design",
+        "**Development:** JavaScript/React, HTML/CSS, Tailwind, Next.js, Git, Responsive design, AI workflows, MCPs",
+        "**Tools & Platforms:** Cursor, Figma, Sanity CMS, Notion, Obsidian; Prompt engineering, Production LLMs"
+      ]
+    },
+    {
+      "kind": "projects",
+      "label": "Projects",
+      "entries": [
+        {
+          "title": "Full-stack portfolio website",
+          "dateRange": "2024 - 2025",
+          "bullets": [
+            "**Built portfolio system** (Next.js + Sanity CMS) presenting multi-medium career collections",
+            "**Designed flexible content architecture separating project data from presentation:** Built schemas supporting mixed media with metadata-driven filtering, enabling layout changes without content migration",
+            "**Implemented iOS-quality interactions:** Custom lightbox with origin-aware transitions, scroll-driven animations for card stacking effects, URL-based filter sharing; prioritized perceived performance with motion timing + progressive loading",
+            "**Shipped to production replacing legacy Cargo site:** Handled full deployment including Vercel hosting, Sanity Studio configuration, DNS setup, and cache revalidation webhooks"
+          ]
+        },
+        {
+          "title": "Personal digital infrastructure and tools",
+          "dateRange": "Ongoing",
+          "bullets": [
+            "**Designed information architecture for personal knowledge system:** Created metadata schema and linking structure across 1000+ notes supporting exploratory browsing, maintainability, and long-term retrieval (nathancheng.fyi)"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "experiences",
+      "label": "Experiences",
+      "entries": [
+        {
+          "title": "Design and Systems Manager",
+          "organization": "TALtech",
+          "dateRange": "2021 - Present",
+          "summary": "Solo designer / systems manager at family-run B2B software company (users at 3M, EPA, Lilly, PepsiCo).",
+          "bullets": [
+            "**Designed workflow builder interface unifying 40+ configuration options:** Studied Windows UI patterns, created component system with progressive disclosure for serial device communication",
+            "**Reduced recurring setup questions ~30%** by producing walkthrough video series replacing 90s-era documentation—scripted, recorded, and edited with motion graphics",
+            "**Led website redesign (500+ pages → focused content):** Created wireframes, partnered with agency on WordPress build, refined typography and layout with custom CSS",
+            "**Planned e-commerce platform architecture:** Data models, offline licensing flows, and Stripe integration to replace legacy store with modern stack supporting B2B/reseller workflows",
+            "**Leveraged direct customer support experience** to identify UX pain points, shaping design and documentation priorities"
+          ]
+        },
+        {
+          "title": "Designer and Developer",
+          "organization": "Foundation Studio",
+          "dateRange": "2024",
+          "bullets": [
+            "**Built React/Next.js config generator for LLM interview chatbot,** reducing setup errors for screening question flows",
+            "**Wrote Python script workaround to preserve image fidelity** when late-notice Techstars delivery requirements revealed Google Slides compression would degrade designs",
+            "**Led pitch deck strategy (3 startups):** Competitor analysis, market positioning, visual direction for investor presentations"
+          ]
+        },
+        {
+          "title": "Fellowship at Venture for America (now Ember Fellowship)",
+          "dateRange": "2023 - 2024",
+          "bullets": [
+            "**Selected for competitive entrepreneurship fellowship (10% acceptance);** trained in product strategy and design thinking with IDEO and Frog Design workshops",
+            "**Led 5-person team to win Judge Pick and Crowd Favorite in 3-day product sprint:** Defined MVP scope, designed UI prototypes, pitched city exploration app to VC/executive panel"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "education",
+      "label": "Education",
+      "entries": [
+        {
+          "title": "Web development foundations (The Odin Project) + Animations on the Web (Emil Kowalski)",
+          "dateRange": "2022 - 2024"
+        },
+        {
+          "title": "Wesleyan University - B.A. in Film Studies, Minor in Integrated Design and Engineering",
+          "dateRange": "2016 - 2020",
+          "bullets": [
+            "**3.71 GPA;** Honors, Dean's List; Frank Capra Prize for technical excellence in filmmaking and humor",
+            "**Led team to first place in videogame dev intensive led by Bethesda founder:** Managed 4-person team from concept to iOS demo, planned level structure and art direction, enhanced visuals in Unity game engine, pitched to industry jury (Harmonix, Warner Bros. Games, Demiurge)"
+          ]
+        }
+      ]
+    }
+  ]
+}
