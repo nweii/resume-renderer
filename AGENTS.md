@@ -42,3 +42,12 @@ Close the loop between "agent chat about Nathan's positioning" and "a resume dra
 - Don't break the "edit one JSON → see change" loop. Avoid indirection (state mirrors, generated-from-X layers) that makes agent edits invisible.
 - Print layout is a first-class design target, not a de-responsified web view. Tune `@page`, `break-inside`, and typography explicitly.
 - Keep templates free of data-shaping logic. If a bullet needs trimming for a variant, edit the variant file.
+
+## Session start
+
+Before replying substantively to the first message in any session, orient from:
+
+1. The most recent entry in `docs/working-log.md` — what changed recently.
+2. The last one or two files in `docs/usage/` — what we're learning about the work. Scan filenames first; read the most recent in full.
+
+If a usage note flags unresolved questions or thinking that's ahead of implementation, carry that forward rather than re-deriving it. When finishing a meaningful block of work, append a new entry to `docs/working-log.md` using the template at the top of that file.
