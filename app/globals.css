@@ -5,60 +5,63 @@
 
 /*
   Fonts: `lib/fonts.ts` → variables on <html> in `app/layout.tsx`.
-  Section accents: OKLCH (L C H in degrees). Tweak a swatch by editing its line.
+
+  Template `templates/current/`: surface, paper, inks, and section accents use the
+  `--t-current-*` namespace so additional full templates can define parallel
+  token sets without colliding. Tweak a swatch by editing its line.
 */
 
 :root {
-  --resume-scale: 1;
+  --t-current-scale: 1;
   color-scheme: light;
 
-  --resume-backdrop: var(--color-stone-50);
-  --resume-paper: oklch(1 0 0);
+  --t-current-backdrop: var(--color-stone-50);
+  --t-current-paper: oklch(1 0 0);
   /* Non-heading body copy (subtitle, bullets, summaries): tweak here only. */
-  --resume-neutral-ink: var(--color-neutral-700);
-  --resume-heading-ink: oklch(0.22 0.02 285);
+  --t-current-neutral-ink: var(--color-neutral-700);
+  --t-current-heading-ink: oklch(0.22 0.02 285);
 
-  --theme-skills-heading: oklch(0.385 0.132 158);
-  --theme-skills-bullet: oklch(0.4 0.2 158);
-  --theme-skills-line: oklch(0.93 0.042 158);
+  --t-current-skills-heading: oklch(0.385 0.132 158);
+  --t-current-skills-bullet: oklch(0.4 0.2 158);
+  --t-current-skills-line: oklch(0.93 0.042 158);
 
-  --theme-projects-heading: oklch(0.385 0.132 294);
-  --theme-projects-bullet: oklch(0.4 0.2 294);
-  --theme-projects-line: oklch(0.93 0.042 294);
+  --t-current-projects-heading: oklch(0.385 0.132 294);
+  --t-current-projects-bullet: oklch(0.4 0.2 294);
+  --t-current-projects-line: oklch(0.93 0.042 294);
 
-  --theme-experiences-heading: oklch(0.385 0.132 260);
-  --theme-experiences-bullet: oklch(0.4 0.2 260);
-  --theme-experiences-line: oklch(0.93 0.042 260);
+  --t-current-experiences-heading: oklch(0.385 0.132 260);
+  --t-current-experiences-bullet: oklch(0.4 0.2 260);
+  --t-current-experiences-line: oklch(0.93 0.042 260);
 
-  --theme-education-heading: oklch(0.385 0.132 48);
-  --theme-education-bullet: oklch(0.4 0.2 48);
-  --theme-education-line: oklch(0.93 0.042 48);
+  --t-current-education-heading: oklch(0.385 0.132 48);
+  --t-current-education-bullet: oklch(0.4 0.2 48);
+  --t-current-education-line: oklch(0.93 0.042 48);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     color-scheme: dark;
 
-    --resume-backdrop: var(--color-stone-950);
-    --resume-paper: var(--color-neutral-900);
-    --resume-neutral-ink: var(--color-neutral-300);
-    --resume-heading-ink: oklch(0.97 0.005 285);
+    --t-current-backdrop: var(--color-stone-950);
+    --t-current-paper: var(--color-neutral-900);
+    --t-current-neutral-ink: var(--color-neutral-300);
+    --t-current-heading-ink: oklch(0.97 0.005 285);
 
-    --theme-skills-heading: oklch(0.78 0.09 158);
-    --theme-skills-bullet: oklch(0.72 0.076 158);
-    --theme-skills-line: oklch(0.4 0.055 158);
+    --t-current-skills-heading: oklch(0.78 0.09 158);
+    --t-current-skills-bullet: oklch(0.72 0.076 158);
+    --t-current-skills-line: oklch(0.4 0.055 158);
 
-    --theme-projects-heading: oklch(0.78 0.09 294);
-    --theme-projects-bullet: oklch(0.72 0.076 294);
-    --theme-projects-line: oklch(0.4 0.055 294);
+    --t-current-projects-heading: oklch(0.78 0.09 294);
+    --t-current-projects-bullet: oklch(0.72 0.076 294);
+    --t-current-projects-line: oklch(0.4 0.055 294);
 
-    --theme-experiences-heading: oklch(0.78 0.09 260);
-    --theme-experiences-bullet: oklch(0.72 0.076 260);
-    --theme-experiences-line: oklch(0.4 0.055 260);
+    --t-current-experiences-heading: oklch(0.78 0.09 260);
+    --t-current-experiences-bullet: oklch(0.72 0.076 260);
+    --t-current-experiences-line: oklch(0.4 0.055 260);
 
-    --theme-education-heading: oklch(0.78 0.09 48);
-    --theme-education-bullet: oklch(0.72 0.076 48);
-    --theme-education-line: oklch(0.4 0.055 48);
+    --t-current-education-heading: oklch(0.78 0.09 48);
+    --t-current-education-bullet: oklch(0.72 0.076 48);
+    --t-current-education-line: oklch(0.4 0.055 48);
   }
 }
 
@@ -66,29 +69,29 @@
   --font-sans: var(--font-funnel), ui-sans-serif, system-ui, -apple-system, sans-serif;
   --font-display: var(--font-nimbus), "Impact", ui-sans-serif, sans-serif;
 
-  --color-body: var(--resume-neutral-ink);
+  --color-body: var(--t-current-neutral-ink);
 
-  --color-skills-heading: var(--theme-skills-heading);
-  --color-skills-bullet: var(--theme-skills-bullet);
-  --color-skills-divider: var(--theme-skills-line);
+  --color-skills-heading: var(--t-current-skills-heading);
+  --color-skills-bullet: var(--t-current-skills-bullet);
+  --color-skills-divider: var(--t-current-skills-line);
 
-  --color-projects-heading: var(--theme-projects-heading);
-  --color-projects-bullet: var(--theme-projects-bullet);
-  --color-projects-divider: var(--theme-projects-line);
+  --color-projects-heading: var(--t-current-projects-heading);
+  --color-projects-bullet: var(--t-current-projects-bullet);
+  --color-projects-divider: var(--t-current-projects-line);
 
-  --color-experiences-heading: var(--theme-experiences-heading);
-  --color-experiences-bullet: var(--theme-experiences-bullet);
-  --color-experiences-divider: var(--theme-experiences-line);
+  --color-experiences-heading: var(--t-current-experiences-heading);
+  --color-experiences-bullet: var(--t-current-experiences-bullet);
+  --color-experiences-divider: var(--t-current-experiences-line);
 
-  --color-education-heading: var(--theme-education-heading);
-  --color-education-bullet: var(--theme-education-bullet);
-  --color-education-divider: var(--theme-education-line);
+  --color-education-heading: var(--t-current-education-heading);
+  --color-education-bullet: var(--t-current-education-bullet);
+  --color-education-divider: var(--t-current-education-line);
 }
 
 html,
 body {
-  background: var(--resume-backdrop);
-  color: var(--resume-heading-ink);
+  background: var(--t-current-backdrop);
+  color: var(--t-current-heading-ink);
 }
 
 @page {
@@ -100,31 +103,31 @@ body {
   :root {
     color-scheme: light;
 
-    --resume-backdrop: oklch(1 0 0);
-    --resume-paper: oklch(1 0 0);
-    --resume-neutral-ink: oklch(0.37 0.02 285);
-    --resume-heading-ink: oklch(0.22 0.02 285);
+    --t-current-backdrop: oklch(1 0 0);
+    --t-current-paper: oklch(1 0 0);
+    --t-current-neutral-ink: oklch(0.37 0.02 285);
+    --t-current-heading-ink: oklch(0.22 0.02 285);
 
-    --theme-skills-heading: oklch(0.385 0.132 158);
-    --theme-skills-bullet: oklch(0.4 0.2 158);
-    --theme-skills-line: oklch(0.93 0.042 158);
+    --t-current-skills-heading: oklch(0.385 0.132 158);
+    --t-current-skills-bullet: oklch(0.4 0.2 158);
+    --t-current-skills-line: oklch(0.93 0.042 158);
 
-    --theme-projects-heading: oklch(0.385 0.132 294);
-    --theme-projects-bullet: oklch(0.4 0.2 294);
-    --theme-projects-line: oklch(0.93 0.042 294);
+    --t-current-projects-heading: oklch(0.385 0.132 294);
+    --t-current-projects-bullet: oklch(0.4 0.2 294);
+    --t-current-projects-line: oklch(0.93 0.042 294);
 
-    --theme-experiences-heading: oklch(0.385 0.132 260);
-    --theme-experiences-bullet: oklch(0.4 0.2 260);
-    --theme-experiences-line: oklch(0.93 0.042 260);
+    --t-current-experiences-heading: oklch(0.385 0.132 260);
+    --t-current-experiences-bullet: oklch(0.4 0.2 260);
+    --t-current-experiences-line: oklch(0.93 0.042 260);
 
-    --theme-education-heading: oklch(0.385 0.132 48);
-    --theme-education-bullet: oklch(0.4 0.2 48);
-    --theme-education-line: oklch(0.93 0.042 48);
+    --t-current-education-heading: oklch(0.385 0.132 48);
+    --t-current-education-bullet: oklch(0.4 0.2 48);
+    --t-current-education-line: oklch(0.93 0.042 48);
   }
 
   html,
   body {
     background: oklch(1 0 0);
-    color: var(--resume-heading-ink);
+    color: var(--t-current-heading-ink);
   }
 }

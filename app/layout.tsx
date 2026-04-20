@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import { Agentation } from "agentation";
 import { funnelSans, nimbusExt } from "@/lib/fonts";
+import { siteConfig } from "@/lib/site";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Nathan Cheng — Resume",
-  description: "Resume of Nathan Cheng.",
+  title: siteConfig.title,
+  description: siteConfig.description,
+  applicationName: siteConfig.name,
 };
 
 export default function RootLayout({

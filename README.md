@@ -54,7 +54,7 @@ Every section and entry can optionally carry `source` / `derivedFrom` fields. No
 
 ### Inline bold in bullets
 
-Bullet strings support a single inline convention: `**text**` renders as bold. The template parses this at render time. No other inline formatting (italics, links, code) is supported; widen the convention in `renderRichText` in `app/page.tsx` if you need more.
+Bullet strings support a single inline convention: `**text**` renders as bold. The active template parses this at render time. No other inline formatting (italics, links, code) is supported; widen the convention in `renderRichText` in [`templates/current/sections.tsx`](templates/current/sections.tsx) if you need more.
 
 ```json
 "**Built portfolio system** (Next.js + Sanity CMS) presenting multi-medium career collections"
@@ -68,21 +68,26 @@ Five knobs. Everything else is framework.
 
 1. **Your content** — rewrite `resumes/master.json`. See the schema in `lib/schema.ts` for the exact shape.
 2. **Your monomark / logo** — replace `public/monomark.svg`. Update the reference in `resumes/master.json` (`header.monomark`) if you rename the file.
-3. **Theme colors** — the four `{ heading, bullet, line }` hex triples in the `themes` object at the top of `app/page.tsx`. Each section kind gets one triple.
+3. **Theme colors** — for the default full-page template (`templates/current/`), section accents are `{ heading, bullet, line }` CSS variable references in [`templates/current/theme.ts`](templates/current/theme.ts), backed by OKLCH values under the `--t-current-*` namespace in [`app/globals.css`](app/globals.css) (light, dark, print). Each section kind gets one triple.
 4. **Page metadata** — `app/layout.tsx` sets the `<title>` and `<meta description>`. Update to your name.
 5. **Fonts** — `lib/fonts.ts` wires up fonts via `next/font`. Funnel Sans (Google Fonts) for body, Nimbus Sans Extended (local woff2 files in `public/fonts/`) for the display `<h1>`. Swap either or both; the Tailwind theme tokens in `app/globals.css` (`--font-sans`, `--font-display`) are the mapping layer.
 
-Beyond these knobs, everything is regular React and Tailwind. Restyling section headers, changing the grid, adding print-only elements, swapping in a different font stack — all of it is component work against `app/page.tsx` and `app/globals.css`, not template configuration.
+Beyond these knobs, everything is regular React and Tailwind. Restyling section headers, changing the grid, adding print-only elements, swapping in a different font stack — all of it is component work under `templates/` and `app/globals.css`. [`app/page.tsx`](app/page.tsx) stays a thin shell: it validates JSON and renders whichever template is selected in [`templates/index.ts`](templates/index.ts) (`activeResumeTemplateId`).
+
+### Templates
+
+- **`templates/current/`** — the letter-size resume layout (header, section dividers, blocks, rich text). CSS tokens for this template use the `--t-current-*` prefix so another full template can ship its own token set later.
+- **`templates/index.ts`** — registry of full templates and the code-selected active entry (`activeResumeTemplateId`). To try a different template implementation, add it here and point `activeResumeTemplateId` at its key.
 
 The agent feedback toolbar (`Agentation` in `app/layout.tsx`) is dev-only and can be removed if you don't use it.
 
 ## Adding a new section kind
 
-Three touchpoints. The discriminated union in the schema keeps all three in type-lockstep.
+Three touchpoints for the default template (plus CSS values for the new accent variables). The discriminated union in the schema keeps the schema and renderer in type-lockstep.
 
 1. **`lib/schema.ts`** — add a new section variant to the `sectionSchema` discriminated union. Give it a unique `kind` literal and whatever entry shape you need.
-2. **`app/page.tsx`** — add a theme triple to the `themes` object and a block component (e.g. `PublicationsBlock`) that renders your section.
-3. **`app/page.tsx`** — add a `case` to the `switch` in `Home()` that dispatches your `kind` to the block component.
+2. **`templates/current/theme.ts`** — add a `{ heading, bullet, line }` entry for your section kind, and define matching `--t-current-…` variables in `app/globals.css` (including dark and `@media print` blocks).
+3. **`templates/current/sections.tsx`** — add a block component (e.g. `PublicationsBlock`) and a `case` in `CurrentResumeDocument`'s `switch` that renders it.
 
 TypeScript will tell you if you miss one — the switch is exhaustive against the union.
 

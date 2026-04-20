@@ -15,6 +15,15 @@ What was done, decided, or changed. Keep it concise — link to files or commits
 
 ---
 
+## 2026-04-20 — Modular templates: `templates/current/` and `--t-current-*` tokens
+
+**Agent**: Cursor / GPT-5.4
+**Scope**: UI / architecture
+
+Extracted the full-page resume presentation from `app/page.tsx` into `templates/current/` (`sections.tsx`, `theme.ts`, `shell.ts`, `CurrentResumeTemplate.tsx`). `app/page.tsx` now only validates `resumes/master.json` and renders the active template from `templates/index.ts` (`activeResumeTemplateId`). Renamed global resume CSS variables to the `--t-current-*` namespace in `app/globals.css` so a future second full template can own a parallel token set; `ResumeScaler` sets `--t-current-scale`. Updated `README.md` and `AGENTS.md` to match.
+
+---
+
 ## 2026-04-19 — Scaffolded Next.js app and established project principles
 
 **Agent**: Claude Code / Opus 4.7
@@ -134,3 +143,25 @@ Followup items:
 - Pretext server-side: revisit when `@chenglou/pretext` ships the promised non-canvas path; then build `lib/measure.ts` + `tests/fit.test.ts` + dev-only overflow badge.
 - Schema contract tests in `bun test` (assert master validates, section counts, balanced `**bold**` pairs) — cheap guardrail that doesn't need pretext, deferred until a block where we're writing tests anyway.
 - MCP server on Lola if/when remote structured writes become friction-worthy.
+
+---
+
+## 2026-04-20 — Replaced scaffold favicon with the portfolio monomark
+
+**Agent**: Cursor / GPT-5.4
+**Scope**: branding / metadata
+
+Replaced the default Next scaffold favicon with the same monomark treatment used in `nathancheng.work/Portfolio`: taupe rounded-square background with the white monomark centered inside. The renderer now uses a generated `app/icon.tsx` route instead of a checked-in `.ico`, which keeps the favicon styling configurable in code while letting forks swap the glyph by replacing a single SVG file.
+
+**Implementation details**:
+
+- Added `lib/site.ts` as the central place for site title/description and favicon styling knobs (`background`, `foreground`, `inset`, `borderRadius`).
+- Added `app/favicon-mark.svg` by copying the portfolio's `monomark-tiny.svg` so the glyph matches the existing site mark.
+- Added `app/icon.tsx` using `next/og` `ImageResponse` and marked it `force-static` for compatibility with `output: "export"`.
+- Removed the scaffolded `app/favicon.ico` so browsers get the generated icon rather than the default Next logo.
+- During verification, local-asset `fetch(new URL(..., import.meta.url))` failed in this repo's static-export prerender path, so the icon route now reads the SVG from disk with Node APIs at build time instead.
+
+Followup items:
+
+- If/when the renderer gets a public base URL config, consider adding `metadataBase` in `app/layout.tsx` alongside `siteConfig`.
+- If you want iOS home-screen parity later, add `app/apple-icon.tsx` that reuses the same styling constants.

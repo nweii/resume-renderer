@@ -14,10 +14,10 @@ Close the loop between "agent chat about the user's positioning" and "a resume d
 
 ## What exists
 
-- `app/` — Next 16 App Router. Pages render resume variants from JSON.
-- `resumes/` *(not yet created)* — one JSON file per variant. `master.json` is canonical; other files are hand-tuned copies (e.g. `backend-staff.json`). Variants are independent artifacts, not filtered views of master.
-- `templates/` *(not yet created)* — React components consuming the resume schema. Design-opinionated, Tailwind-based.
-- `lib/schema.ts` *(not yet created)* — Zod schema. The contract between agent-authored JSON and the renderer.
+- `app/` — Next 16 App Router. The home route validates JSON and renders the active template from `templates/`.
+- `resumes/` — one JSON file per content variant. `master.json` is canonical; other files are hand-tuned copies (e.g. `backend-staff.json`). Variants are independent artifacts, not filtered views of master.
+- `templates/` — React components consuming the resume schema. Design-opinionated, Tailwind-based. The active template is code-selected in `templates/index.ts` (`activeResumeTemplateId`); the default full-page layout lives under `templates/current/`.
+- `lib/schema.ts` — Zod schema. The contract between agent-authored JSON and the renderer.
 
 ## What the agent can do
 
