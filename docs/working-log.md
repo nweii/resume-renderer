@@ -15,6 +15,15 @@ What was done, decided, or changed. Keep it concise — link to files or commits
 
 ---
 
+## 2026-04-20 — Decoupled print spacing from responsive spacing for Safari preview
+
+**Agent**: Cursor / GPT-5.4
+**Scope**: print / UI
+
+Safari print preview was reusing viewport-responsive spacing after the page had been resized, which showed up most obviously in section vertical rhythm. The fix was to stop relying on `md:` classes as implicit print defaults in `templates/current/sections.tsx` and `templates/current/shell.ts`: print now gets its own explicit section stack spacing, entry spacing, bullet spacing, page insets, and top padding. This keeps Chromium behavior unchanged while making print layout deterministic regardless of the last responsive viewport state.
+
+---
+
 ## 2026-04-20 — Modular templates: `templates/current/` and `--t-current-*` tokens
 
 **Agent**: Cursor / GPT-5.4

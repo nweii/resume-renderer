@@ -9,10 +9,10 @@ import type {
 import type { SectionAccent } from "./theme";
 import { currentSectionAccents } from "./theme";
 
-const PAGE_INSET = "px-4 sm:px-6 md:pr-[0.35in] md:pl-[0.25in]";
+const PAGE_INSET = "px-4 sm:px-6 print:pr-[0.35in] print:pl-[0.25in] md:pr-[0.35in] md:pl-[0.25in]";
 
-const SECTION_STACK = "space-y-[0.2in] md:space-y-[0.1in]";
-const ENTRY_STACK = "space-y-[8pt] md:space-y-[7pt] print:break-inside-avoid";
+const SECTION_STACK = "space-y-[0.2in] print:space-y-[0.1in] md:space-y-[0.1in]";
+const ENTRY_STACK = "space-y-[8pt] print:space-y-[7pt] print:break-inside-avoid md:space-y-[7pt]";
 
 function renderRichText(text: string) {
   const parts = text.split(/\*\*(.+?)\*\*/g);
@@ -40,7 +40,7 @@ function Bullet({ accent, children }: { accent: SectionAccent; children: ReactNo
 
 function BulletList({ accent, bullets }: { accent: SectionAccent; bullets: string[] }) {
   return (
-    <ul className="space-y-[6pt] md:space-y-[3pt]">
+    <ul className="space-y-[6pt] print:space-y-[3pt] md:space-y-[3pt]">
       {bullets.map((text, i) => (
         <Bullet key={i} accent={accent}>
           {renderRichText(text)}
@@ -128,9 +128,9 @@ function ResumeHeader({ header }: { header: Resume["header"] }) {
 
 function EntryHead({ left, right }: { left: ReactNode; right?: ReactNode }) {
   return (
-    <div className="text-(--t-current-heading-ink) flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4">
+    <div className="text-(--t-current-heading-ink) flex flex-col gap-1 print:flex-row print:items-baseline print:justify-between print:gap-4 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4">
       <div className="font-semibold">{left}</div>
-      {right && <div className="shrink-0 font-semibold">{right}</div>}
+      {right && <div className="shrink-0 whitespace-nowrap font-semibold">{right}</div>}
     </div>
   );
 }
