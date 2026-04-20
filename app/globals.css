@@ -12,11 +12,11 @@
   --resume-scale: 1;
   color-scheme: light;
 
-  --resume-canvas: oklch(0.96 0.004 285);
-  --resume-surface: oklch(1 0 0);
-  --resume-page-fg: oklch(0.37 0.02 285);
-  --resume-heading-fg: oklch(0.22 0.02 285);
-  --resume-muted-fg: oklch(0.45 0.03 285);
+  --resume-backdrop: var(--color-stone-50);
+  --resume-paper: oklch(1 0 0);
+  /* Non-heading body copy (subtitle, bullets, summaries): tweak here only. */
+  --resume-neutral-ink: var(--color-neutral-700);
+  --resume-heading-ink: oklch(0.22 0.02 285);
 
   --theme-skills-heading: oklch(0.385 0.132 158);
   --theme-skills-bullet: oklch(0.34 0.115 158);
@@ -39,11 +39,10 @@
   :root {
     color-scheme: dark;
 
-    --resume-canvas: oklch(0.145 0.015 285);
-    --resume-surface: oklch(0.2 0.015 285);
-    --resume-page-fg: oklch(0.86 0.012 285);
-    --resume-heading-fg: oklch(0.97 0.005 285);
-    --resume-muted-fg: oklch(0.72 0.02 285);
+    --resume-backdrop: var(--color-stone-950);
+    --resume-paper: var(--color-neutral-900);
+    --resume-neutral-ink: var(--color-neutral-300);
+    --resume-heading-ink: oklch(0.97 0.005 285);
 
     --theme-skills-heading: oklch(0.78 0.09 158);
     --theme-skills-bullet: oklch(0.72 0.076 158);
@@ -67,7 +66,7 @@
   --font-sans: var(--font-funnel), ui-sans-serif, system-ui, -apple-system, sans-serif;
   --font-display: var(--font-nimbus), "Impact", ui-sans-serif, sans-serif;
 
-  --color-body: var(--resume-page-fg);
+  --color-body: var(--resume-neutral-ink);
 
   --color-skills-heading: var(--theme-skills-heading);
   --color-skills-bullet: var(--theme-skills-bullet);
@@ -88,8 +87,8 @@
 
 html,
 body {
-  background: var(--resume-canvas);
-  color: var(--resume-heading-fg);
+  background: var(--resume-backdrop);
+  color: var(--resume-heading-ink);
 }
 
 @page {
@@ -101,11 +100,10 @@ body {
   :root {
     color-scheme: light;
 
-    --resume-canvas: oklch(1 0 0);
-    --resume-surface: oklch(1 0 0);
-    --resume-page-fg: oklch(0.37 0.02 285);
-    --resume-heading-fg: oklch(0.22 0.02 285);
-    --resume-muted-fg: oklch(0.45 0.03 285);
+    --resume-backdrop: oklch(1 0 0);
+    --resume-paper: oklch(1 0 0);
+    --resume-neutral-ink: oklch(0.37 0.02 285);
+    --resume-heading-ink: oklch(0.22 0.02 285);
 
     --theme-skills-heading: oklch(0.385 0.132 158);
     --theme-skills-bullet: oklch(0.34 0.115 158);
@@ -127,6 +125,6 @@ body {
   html,
   body {
     background: oklch(1 0 0);
-    color: oklch(0.22 0.02 285);
+    color: var(--resume-heading-ink);
   }
 }

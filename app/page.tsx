@@ -12,6 +12,7 @@ type Theme = {
 // Section accent colors: CSS variables in `app/globals.css` (light, dark via
 // `prefers-color-scheme`, print overrides). Inline `style` only for border and
 // bullet dots — values are `var(--theme-…)`.
+// Neutral body copy (including subtitle) uses `--resume-neutral-ink` via `text-body` on `<article>`.
 // Colors come from CSS variables in `app/globals.css` (light / dark / print).
 const themes = {
   skills: {
@@ -36,7 +37,11 @@ const themes = {
   },
 } satisfies Record<string, Theme>;
 
-const PAGE_INSET = "px-4 sm:px-6 md:px-[0.35in]";
+const PAGE_INSET = "px-4 sm:px-6 md:pr-[0.35in] md:pl-[0.25in]";
+
+// Vertical rhythm: plain Tailwind classes, single edit point; add `sm:` / `md:` / `print:` here as needed.
+const SECTION_STACK = "space-y-[0.2in] md:space-y-[0.1in]";
+const ENTRY_STACK = "space-y-[8pt] md:space-y-[7pt] print:break-inside-avoid";
 
 // Inline rich text: bullet strings may contain `**bold**` runs. Split on the
 // marker and alternate plain / strong nodes. Single convention, no nesting,
@@ -67,7 +72,7 @@ function Bullet({ theme, children }: { theme: Theme; children: React.ReactNode }
 
 function BulletList({ theme, bullets }: { theme: Theme; bullets: string[] }) {
   return (
-    <ul className="text-(--resume-page-fg) space-y-[3pt]">
+    <ul className="space-y-[6pt] md:space-y-[3pt]">
       {bullets.map((text, i) => (
         <Bullet key={i} theme={theme}>
           {renderRichText(text)}
@@ -87,14 +92,14 @@ function Section({ label, theme, children }: { label: string; theme: Theme; chil
         <div className="text-[8.5pt] font-bold uppercase tracking-[0.05em]" style={{ color: theme.heading }}>
           {label}
         </div>
-        <div className="space-y-[0.1in]">{children}</div>
+        <div className={SECTION_STACK}>{children}</div>
       </div>
     </section>
   );
 }
 
 function ResumeHeader({ header }: { header: Resume["header"] }) {
-  const linkCls = "text-(--resume-heading-fg) underline-offset-2 decoration-zinc-400/70 hover:underline dark:decoration-zinc-500";
+  const linkCls = "text-(--resume-heading-ink) underline-offset-2 decoration-zinc-400/70 hover:underline dark:decoration-zinc-500";
 
   const contact = (
     <div className="space-y-0.5 font-semibold leading-[1.35]">
@@ -114,7 +119,7 @@ function ResumeHeader({ header }: { header: Resume["header"] }) {
   );
 
   const subtitle = (
-    <p className="text-(--resume-muted-fg) mt-[5pt] max-w-full font-semibold italic leading-[1.35] print:col-start-2 print:row-start-2 print:mt-0 md:col-start-2 md:row-start-2 md:mt-0 md:max-w-[4.9in]">
+    <p className="mt-[5pt] max-w-full font-semibold italic leading-[1.35] print:col-start-2 print:row-start-2 print:mt-0 md:col-start-2 md:row-start-2 md:mt-0 md:max-w-[4.9in]">
       {header.subtitle.map((line, i) => (
         <span key={i}>
           {line}
@@ -131,7 +136,7 @@ function ResumeHeader({ header }: { header: Resume["header"] }) {
 
       <div className="col-start-1 row-start-1 min-w-0 print:contents md:contents">
         <h1
-          className="text-(--resume-heading-fg) text-[16pt] font-bold leading-[1.1] tracking-[0] print:col-start-2 print:row-start-1 md:col-start-2 md:row-start-1"
+          className="text-(--resume-heading-ink) text-[16pt] font-bold leading-[1.1] tracking-[0] print:col-start-2 print:row-start-1 md:col-start-2 md:row-start-1"
           style={{ fontFamily: "var(--font-display)" }}>
           {header.name}
         </h1>
@@ -156,7 +161,7 @@ function ResumeHeader({ header }: { header: Resume["header"] }) {
 
 function EntryHead({ left, right }: { left: React.ReactNode; right?: React.ReactNode }) {
   return (
-    <div className="text-(--resume-heading-fg) flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4">
+    <div className="text-(--resume-heading-ink) flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4">
       <div className="font-semibold">{left}</div>
       {right && <div className="shrink-0 font-semibold">{right}</div>}
     </div>
@@ -176,7 +181,7 @@ function ProjectsBlock({ section }: { section: ProjectsSection }) {
   return (
     <Section label={section.label} theme={theme}>
       {section.entries.map((entry, i) => (
-        <div key={i} className="space-y-[7pt] print:break-inside-avoid">
+        <div key={i} className={ENTRY_STACK}>
           <EntryHead left={entry.title} right={entry.dateRange} />
           <BulletList theme={theme} bullets={entry.bullets} />
         </div>
@@ -198,7 +203,7 @@ function ExperiencesBlock({ section }: { section: ExperiencesSection }) {
           entry.title
         );
         return (
-          <div key={i} className="space-y-[7pt] print:break-inside-avoid">
+          <div key={i} className={ENTRY_STACK}>
             <EntryHead left={left} right={entry.dateRange} />
             {entry.summary && <p>{entry.summary}</p>}
             <BulletList theme={theme} bullets={entry.bullets} />
@@ -214,7 +219,7 @@ function EducationBlock({ section }: { section: EducationSection }) {
   return (
     <Section label={section.label} theme={theme}>
       {section.entries.map((entry, i) => (
-        <div key={i} className="space-y-[7pt] print:break-inside-avoid">
+        <div key={i} className={ENTRY_STACK}>
           <EntryHead left={entry.title} right={entry.dateRange} />
           {entry.bullets && entry.bullets.length > 0 && <BulletList theme={theme} bullets={entry.bullets} />}
         </div>
@@ -240,9 +245,9 @@ export default function Home() {
   const { header, sections } = parsed.data;
 
   return (
-    <main className="bg-(--resume-canvas) flex min-h-screen justify-center px-3 py-6 print:block print:bg-white print:p-0 sm:px-6 md:px-8">
+    <main className="bg-(--resume-backdrop) flex min-h-screen justify-center px-3 py-6 print:block print:bg-white print:p-0 sm:px-6 md:px-8">
       <ResumeScaler />
-      <article className="bg-(--resume-surface) text-body relative min-h-0 w-full max-w-[8.5in] rounded-lg pb-[0.3in] pt-[0.2in] font-sans text-[8.5pt] leading-[1.4] shadow-md [zoom:var(--resume-scale)] print:min-h-[11in] print:w-[8.5in] print:max-w-[8.5in] print:rounded-none print:shadow-none print:[zoom:1] md:min-h-[11in] md:rounded-none md:pt-[0.35in]">
+      <article className="bg-(--resume-paper) text-body relative min-h-0 w-full max-w-[8.5in] rounded-lg pb-[0.3in] pt-[0.2in] font-sans text-[8.5pt] leading-[1.4] shadow-md [zoom:var(--resume-scale)] print:min-h-[11in] print:w-[8.5in] print:max-w-[8.5in] print:rounded-none print:shadow-none print:[zoom:1] md:min-h-[11in] md:rounded-none md:pt-[0.35in]">
         {/*
           Dev-only overflow warning. The template targets a single 8.5×11
           sheet; when content spills past 11in, PageEdge renders a red dashed
