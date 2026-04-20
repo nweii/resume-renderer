@@ -242,7 +242,7 @@ export default function Home() {
   return (
     <main className="bg-(--resume-canvas) flex min-h-screen justify-center px-3 py-6 print:block print:bg-white print:p-0 sm:px-6 md:px-8">
       <ResumeScaler />
-      <article className="bg-(--resume-surface) text-body relative min-h-0 w-full max-w-[8.5in] rounded-lg pb-[0.3in] pt-[0.35in] font-sans text-[8.5pt] leading-[1.4] shadow-md [zoom:var(--resume-scale)] print:min-h-[11in] print:w-[8.5in] print:max-w-[8.5in] print:rounded-none print:shadow-none print:[zoom:1] md:min-h-[11in] md:rounded-none">
+      <article className="bg-(--resume-surface) text-body relative min-h-0 w-full max-w-[8.5in] rounded-lg pb-[0.3in] pt-[0.2in] font-sans text-[8.5pt] leading-[1.4] shadow-md [zoom:var(--resume-scale)] print:min-h-[11in] print:w-[8.5in] print:max-w-[8.5in] print:rounded-none print:shadow-none print:[zoom:1] md:min-h-[11in] md:rounded-none md:pt-[0.35in]">
         {/*
           Dev-only overflow warning. The template targets a single 8.5×11
           sheet; when content spills past 11in, PageEdge renders a red dashed
