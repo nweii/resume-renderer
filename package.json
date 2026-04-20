@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "deploy": "bun run build && wrangler deploy",
+    "preview:cf": "bun run build && wrangler dev"
   },
   "dependencies": {
     "agentation": "^3.0.2",
@@ -23,7 +25,8 @@
     "eslint": "^9",
     "eslint-config-next": "16.2.4",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "wrangler": "^4.83.0"
   },
   "ignoreScripts": [
     "sharp",

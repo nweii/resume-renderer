@@ -1,6 +1,7 @@
 import master from "@/resumes/master.json";
 import { resumeSchema, type EducationSection, type ExperiencesSection, type ProjectsSection, type SkillsSection } from "@/lib/schema";
 import { PageEdge } from "./PageEdge";
+import { ResumeScaler } from "./ResumeScaler";
 
 type Theme = {
   heading: string;
@@ -162,8 +163,9 @@ export default function Home() {
 
   return (
     <main className="flex min-h-screen justify-center bg-zinc-100 py-8 print:block print:bg-white print:p-0">
+      <ResumeScaler />
       <article
-        className="relative min-h-[11in] w-[8.5in] bg-white pb-[0.4in] pt-[0.35in] font-sans text-[8.5pt] leading-[1.4] shadow-md [zoom:min(1,calc((100vw-2rem)/816px))] print:shadow-none print:[zoom:1]"
+        className="relative min-h-[11in] w-[8.5in] bg-white pb-[0.4in] pt-[0.35in] font-sans text-[8.5pt] leading-[1.4] shadow-md [zoom:var(--resume-scale)] print:shadow-none print:[zoom:1]"
         style={{ color: "#3F3F46" }}>
         {/*
           Dev-only overflow warning. The template targets a single 8.5×11

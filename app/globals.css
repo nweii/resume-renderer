@@ -30,6 +30,10 @@
   --color-education-bullet: #c2410c;
 }
 
+:root {
+  --resume-scale: 1;
+}
+
 html,
 body {
   background: #ffffff;

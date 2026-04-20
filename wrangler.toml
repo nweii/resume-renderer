@@ -1,0 +1,8 @@
+# Static export from Next (`output: "export"` → `out/`). Deploy with `bun run deploy`.
+# Requires: `bun run build` first so `out/` exists.
+name = "resume-renderer"
+compatibility_date = "2026-04-19"
+
+[assets]
+directory = "./out"
+not_found_handling = "404-page"

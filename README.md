@@ -1,6 +1,6 @@
 # Resume renderer
 
-JSON file in, rendered resume out (web page + print-ready PDF via browser print). Built for iteration velocity in an agent loop (edit JSON, hot-reload, eyeball, repeat).The template is plain React and Tailwind.
+JSON file in, rendered resume out (web page + print-ready PDF via browser print). Built for iteration velocity in an agent loop (edit JSON, hot-reload, eyeball, repeat). The template is plain React and Tailwind.
 
 This is primarily a personal tool. The code is public as portfolio evidence and as a reference for anyone who wants to fork the same shape for themselves.
 
@@ -12,6 +12,19 @@ bun dev
 ```
 
 Open `http://localhost:3000`. Edit `resumes/master.json` and the page hot-reloads.
+
+### Deploy (Cloudflare Workers)
+
+Production is a static export (`next.config.ts` sets `output: "export"` → `out/`). [`wrangler.toml`](wrangler.toml) points Workers [static assets](https://developers.cloudflare.com/workers/static-assets/) at that folder.
+
+```bash
+bunx wrangler login   # once per machine
+bun run deploy        # build + wrangler deploy
+```
+
+You get a `*.workers.dev` URL by default. Attach a custom hostname in the Cloudflare dashboard (Workers → your worker → **Domains & Routes**). To serve the same build from a path on another site (e.g. `nathancheng.work/resume` while the portfolio stays on Vercel), add a rewrite or proxy rule on the portfolio host to this deployment’s origin — no change required in this repo.
+
+`bun run preview:cf` builds and runs `wrangler dev` against `out/` for a local smoke test of the Worker asset pipeline.
 
 ### Export PDF
 
