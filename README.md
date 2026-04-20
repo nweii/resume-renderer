@@ -54,7 +54,7 @@ Every section and entry can optionally carry `source` / `derivedFrom` fields. No
 
 ### Inline bold in bullets
 
-Bullet strings support a single inline convention: `**text**` renders as bold. The active template parses this at render time. No other inline formatting (italics, links, code) is supported; widen the convention in `renderRichText` in [`templates/current/sections.tsx`](templates/current/sections.tsx) if you need more.
+Bullet strings support a single inline convention: `**text**` renders as bold. The active template parses this at render time. No other inline formatting (italics, links, code) is supported; widen the convention in `renderRichText` in [`templates/current/index.tsx`](templates/current/index.tsx) if you need more.
 
 ```json
 "**Built portfolio system** (Next.js + Sanity CMS) presenting multi-medium career collections"
@@ -68,7 +68,7 @@ Five knobs. Everything else is framework.
 
 1. **Your content** — rewrite `resumes/master.json`. See the schema in `lib/schema.ts` for the exact shape.
 2. **Your monomark / logo** — replace `public/monomark.svg`. Update the reference in `resumes/master.json` (`header.monomark`) if you rename the file.
-3. **Theme colors** — for the default full-page template (`templates/current/`), section accents are `{ heading, bullet, line }` CSS variable references in [`templates/current/theme.ts`](templates/current/theme.ts), backed by OKLCH values under the `--t-current-*` namespace in [`app/globals.css`](app/globals.css) (light, dark, print). Each section kind gets one triple.
+3. **Theme colors** — for the default full-page template (`templates/current/`), section accents are `{ heading, bullet, line }` CSS variable references in the `accents` map at the top of [`templates/current/index.tsx`](templates/current/index.tsx), backed by OKLCH values under the `--t-current-*` namespace in [`app/globals.css`](app/globals.css) (light, dark, print). Each section kind gets one triple.
 4. **Page metadata** — `app/layout.tsx` sets the `<title>` and `<meta description>`. Update to your name.
 5. **Fonts** — `lib/fonts.ts` wires up fonts via `next/font`. Funnel Sans (Google Fonts) for body, Nimbus Sans Extended (local woff2 files in `public/fonts/`) for the display `<h1>`. Swap either or both; the Tailwind theme tokens in `app/globals.css` (`--font-sans`, `--font-display`) are the mapping layer.
 
@@ -86,8 +86,8 @@ The agent feedback toolbar (`Agentation` in `app/layout.tsx`) is dev-only and ca
 Three touchpoints for the default template (plus CSS values for the new accent variables). The discriminated union in the schema keeps the schema and renderer in type-lockstep.
 
 1. **`lib/schema.ts`** — add a new section variant to the `sectionSchema` discriminated union. Give it a unique `kind` literal and whatever entry shape you need.
-2. **`templates/current/theme.ts`** — add a `{ heading, bullet, line }` entry for your section kind, and define matching `--t-current-…` variables in `app/globals.css` (including dark and `@media print` blocks).
-3. **`templates/current/sections.tsx`** — add a block component (e.g. `PublicationsBlock`) and a `case` in `CurrentResumeDocument`'s `switch` that renders it.
+2. **`templates/current/index.tsx`** — add a `{ heading, bullet, line }` entry to the `accents` map for your new kind, and define matching `--t-current-…` variables in `app/globals.css` (including dark and `@media print` blocks).
+3. **`templates/current/index.tsx`** — add a `case` to the `switch` inside `Document`. If the new kind is shaped like projects/experiences/education (title + optional dateRange/summary/bullets per entry), reuse the generic `Section` component and pass a `renderLeft` override if you need a custom head; otherwise write a small dedicated block like `SkillsBlock`.
 
 TypeScript will tell you if you miss one — the switch is exhaustive against the union.
 

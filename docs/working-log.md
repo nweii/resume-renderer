@@ -168,6 +168,27 @@ Followup items:
 
 ---
 
+## 2026-04-20 — Collapsed `templates/current/` into one file with resume-native names
+
+**Agent**: Cursor / Claude Opus 4.7
+**Scope**: UI / architecture
+
+Follow-up to the earlier templates extraction. The four-file split (`sections.tsx`, `theme.ts`, `shell.ts`, `CurrentResumeTemplate.tsx`) was over-modularized — nothing outside the core template imported those pieces independently. Collapsed everything into a single [`templates/current/index.tsx`](../templates/current/index.tsx) exporting `shell` and `Document`. The folder stays so a template can own future local assets without restructuring.
+
+Also unified the three near-identical entry-list block components. Projects / experiences / education all rendered the same shape (`EntryHead` + optional summary + optional `BulletList` inside an entry-stack wrapper); only the accent, the left-hand head, and whether summary exists differed. Replaced them with one generic `Section<T>` that takes `entries` and an optional `renderLeft` hook. Experiences uses `renderLeft` inline in the `Document` switch to glue `{title} at {organization}`; the others fall back to `entry.title`. Skills stays its own `SkillsBlock` because its shape is genuinely different (no entries, bullets on the section itself).
+
+Naming in resume vocabulary now, not framework flavor:
+
+- `SectionShell` — chrome (divider line + two-column label/content layout + spacing). Shared by `Section` and `SkillsBlock`.
+- `Section<T>` — entry-list renderer (projects, experiences, education).
+- `Entry` — per-entry wrapper (head + summary + bullets).
+- `SkillsBlock` — the structurally distinct skills section.
+- `accents` — section-kind → `{ heading, bullet, line }` map pointing at `--t-current-*` CSS vars.
+
+Inlined single-use helpers (`Bullet` folded into `BulletList`, `SECTION_STACK` into `SectionShell`) and restored explanatory comments that had been dropped during the earlier extraction. `app/page.tsx`, `app/globals.css`, and the template registry in `templates/index.ts` are unchanged on the surface — the registry just imports `* as current from "./current"` now instead of the old per-file paths.
+
+---
+
 ## 2026-04-20 — Decoupled print spacing from responsive spacing for Safari preview
 
 **Agent**: Cursor / GPT-5.4
