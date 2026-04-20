@@ -1,33 +1,26 @@
 import type { ComponentType } from "react";
 import type { Resume } from "@/lib/schema";
-import { CurrentResumeDocument } from "./current/sections";
-import { currentTemplateShell } from "./current/shell";
+import * as current from "./current";
 
-export type ResumeTemplateDefinition = {
+export type ResumeTemplate = {
   id: string;
-  shell: {
-    readonly mainClassName: string;
-    readonly articleClassName: string;
-  };
+  shell: { readonly mainClassName: string; readonly articleClassName: string };
   Document: ComponentType<{ resume: Resume }>;
 };
 
 export const resumeTemplates = {
-  current: {
-    id: "current",
-    shell: currentTemplateShell,
-    Document: CurrentResumeDocument,
-  },
-} satisfies Record<string, ResumeTemplateDefinition>;
+  current: { id: "current", shell: current.shell, Document: current.Document },
+} satisfies Record<string, ResumeTemplate>;
 
 export type ResumeTemplateId = keyof typeof resumeTemplates;
 
 /**
- * Code-selected active template. Add a new entry to `resumeTemplates`, then
- * point this constant at its key to render that template on `/`.
+ * Code-selected active template. To try a different template, add a folder
+ * under `templates/` exporting `shell` and `Document`, register it above,
+ * then point this constant at its key.
  */
 export const activeResumeTemplateId: ResumeTemplateId = "current";
 
-export function getActiveResumeTemplate(): (typeof resumeTemplates)[ResumeTemplateId] {
+export function getActiveResumeTemplate(): ResumeTemplate {
   return resumeTemplates[activeResumeTemplateId];
 }
