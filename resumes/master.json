@@ -29,7 +29,6 @@
           "title": "Full-stack portfolio website",
           "dateRange": "2024 - 2025",
           "bullets": [
-            "**Built portfolio system** (Next.js + Sanity CMS) presenting multi-medium career collections",
             "**Designed flexible content architecture separating project data from presentation:** Built schemas supporting mixed media with metadata-driven filtering, enabling layout changes without content migration",
             "**Implemented iOS-quality interactions:** Custom lightbox with origin-aware transitions, scroll-driven animations for card stacking effects, URL-based filter sharing; prioritized perceived performance with motion timing + progressive loading",
             "**Shipped to production replacing legacy Cargo site:** Handled full deployment including Vercel hosting, Sanity Studio configuration, DNS setup, and cache revalidation webhooks"
@@ -56,7 +55,6 @@
           "bullets": [
             "**Designed workflow builder interface unifying 40+ configuration options:** Studied Windows UI patterns, created component system with progressive disclosure for serial device communication",
             "**Reduced recurring setup questions ~30%** by producing walkthrough video series replacing 90s-era documentation—scripted, recorded, and edited with motion graphics",
-            "**Led website redesign (500+ pages → focused content):** Created wireframes, partnered with agency on WordPress build, refined typography and layout with custom CSS",
             "**Planned e-commerce platform architecture:** Data models, offline licensing flows, and Stripe integration to replace legacy store with modern stack supporting B2B/reseller workflows",
             "**Leveraged direct customer support experience** to identify UX pain points, shaping design and documentation priorities"
           ]
