@@ -19,19 +19,19 @@
   --resume-heading-ink: oklch(0.22 0.02 285);
 
   --theme-skills-heading: oklch(0.385 0.132 158);
-  --theme-skills-bullet: oklch(0.34 0.115 158);
+  --theme-skills-bullet: oklch(0.4 0.2 158);
   --theme-skills-line: oklch(0.93 0.042 158);
 
   --theme-projects-heading: oklch(0.385 0.132 294);
-  --theme-projects-bullet: oklch(0.34 0.115 294);
+  --theme-projects-bullet: oklch(0.4 0.2 294);
   --theme-projects-line: oklch(0.93 0.042 294);
 
   --theme-experiences-heading: oklch(0.385 0.132 260);
-  --theme-experiences-bullet: oklch(0.34 0.115 260);
+  --theme-experiences-bullet: oklch(0.4 0.2 260);
   --theme-experiences-line: oklch(0.93 0.042 260);
 
   --theme-education-heading: oklch(0.385 0.132 48);
-  --theme-education-bullet: oklch(0.34 0.115 48);
+  --theme-education-bullet: oklch(0.4 0.2 48);
   --theme-education-line: oklch(0.93 0.042 48);
 }
 
@@ -106,19 +106,19 @@ body {
     --resume-heading-ink: oklch(0.22 0.02 285);
 
     --theme-skills-heading: oklch(0.385 0.132 158);
-    --theme-skills-bullet: oklch(0.34 0.115 158);
+    --theme-skills-bullet: oklch(0.4 0.2 158);
     --theme-skills-line: oklch(0.93 0.042 158);
 
     --theme-projects-heading: oklch(0.385 0.132 294);
-    --theme-projects-bullet: oklch(0.34 0.115 294);
+    --theme-projects-bullet: oklch(0.4 0.2 294);
     --theme-projects-line: oklch(0.93 0.042 294);
 
     --theme-experiences-heading: oklch(0.385 0.132 260);
-    --theme-experiences-bullet: oklch(0.34 0.115 260);
+    --theme-experiences-bullet: oklch(0.4 0.2 260);
     --theme-experiences-line: oklch(0.93 0.042 260);
 
     --theme-education-heading: oklch(0.385 0.132 48);
-    --theme-education-bullet: oklch(0.34 0.115 48);
+    --theme-education-bullet: oklch(0.4 0.2 48);
     --theme-education-line: oklch(0.93 0.042 48);
   }
 
