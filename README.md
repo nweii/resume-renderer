@@ -8,10 +8,11 @@ This is primarily a personal tool. The code is public as portfolio evidence and 
 
 ```bash
 bun install
-bun dev
+bun dev       # http://localhost:3000, hot reload on JSON + code edits
+bun test      # runs the bun:test suite (schema + variant registry)
 ```
 
-Open `http://localhost:3000`. Edit `resumes/master.json` and the page hot-reloads.
+Edit `resumes/master.json` and the page hot-reloads.
 
 ### Deploy (Cloudflare Workers)
 
