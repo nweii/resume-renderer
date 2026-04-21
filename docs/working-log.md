@@ -206,3 +206,33 @@ Inlined single-use helpers (`Bullet` folded into `BulletList`, `SECTION_STACK` i
 **Scope**: print / UI
 
 Safari print preview was reusing viewport-responsive spacing after the page had been resized, which showed up most obviously in section vertical rhythm. The fix was to stop relying on `md:` classes as implicit print defaults in `templates/current/sections.tsx` and `templates/current/shell.ts`: print now gets its own explicit section stack spacing, entry spacing, bullet spacing, page insets, and top padding. This keeps Chromium behavior unchanged while making print layout deterministic regardless of the last responsive viewport state.
+
+---
+
+## 2026-04-21 — Refreshed agent docs and added JSON / Markdown data endpoints
+
+**Agent**: Claude Code / Opus 4.7
+**Scope**: docs, data endpoints, schema-driven serialization
+
+Two blocks bundled into one session:
+
+**AGENTS.md refresh.** The prior file still referenced the retired `activeResumeTemplateId` singleton and had no mention of the variant registry, dev / test / deploy commands, or agent-facing content-editing recipes. Rewrote to put the session-start ritual up top, added a "Working in this repo" block (bun commands, how to edit resume content + the `**bold**` convention, how to add a tailored variant, how to switch templates per route, PDF export), refreshed the repo map, and added a guardrail that `master.json` is public on push so conversational edits should be reviewed before being committed. Minor tweak to the README to add `bun test`.
+
+**Data endpoints.** Each variant now publishes three representations at build time: HTML (existing), validated JSON, and Markdown. URL shape: `/resume.{json,md}` for the default variant and `/<slug>/resume.{json,md}` for named variants. Implementation:
+
+- [`lib/resume-markdown.ts`](../lib/resume-markdown.ts) — schema-driven default converter. Stable outline contract (`H1` name, `H2` section label, `H3` entry, `- …` bullets) so agents can parse without knowing which template emitted the doc. Inline `**bold**` passes through as valid Markdown.
+- [`templates/index.ts`](../templates/index.ts) — the `ResumeTemplate` type gained an **optional** `toMarkdown?: (Resume) => string`. A new template gets `.md` support for free; it only overrides if it genuinely presents data differently. Chose this over "every template must implement Markdown" after a nudge from Nathan — JSON and Markdown are serializations of *data*, not presentations, so keeping them schema-scoped is more future-proof than template-scoped.
+- [`lib/resume-responses.ts`](../lib/resume-responses.ts) — shared helpers (`resumeJsonResponse`, `resumeMarkdownResponse`) that `parse` with `resumeSchema`, honor the template override, and set content-types. Route handlers are 4–8 lines each.
+- Four route handlers under `app/resume.json/`, `app/resume.md/`, `app/[variant]/resume.json/`, `app/[variant]/resume.md/`, all `force-static` with `generateStaticParams` where dynamic.
+
+URL-shape note: proposed flat suffixes (`/master.json`) but Next 16's documented dynamic-segment convention is `[folder]` as the whole segment — extension-suffixed dynamic segments like `[slug].json/` aren't in the docs. Pivoted to the nested shape (`/master/resume.json`) which is fully documented and also reads naturally as "one resource, many representations."
+
+Validation strategy: data routes use `resumeSchema.parse` (throws) rather than `safeParse`, so invalid resume JSON fails the static-export build instead of shipping an error-shaped file. HTML route keeps `safeParse` + the red error page for the faster dev edit loop.
+
+Test coverage: [`lib/resume-markdown.test.ts`](../lib/resume-markdown.test.ts) — 13 tests covering each section kind, the `title at organization` / `title` composition branches, optional fields, inline-bold passthrough, block separator discipline, and a master.json round-trip smoke test. `bun test` + `bun run build` both clean.
+
+Followup items:
+
+- The variant-registry work from 2026-04-20 is still uncommitted. This session's doc and endpoint changes sit on top of it. Next commit should probably bundle the registry, the endpoints, and the doc refresh under a single "path-based variants + data endpoints" message — they're one coherent story.
+- Phone-to-resume workflow (capture drafts on phone, review and commit on Mac) is still notional. Deferred until the shape is validated through real use.
+- `/resume.pdf` and `/resume/og.png` endpoints would slot in naturally next to the existing representations if a downstream consumer ever wants them. Deferred until there's one.

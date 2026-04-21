@@ -28,6 +28,8 @@ If a usage note flags unresolved questions or thinking that's ahead of implement
 - `templates/` — React components consuming the resume schema. Design-opinionated, Tailwind-based. The default full-page layout is `templates/current/`. The registry in `templates/index.ts` maps `templateId → { shell, Document }`; templates are selected per-variant, not globally.
 - `lib/schema.ts` — Zod schema. The contract between agent-authored JSON and the renderer. Validation failures surface as a readable error page in dev; they become build failures in the static export.
 - `lib/resume-variants.ts` — single source of truth for public URL paths. Each entry binds one slug to a resume JSON file, a `templateId`, and a `themeId`.
+- `lib/resume-markdown.ts` — schema-driven default Markdown converter for the `.md` data endpoints. Templates can override via an optional `toMarkdown` in the registry; most won't need to.
+- `lib/resume-responses.ts` — shared helpers that turn a variant into validated JSON / Markdown Responses. Used by the four `.json` / `.md` route handlers.
 - `lib/fonts.ts`, `lib/site.ts` — font wiring and site metadata.
 - `app/globals.css` — Tailwind layer, `@theme` tokens, and the `--t-current-*` CSS variable palette. Theme values are applied per route via `data-resume-theme`.
 - `docs/working-log.md` — append-only decision log. `docs/usage/` — standalone design thinking.
@@ -53,6 +55,18 @@ bun run lint
 4. Schema failures render as a red error page in dev with the raw `issues` array — path + message + code per issue. That's the feedback surface; don't `console.log` your way around it.
 5. Optional `source` / `derivedFrom` fields exist on every section and entry as provenance breadcrumbs for future authoring systems. Nothing consumes them today.
 
+### Data endpoints (for agents consuming the resume)
+
+Every variant exposes three representations. Use whichever fits the task:
+
+- `GET /` (default) / `GET /<slug>` — HTML, human-readable.
+- `GET /resume.json` (default) / `GET /<slug>/resume.json` — validated JSON, the schema-exact data. Parse against `lib/schema.ts`.
+- `GET /resume.md` (default) / `GET /<slug>/resume.md` — Markdown. Stable outline contract: H1 = name, H2 = section label, H3 = entry, `- …` = bullets. Inline `**bold**` passes through as Markdown.
+
+All endpoints are static files in the export (`out/`). A remote agent can `fetch` them with zero protocol overhead.
+
+The Markdown endpoint is useful for keeping an agent-readable mirror of the live resume wherever structured notes live (e.g., an Obsidian vault): an agent with filesystem or MCP write access fetches `/resume.md` and writes the output to a file. The renderer just publishes — the HTTP-to-file side is the consumer's concern.
+
 ### Adding a tailored variant (local only)
 
 1. Duplicate `resumes/master.json` → `resumes/<role>.json`. Stays gitignored automatically.
@@ -61,11 +75,11 @@ bun run lint
 
 ### Adding a new section kind
 
-See the README's "Adding a new section kind" section for the three touchpoints (`lib/schema.ts`, the `accents` map + `switch` in `templates/current/index.tsx`, and matching `--t-current-*` variables in `app/globals.css`). TypeScript exhaustiveness checking on the discriminated union catches missing cases.
+See the README's "Adding a new section kind" section for the three touchpoints (`lib/schema.ts`, the `accents` map + `switch` in `templates/current/index.tsx`, and matching `--t-current-*` variables in `app/globals.css`). Also extend the switch in `renderSection` inside `lib/resume-markdown.ts` so the new kind serializes in the Markdown endpoint. TypeScript exhaustiveness checking on the discriminated union catches missing cases in both places.
 
 ### Changing the active template per route
 
-Templates are resolved per-variant. To try a different template on a route: add a folder under `templates/` exporting `shell` and `Document`, register it in `templates/index.ts`, then set `templateId` on the variant entry in `lib/resume-variants.ts`.
+Templates are resolved per-variant. To try a different template on a route: add a folder under `templates/` exporting `shell` and `Document`, register it in `templates/index.ts`, then set `templateId` on the variant entry in `lib/resume-variants.ts`. If the new template genuinely diverges from the default Markdown outline (uncommon), export a `toMarkdown` alongside `Document` — the `.md` endpoint uses it when present and falls back to `lib/resume-markdown.ts` otherwise.
 
 ### Exporting PDF
 

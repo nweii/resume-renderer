@@ -93,13 +93,28 @@ To add another public route, duplicate the `master` entry, point `resume` at ano
 
 ## Adding a new section kind
 
-Three touchpoints for the default template (plus CSS values for the new accent variables). The discriminated union in the schema keeps the schema and renderer in type-lockstep.
+Four touchpoints for the default template (plus CSS values for the new accent variables). The discriminated union in the schema keeps the schema, the HTML renderer, and the Markdown serializer in type-lockstep.
 
 1. **`lib/schema.ts`** — add a new section variant to the `sectionSchema` discriminated union. Give it a unique `kind` literal and whatever entry shape you need.
 2. **`templates/current/index.tsx`** — add a `{ heading, bullet, line }` entry to the `accents` map for your new kind, and define matching `--t-current-…` variables in `app/globals.css` (including dark and `@media print` blocks).
 3. **`templates/current/index.tsx`** — add a `case` to the `switch` inside `Document`. If the new kind is shaped like projects/experiences/education (title + optional dateRange/summary/bullets per entry), reuse the generic `Section` component and pass a `renderLeft` override if you need a custom head; otherwise write a small dedicated block like `SkillsBlock`.
+4. **`lib/resume-markdown.ts`** — add a `case` to the `renderSection` switch so the new kind serializes into the `.md` endpoint.
 
-TypeScript will tell you if you miss one — the switch is exhaustive against the union.
+TypeScript will tell you if you miss one — both switches are exhaustive against the union.
+
+## Data endpoints
+
+Every variant exposes three representations so agents, scripts, and downstream tools can consume the resume without scraping HTML:
+
+| URL                      | Format   | Notes                                                                 |
+| ------------------------ | -------- | --------------------------------------------------------------------- |
+| `/` · `/<slug>`          | HTML     | The rendered template.                                                |
+| `/resume.json` · `/<slug>/resume.json` | JSON     | Schema-validated data, pretty-printed. Parse against `lib/schema.ts`. |
+| `/resume.md` · `/<slug>/resume.md`     | Markdown | Stable outline: H1 name · H2 section · H3 entry · `-` bullets.         |
+
+The Markdown converter lives in [`lib/resume-markdown.ts`](lib/resume-markdown.ts) and is schema-driven by default so any future template gets `.md` support for free. A template can export an optional `toMarkdown` in [`templates/index.ts`](templates/index.ts) if it genuinely diverges from the default outline (reorders sections, collapses kinds, etc.) — otherwise the shared converter is used. The inline `**bold**` convention used in bullets is already valid Markdown, so it passes through unchanged.
+
+All endpoints are built as static files by `next build` (`output: "export"`), so they're served directly from the CDN with no Worker execution cost.
 
 ## Variants
 
