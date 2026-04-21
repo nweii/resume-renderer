@@ -14,13 +14,6 @@ export const resumeTemplates = {
 
 export type ResumeTemplateId = keyof typeof resumeTemplates;
 
-/**
- * Code-selected active template. To try a different template, add a folder
- * under `templates/` exporting `shell` and `Document`, register it above,
- * then point this constant at its key.
- */
-export const activeResumeTemplateId: ResumeTemplateId = "current";
-
-export function getActiveResumeTemplate(): ResumeTemplate {
-  return resumeTemplates[activeResumeTemplateId];
+export function getResumeTemplate(templateId: ResumeTemplateId): ResumeTemplate {
+  return resumeTemplates[templateId];
 }

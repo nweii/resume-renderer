@@ -68,18 +68,27 @@ Five knobs. Everything else is framework.
 
 1. **Your content** — rewrite `resumes/master.json`. See the schema in `lib/schema.ts` for the exact shape.
 2. **Your monomark / logo** — replace `public/monomark.svg`. Update the reference in `resumes/master.json` (`header.monomark`) if you rename the file.
-3. **Theme colors** — for the default full-page template (`templates/current/`), section accents are `{ heading, bullet, line }` CSS variable references in the `accents` map at the top of [`templates/current/index.tsx`](templates/current/index.tsx), backed by OKLCH values under the `--t-current-*` namespace in [`app/globals.css`](app/globals.css) (light, dark, print). Each section kind gets one triple.
+3. **Theme colors** — for the default full-page template (`templates/current/`), section accents are `{ heading, bullet, line }` CSS variable references in the `accents` map at the top of [`templates/current/index.tsx`](templates/current/index.tsx), backed by OKLCH values under the `--t-current-*` namespace in [`app/globals.css`](app/globals.css) (light, dark, print). Theme values are applied per route via `data-resume-theme`, so two paths can share a template while using different palettes.
 4. **Page metadata** — `app/layout.tsx` sets the `<title>` and `<meta description>`. Update to your name.
 5. **Fonts** — `lib/fonts.ts` wires up fonts via `next/font`. Funnel Sans (Google Fonts) for body, Nimbus Sans Extended (local woff2 files in `public/fonts/`) for the display `<h1>`. Swap either or both; the Tailwind theme tokens in `app/globals.css` (`--font-sans`, `--font-display`) are the mapping layer.
 
-Beyond these knobs, everything is regular React and Tailwind. Restyling section headers, changing the grid, adding print-only elements, swapping in a different font stack — all of it is component work under `templates/` and `app/globals.css`. [`app/page.tsx`](app/page.tsx) stays a thin shell: it validates JSON and renders whichever template is selected in [`templates/index.ts`](templates/index.ts) (`activeResumeTemplateId`).
+Beyond these knobs, everything is regular React and Tailwind. Restyling section headers, changing the grid, adding print-only elements, swapping in a different font stack — all of it is component work under `templates/` and `app/globals.css`. [`app/page.tsx`](app/page.tsx) and [`app/[variant]/page.tsx`](app/[variant]/page.tsx) stay thin: they resolve a variant from [`lib/resume-variants.ts`](lib/resume-variants.ts), validate its JSON, and render whichever template is selected there.
 
 ### Templates
 
 - **`templates/current/`** — the letter-size resume layout (header, section dividers, blocks, rich text). CSS tokens for this template use the `--t-current-*` prefix so another full template can ship its own token set later.
-- **`templates/index.ts`** — registry of full templates and the code-selected active entry (`activeResumeTemplateId`). To try a different template implementation, add it here and point `activeResumeTemplateId` at its key.
+- **`templates/index.ts`** — registry of full templates. Variants refer to these ids from [`lib/resume-variants.ts`](lib/resume-variants.ts), so route selection stays explicit and build-time.
 
 The agent feedback toolbar (`Agentation` in `app/layout.tsx`) is dev-only and can be removed if you don't use it.
+
+### Variant paths
+
+[`lib/resume-variants.ts`](lib/resume-variants.ts) is the single source of truth for public paths. Each entry maps one URL slug to a resume JSON file, template id, and theme id.
+
+- `/` renders the default variant.
+- `/master` renders the same canonical resume through the path-based variant mechanism.
+
+To add another public route, duplicate the `master` entry, point `resume` at another imported JSON file, then change `slug`, `pathname`, and optionally `templateId` / `themeId`. Static export picks it up through `generateStaticParams()` automatically.
 
 ## Adding a new section kind
 

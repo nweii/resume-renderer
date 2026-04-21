@@ -15,6 +15,17 @@ What was done, decided, or changed. Keep it concise — link to files or commits
 
 ---
 
+## 2026-04-20 — Mapped public resume paths through a build-time variant registry
+
+**Agent**: Cursor / GPT-5.4
+**Scope**: routing / theming
+
+Added `lib/resume-variants.ts` as the single source of truth for public resume paths. Variants now resolve by URL path instead of a code-selected global template: `/` renders the default variant, and `app/[variant]/page.tsx` statically exports configured slugs via `generateStaticParams()` (currently `/master` as the first path-based entry). `app/ResumePage.tsx` now owns the shared validation + render flow, while `templates/index.ts` exposes direct template lookup by id instead of an active-template singleton.
+
+Theme tokens in `app/globals.css` are now scoped under `data-resume-theme`, which keeps the current template unchanged while making room for route-specific palettes later. Added `lib/resume-variants.test.ts` to lock the registry behavior (default route, slug lookup, static params, unknown slug). Updated `README.md` to document the variant registry and route-based workflow.
+
+---
+
 ## 2026-04-20 — Modular templates: `templates/current/` and `--t-current-*` tokens
 
 **Agent**: Cursor / GPT-5.4

@@ -7,12 +7,16 @@
   Fonts: `lib/fonts.ts` → variables on <html> in `app/layout.tsx`.
 
   Template `templates/current/`: surface, paper, inks, and section accents use the
-  `--t-current-*` namespace so additional full templates can define parallel
-  token sets without colliding. Tweak a swatch by editing its line.
+  `--t-current-*` namespace. Route-level theme selectors can swap the values
+  behind that namespace without the template needing to know which variant is
+  active. Tweak a swatch by editing its line.
 */
 
 :root {
   --t-current-scale: 1;
+}
+
+[data-resume-theme="current"] {
   color-scheme: light;
 
   --t-current-backdrop: var(--color-stone-50);
@@ -39,7 +43,7 @@
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
+  [data-resume-theme="current"] {
     color-scheme: dark;
 
     --t-current-backdrop: var(--color-stone-950);
@@ -90,8 +94,16 @@
 
 html,
 body {
-  background: var(--t-current-backdrop);
-  color: var(--t-current-heading-ink);
+  background: var(--color-stone-50);
+  color: var(--color-neutral-900);
+}
+
+@media (prefers-color-scheme: dark) {
+  html,
+  body {
+    background: var(--color-stone-950);
+    color: var(--color-neutral-100);
+  }
 }
 
 @page {
@@ -100,7 +112,7 @@ body {
 }
 
 @media print {
-  :root {
+  [data-resume-theme="current"] {
     color-scheme: light;
 
     --t-current-backdrop: oklch(1 0 0);
@@ -128,6 +140,6 @@ body {
   html,
   body {
     background: oklch(1 0 0);
-    color: var(--t-current-heading-ink);
+    color: oklch(0.22 0.02 285);
   }
 }
