@@ -1,4 +1,4 @@
-import master from "@/resumes/master.json";
+import defaultResume from "@/resumes/default.json";
 import type { ResumeTemplateId } from "@/templates";
 
 export type ResumeThemeId = "current";
@@ -14,12 +14,12 @@ export type ResumeVariant = {
 };
 
 export const resumeVariants = {
-  master: {
-    id: "master",
-    slug: "master",
-    pathname: "/master",
-    resumeFile: "resumes/master.json",
-    resume: master,
+  default: {
+    id: "default",
+    slug: "default",
+    pathname: "/default",
+    resumeFile: "resumes/default.json",
+    resume: defaultResume,
     templateId: "current",
     themeId: "current",
   },
@@ -27,7 +27,7 @@ export const resumeVariants = {
 
 export type ResumeVariantId = keyof typeof resumeVariants;
 
-export const defaultResumeVariantId: ResumeVariantId = "master";
+export const defaultResumeVariantId: ResumeVariantId = "default";
 
 export function getDefaultResumeVariant(): ResumeVariant {
   const variant = resumeVariants[defaultResumeVariantId];

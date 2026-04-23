@@ -12,7 +12,7 @@ bun dev       # http://localhost:3000, hot reload on JSON + code edits
 bun test      # runs the bun:test suite (schema + variant registry)
 ```
 
-Edit `resumes/master.json` and the page hot-reloads.
+Edit `resumes/default.json` and the page hot-reloads.
 
 ### Deploy (Cloudflare Workers)
 
@@ -33,7 +33,7 @@ Open the rendered page in Chrome → `⌘P` → **Margins: None**, **Scale: 100*
 
 ## The data model
 
-`resumes/master.json` is the canonical resume content. It's validated at render time against the Zod schema in `lib/schema.ts`; schema failures surface as a readable error page with a list of issues.
+`resumes/default.json` is the canonical resume content. It's validated at render time against the Zod schema in `lib/schema.ts`; schema failures surface as a readable error page with a list of issues.
 
 Top-level shape:
 
@@ -61,14 +61,14 @@ Bullet strings support a single inline convention: `**text**` renders as bold. T
 "**Built portfolio system** (Next.js + Sanity CMS) presenting multi-medium career collections"
 ```
 
-Read `resumes/master.json` for a full worked example of every section kind.
+Read `resumes/default.json` for a full worked example of every section kind.
 
 ## Customizing this for yourself
 
 Five knobs. Everything else is framework.
 
-1. **Your content** — rewrite `resumes/master.json`. See the schema in `lib/schema.ts` for the exact shape.
-2. **Your monomark / logo** — replace `public/monomark.svg`. Update the reference in `resumes/master.json` (`header.monomark`) if you rename the file.
+1. **Your content** — rewrite `resumes/default.json`. See the schema in `lib/schema.ts` for the exact shape.
+2. **Your monomark / logo** — replace `public/monomark.svg`. Update the reference in `resumes/default.json` (`header.monomark`) if you rename the file.
 3. **Theme colors** — for the default full-page template (`templates/current/`), section accents are `{ heading, bullet, line }` CSS variable references in the `accents` map at the top of [`templates/current/index.tsx`](templates/current/index.tsx), backed by OKLCH values under the `--t-current-*` namespace in [`app/globals.css`](app/globals.css) (light, dark, print). Theme values are applied per route via `data-resume-theme`, so two paths can share a template while using different palettes.
 4. **Page metadata** — `app/layout.tsx` sets the `<title>` and `<meta description>`. Update to your name.
 5. **Fonts** — `lib/fonts.ts` wires up fonts via `next/font`. Funnel Sans (Google Fonts) for body, Nimbus Sans Extended (local woff2 files in `public/fonts/`) for the display `<h1>`. Swap either or both; the Tailwind theme tokens in `app/globals.css` (`--font-sans`, `--font-display`) are the mapping layer.
@@ -87,9 +87,9 @@ The agent feedback toolbar (`Agentation` in `app/layout.tsx`) is dev-only and ca
 [`lib/resume-variants.ts`](lib/resume-variants.ts) is the single source of truth for public paths. Each entry maps one URL slug to a resume JSON file, template id, and theme id.
 
 - `/` renders the default variant.
-- `/master` renders the same canonical resume through the path-based variant mechanism.
+- `/default` renders the same canonical resume through the path-based variant mechanism.
 
-To add another public route, duplicate the `master` entry, point `resume` at another imported JSON file, then change `slug`, `pathname`, and optionally `templateId` / `themeId`. Static export picks it up through `generateStaticParams()` automatically.
+To add another public route, duplicate the `default` entry, point `resume` at another imported JSON file, then change `slug`, `pathname`, and optionally `templateId` / `themeId`. Static export picks it up through `generateStaticParams()` automatically.
 
 ## Adding a new section kind
 
@@ -118,9 +118,9 @@ All endpoints are built as static files by `next build` (`output: "export"`), so
 
 ## Variants
 
-`resumes/master.json` is the canonical public resume. Tailored-per-role variants (`backend-staff.json`, `design-lead.json`, etc.) are gitignored by convention — see `.gitignore`. They live in the same folder on your machine but don't land in public git history.
+`resumes/default.json` is the canonical public resume. Tailored-per-role variants (`backend-staff.json`, `design-lead.json`, etc.) are gitignored by convention — see `.gitignore`. They live in the same folder on your machine but don't land in public git history.
 
-Variants are independent artifacts, not filtered views of master. Each one is a hand-tuned whole file. Duplication is intentional; it buys freedom to trim, reorder, and re-emphasize per role without side effects on other variants.
+Variants are independent artifacts, not filtered views of the default. Each one is a hand-tuned whole file. Duplication is intentional; it buys freedom to trim, reorder, and re-emphasize per role without side effects on other variants.
 
 ## Overflow and page fit
 

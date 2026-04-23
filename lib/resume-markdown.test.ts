@@ -1,9 +1,9 @@
 // ABOUTME: Tests for the default schema-driven Markdown converter. Covers each
 // section kind, header shape, inline-bold passthrough, and a smoke test on
-// master.json so the live resume stays convertible as it evolves.
+// default.json so the live resume stays convertible as it evolves.
 
 import { describe, expect, test } from "bun:test";
-import master from "@/resumes/master.json";
+import master from "@/resumes/default.json";
 import { resumeToMarkdown } from "@/lib/resume-markdown";
 import { resumeSchema } from "@/lib/schema";
 
@@ -199,7 +199,7 @@ describe("resumeToMarkdown", () => {
     expect(md).not.toMatch(/\n\n\n/);
   });
 
-  test("round-trips master.json into a non-empty doc starting with the name", () => {
+  test("round-trips default.json into a non-empty doc starting with the name", () => {
     const resume = resumeSchema.parse(master);
     const md = resumeToMarkdown(resume);
     expect(md.length).toBeGreaterThan(200);

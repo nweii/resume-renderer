@@ -24,7 +24,7 @@ If a usage note flags unresolved questions or thinking that's ahead of implement
 ## Repo map
 
 - `app/` — Next 16 App Router. `page.tsx` renders the default variant; `[variant]/page.tsx` statically exports configured slugs. Both delegate to `app/ResumePage.tsx`, which validates JSON and renders a template.
-- `resumes/` — one JSON file per content variant. `master.json` is canonical and public. Other files (`backend-staff.json`, etc.) are hand-tuned tailored variants and are **gitignored** by the `resumes/*.json` pattern in `.gitignore` — they live locally, never in public history.
+- `resumes/` — one JSON file per content variant. `default.json` is canonical and public. Other files (`backend-staff.json`, etc.) are hand-tuned tailored variants and are **gitignored** by the `resumes/*.json` pattern in `.gitignore` — they live locally, never in public history.
 - `templates/` — React components consuming the resume schema. Design-opinionated, Tailwind-based. The default full-page layout is `templates/current/`. The registry in `templates/index.ts` maps `templateId → { shell, Document }`; templates are selected per-variant, not globally.
 - `lib/schema.ts` — Zod schema. The contract between agent-authored JSON and the renderer. Validation failures surface as a readable error page in dev; they become build failures in the static export.
 - `lib/resume-variants.ts` — single source of truth for public URL paths. Each entry binds one slug to a resume JSON file, a `templateId`, and a `themeId`.
@@ -49,7 +49,7 @@ bun run lint
 
 ### Editing resume content
 
-1. Edit `resumes/master.json` (the public canonical) or any local tailored variant (`resumes/<role>.json`, gitignored).
+1. Edit `resumes/default.json` (the public canonical) or any local tailored variant (`resumes/<role>.json`, gitignored).
 2. Schema lives in `lib/schema.ts`. Top level: `{ header, sections[] }`. Sections are a discriminated union on `kind`: `skills`, `projects`, `experiences`, `education`. Read `lib/schema.ts` for exact shapes — don't guess from the JSON.
 3. Inline formatting inside bullet strings: `**text**` renders as bold. No other inline syntax (no italics, links, code). The parser is `renderRichText` in `templates/current/index.tsx`; widen it there if a future convention is genuinely needed.
 4. Schema failures render as a red error page in dev with the raw `issues` array — path + message + code per issue. That's the feedback surface; don't `console.log` your way around it.
@@ -69,7 +69,7 @@ The Markdown endpoint is useful for keeping an agent-readable mirror of the live
 
 ### Adding a tailored variant (local only)
 
-1. Duplicate `resumes/master.json` → `resumes/<role>.json`. Stays gitignored automatically.
+1. Duplicate `resumes/default.json` → `resumes/<role>.json`. Stays gitignored automatically.
 2. Add an entry to `resumeVariants` in `lib/resume-variants.ts`: import the JSON, set `id` / `slug` / `pathname` / `resumeFile` / `templateId` / `themeId`. `generateStaticParams()` picks it up for the static export.
 3. Visit `http://localhost:3000/<slug>` to render.
 
@@ -97,10 +97,10 @@ Open the page in Chrome → `⌘P` → **Margins: None**, **Scale: 100**, **Back
 - Don't break the "edit one JSON → see change" loop. Avoid indirection (state mirrors, generated-from-X layers) that makes agent edits invisible.
 - Print layout is a first-class design target, not a de-responsified web view. Tune `@page`, `break-inside`, and typography explicitly.
 - Keep templates free of data-shaping logic. If a bullet needs trimming for a variant, edit the variant file.
-- Don't commit anything under `resumes/` other than `master.json`. The gitignore enforces this, but don't fight it.
+- Don't commit anything under `resumes/` other than `default.json`. The gitignore enforces this, but don't fight it.
 
 ## Commits
 
 The public git history is part of the portfolio — treat it as a curated change log, not a save stream. Group meaningful edits into single commits with descriptive messages. Squash local WIP before pushing. Prefer `Reframe TALtech bullet around UX pain points` over `edit`, `fix`, `more`, `word change`. Twenty thoughtful commits over six months tell a story; two hundred noisy commits feel like jitter.
 
-Never push to `main` without explicit user confirmation. Content edits to `master.json` are public when pushed — double-check phrasing before committing, and ask before pushing if the change was conversational rather than reviewed.
+Never push to `main` without explicit user confirmation. Content edits to `default.json` are public when pushed — double-check phrasing before committing, and ask before pushing if the change was conversational rather than reviewed.
