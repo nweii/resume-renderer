@@ -1,7 +1,7 @@
 import defaultResume from "@/resumes/default.json";
 import type { ResumeTemplateId } from "@/templates";
 
-export type ResumeThemeId = "current";
+export type ResumeThemeId = "playroom";
 
 export type ResumeVariant = {
   id: string;
@@ -20,8 +20,8 @@ export const resumeVariants = {
     pathname: "/default",
     resumeFile: "resumes/default.json",
     resume: defaultResume,
-    templateId: "current",
-    themeId: "current",
+    templateId: "playroom",
+    themeId: "playroom",
   },
 } satisfies Record<string, ResumeVariant>;
 

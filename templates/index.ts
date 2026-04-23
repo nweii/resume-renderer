@@ -1,6 +1,6 @@
 import type { ComponentType } from "react";
 import type { Resume } from "@/lib/schema";
-import * as current from "./current";
+import * as playroom from "./playroom";
 
 /**
  * A template owns one resume presentation. HTML is required (`Document`).
@@ -18,7 +18,7 @@ export type ResumeTemplate = {
 };
 
 export const resumeTemplates = {
-  current: { id: "current", shell: current.shell, Document: current.Document },
+  playroom: { id: "playroom", shell: playroom.shell, Document: playroom.Document },
 } satisfies Record<string, ResumeTemplate>;
 
 export type ResumeTemplateId = keyof typeof resumeTemplates;

@@ -11,40 +11,40 @@ import type {
  * Per-section accent colors. Each section kind (skills, projects, experiences,
  * education) gets its own heading / bullet / divider-line triple. Values
  * reference CSS custom properties defined in `app/globals.css` under the
- * `--t-current-*` namespace so light, dark, and print modes can retune the
+ * `--t-playroom-*` namespace so light, dark, and print modes can retune the
  * palette without touching this file.
  */
 type SectionAccent = { heading: string; bullet: string; line: string };
 
 const accents = {
   skills: {
-    heading: "var(--t-current-skills-heading)",
-    bullet: "var(--t-current-skills-bullet)",
-    line: "var(--t-current-skills-line)",
+    heading: "var(--t-playroom-skills-heading)",
+    bullet: "var(--t-playroom-skills-bullet)",
+    line: "var(--t-playroom-skills-line)",
   },
   projects: {
-    heading: "var(--t-current-projects-heading)",
-    bullet: "var(--t-current-projects-bullet)",
-    line: "var(--t-current-projects-line)",
+    heading: "var(--t-playroom-projects-heading)",
+    bullet: "var(--t-playroom-projects-bullet)",
+    line: "var(--t-playroom-projects-line)",
   },
   experiences: {
-    heading: "var(--t-current-experiences-heading)",
-    bullet: "var(--t-current-experiences-bullet)",
-    line: "var(--t-current-experiences-line)",
+    heading: "var(--t-playroom-experiences-heading)",
+    bullet: "var(--t-playroom-experiences-bullet)",
+    line: "var(--t-playroom-experiences-line)",
   },
   education: {
-    heading: "var(--t-current-education-heading)",
-    bullet: "var(--t-current-education-bullet)",
-    line: "var(--t-current-education-line)",
+    heading: "var(--t-playroom-education-heading)",
+    bullet: "var(--t-playroom-education-bullet)",
+    line: "var(--t-playroom-education-line)",
   },
 } satisfies Record<string, SectionAccent>;
 
 /** Outer layout classes applied by the app shell to `<main>` and `<article>`. */
 export const shell = {
   mainClassName:
-    "bg-(--t-current-backdrop) flex min-h-screen justify-center px-3 py-6 print:block print:bg-white print:p-0 sm:px-6 md:px-8",
+    "bg-(--t-playroom-backdrop) flex min-h-screen justify-center px-3 py-6 print:block print:bg-white print:p-0 sm:px-6 md:px-8",
   articleClassName:
-    "bg-(--t-current-paper) text-body relative min-h-0 w-full max-w-[8.5in] rounded-lg pb-[0.3in] pt-[0.2in] font-sans text-[8.5pt] leading-[1.4] shadow-md [zoom:var(--t-current-scale)] print:min-h-[11in] print:w-[8.5in] print:max-w-[8.5in] print:rounded-none print:shadow-none print:[zoom:1] md:min-h-[11in] md:rounded-none md:pt-[0.35in]",
+    "bg-(--t-playroom-paper) text-body relative min-h-0 w-full max-w-[8.5in] rounded-lg pb-[0.3in] pt-[0.2in] font-sans text-[8.5pt] leading-[1.4] shadow-md [zoom:var(--t-playroom-scale)] print:min-h-[11in] print:w-[8.5in] print:max-w-[8.5in] print:rounded-none print:shadow-none print:[zoom:1] md:min-h-[11in] md:rounded-none md:pt-[0.35in]",
 } as const;
 
 const PAGE_INSET = "px-4 sm:px-6 print:pr-[0.35in] print:pl-[0.25in] md:pr-[0.35in] md:pl-[0.25in]";
@@ -107,7 +107,7 @@ function SectionShell({ label, accent, children }: { label: string; accent: Sect
 
 function ResumeHeader({ header }: { header: Resume["header"] }) {
   const linkCls =
-    "text-(--t-current-heading-ink) underline-offset-2 decoration-zinc-400/70 hover:underline dark:decoration-zinc-500";
+    "text-(--t-playroom-heading-ink) underline-offset-2 decoration-zinc-400/70 hover:underline dark:decoration-zinc-500";
 
   const contact = (
     <div className="space-y-0.5 font-semibold leading-[1.35]">
@@ -144,7 +144,7 @@ function ResumeHeader({ header }: { header: Resume["header"] }) {
 
       <div className="col-start-1 row-start-1 min-w-0 print:contents md:contents">
         <h1
-          className="text-(--t-current-heading-ink) text-[16pt] font-bold leading-[1.1] tracking-[0] print:col-start-2 print:row-start-1 md:col-start-2 md:row-start-1"
+          className="text-(--t-playroom-heading-ink) text-[16pt] font-bold leading-[1.1] tracking-[0] print:col-start-2 print:row-start-1 md:col-start-2 md:row-start-1"
           style={{ fontFamily: "var(--font-display)" }}>
           {header.name}
         </h1>
@@ -169,7 +169,7 @@ function ResumeHeader({ header }: { header: Resume["header"] }) {
 
 function EntryHead({ left, right }: { left: ReactNode; right?: ReactNode }) {
   return (
-    <div className="text-(--t-current-heading-ink) flex flex-col gap-1 print:flex-row print:items-baseline print:justify-between print:gap-4 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4">
+    <div className="text-(--t-playroom-heading-ink) flex flex-col gap-1 print:flex-row print:items-baseline print:justify-between print:gap-4 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4">
       <div className="font-semibold">{left}</div>
       {right && <div className="shrink-0 whitespace-nowrap font-semibold">{right}</div>}
     </div>

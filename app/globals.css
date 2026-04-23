@@ -6,66 +6,66 @@
 /*
   Fonts: `lib/fonts.ts` → variables on <html> in `app/layout.tsx`.
 
-  Template `templates/current/`: surface, paper, inks, and section accents use the
-  `--t-current-*` namespace. Route-level theme selectors can swap the values
+  Template `templates/playroom/`: surface, paper, inks, and section accents use the
+  `--t-playroom-*` namespace. Route-level theme selectors can swap the values
   behind that namespace without the template needing to know which variant is
   active. Tweak a swatch by editing its line.
 */
 
 :root {
-  --t-current-scale: 1;
+  --t-playroom-scale: 1;
 }
 
-[data-resume-theme="current"] {
+[data-resume-theme="playroom"] {
   color-scheme: light;
 
-  --t-current-backdrop: var(--color-stone-50);
-  --t-current-paper: oklch(1 0 0);
+  --t-playroom-backdrop: var(--color-stone-50);
+  --t-playroom-paper: oklch(1 0 0);
   /* Non-heading body copy (subtitle, bullets, summaries): tweak here only. */
-  --t-current-neutral-ink: var(--color-neutral-700);
-  --t-current-heading-ink: oklch(0.22 0.02 285);
+  --t-playroom-neutral-ink: var(--color-neutral-700);
+  --t-playroom-heading-ink: oklch(0.22 0.02 285);
 
-  --t-current-skills-heading: oklch(0.385 0.132 158);
-  --t-current-skills-bullet: oklch(0.4 0.2 158);
-  --t-current-skills-line: oklch(0.93 0.042 158);
+  --t-playroom-skills-heading: oklch(0.385 0.132 158);
+  --t-playroom-skills-bullet: oklch(0.4 0.2 158);
+  --t-playroom-skills-line: oklch(0.93 0.042 158);
 
-  --t-current-projects-heading: oklch(0.385 0.132 294);
-  --t-current-projects-bullet: oklch(0.4 0.2 294);
-  --t-current-projects-line: oklch(0.93 0.042 294);
+  --t-playroom-projects-heading: oklch(0.385 0.132 294);
+  --t-playroom-projects-bullet: oklch(0.4 0.2 294);
+  --t-playroom-projects-line: oklch(0.93 0.042 294);
 
-  --t-current-experiences-heading: oklch(0.385 0.132 260);
-  --t-current-experiences-bullet: oklch(0.4 0.2 260);
-  --t-current-experiences-line: oklch(0.93 0.042 260);
+  --t-playroom-experiences-heading: oklch(0.385 0.132 260);
+  --t-playroom-experiences-bullet: oklch(0.4 0.2 260);
+  --t-playroom-experiences-line: oklch(0.93 0.042 260);
 
-  --t-current-education-heading: oklch(0.385 0.132 48);
-  --t-current-education-bullet: oklch(0.4 0.2 48);
-  --t-current-education-line: oklch(0.93 0.042 48);
+  --t-playroom-education-heading: oklch(0.385 0.132 48);
+  --t-playroom-education-bullet: oklch(0.4 0.2 48);
+  --t-playroom-education-line: oklch(0.93 0.042 48);
 }
 
 @media (prefers-color-scheme: dark) {
-  [data-resume-theme="current"] {
+  [data-resume-theme="playroom"] {
     color-scheme: dark;
 
-    --t-current-backdrop: var(--color-stone-950);
-    --t-current-paper: var(--color-neutral-900);
-    --t-current-neutral-ink: var(--color-neutral-300);
-    --t-current-heading-ink: oklch(0.97 0.005 285);
+    --t-playroom-backdrop: var(--color-stone-950);
+    --t-playroom-paper: var(--color-neutral-900);
+    --t-playroom-neutral-ink: var(--color-neutral-300);
+    --t-playroom-heading-ink: oklch(0.97 0.005 285);
 
-    --t-current-skills-heading: oklch(0.78 0.09 158);
-    --t-current-skills-bullet: oklch(0.72 0.076 158);
-    --t-current-skills-line: oklch(0.4 0.055 158);
+    --t-playroom-skills-heading: oklch(0.78 0.09 158);
+    --t-playroom-skills-bullet: oklch(0.72 0.076 158);
+    --t-playroom-skills-line: oklch(0.4 0.055 158);
 
-    --t-current-projects-heading: oklch(0.78 0.09 294);
-    --t-current-projects-bullet: oklch(0.72 0.076 294);
-    --t-current-projects-line: oklch(0.4 0.055 294);
+    --t-playroom-projects-heading: oklch(0.78 0.09 294);
+    --t-playroom-projects-bullet: oklch(0.72 0.076 294);
+    --t-playroom-projects-line: oklch(0.4 0.055 294);
 
-    --t-current-experiences-heading: oklch(0.78 0.09 260);
-    --t-current-experiences-bullet: oklch(0.72 0.076 260);
-    --t-current-experiences-line: oklch(0.4 0.055 260);
+    --t-playroom-experiences-heading: oklch(0.78 0.09 260);
+    --t-playroom-experiences-bullet: oklch(0.72 0.076 260);
+    --t-playroom-experiences-line: oklch(0.4 0.055 260);
 
-    --t-current-education-heading: oklch(0.78 0.09 48);
-    --t-current-education-bullet: oklch(0.72 0.076 48);
-    --t-current-education-line: oklch(0.4 0.055 48);
+    --t-playroom-education-heading: oklch(0.78 0.09 48);
+    --t-playroom-education-bullet: oklch(0.72 0.076 48);
+    --t-playroom-education-line: oklch(0.4 0.055 48);
   }
 }
 
@@ -73,23 +73,23 @@
   --font-sans: var(--font-funnel), ui-sans-serif, system-ui, -apple-system, sans-serif;
   --font-display: var(--font-nimbus), "Impact", ui-sans-serif, sans-serif;
 
-  --color-body: var(--t-current-neutral-ink);
+  --color-body: var(--t-playroom-neutral-ink);
 
-  --color-skills-heading: var(--t-current-skills-heading);
-  --color-skills-bullet: var(--t-current-skills-bullet);
-  --color-skills-divider: var(--t-current-skills-line);
+  --color-skills-heading: var(--t-playroom-skills-heading);
+  --color-skills-bullet: var(--t-playroom-skills-bullet);
+  --color-skills-divider: var(--t-playroom-skills-line);
 
-  --color-projects-heading: var(--t-current-projects-heading);
-  --color-projects-bullet: var(--t-current-projects-bullet);
-  --color-projects-divider: var(--t-current-projects-line);
+  --color-projects-heading: var(--t-playroom-projects-heading);
+  --color-projects-bullet: var(--t-playroom-projects-bullet);
+  --color-projects-divider: var(--t-playroom-projects-line);
 
-  --color-experiences-heading: var(--t-current-experiences-heading);
-  --color-experiences-bullet: var(--t-current-experiences-bullet);
-  --color-experiences-divider: var(--t-current-experiences-line);
+  --color-experiences-heading: var(--t-playroom-experiences-heading);
+  --color-experiences-bullet: var(--t-playroom-experiences-bullet);
+  --color-experiences-divider: var(--t-playroom-experiences-line);
 
-  --color-education-heading: var(--t-current-education-heading);
-  --color-education-bullet: var(--t-current-education-bullet);
-  --color-education-divider: var(--t-current-education-line);
+  --color-education-heading: var(--t-playroom-education-heading);
+  --color-education-bullet: var(--t-playroom-education-bullet);
+  --color-education-divider: var(--t-playroom-education-line);
 }
 
 html,
@@ -112,29 +112,29 @@ body {
 }
 
 @media print {
-  [data-resume-theme="current"] {
+  [data-resume-theme="playroom"] {
     color-scheme: light;
 
-    --t-current-backdrop: oklch(1 0 0);
-    --t-current-paper: oklch(1 0 0);
-    --t-current-neutral-ink: oklch(0.37 0.02 285);
-    --t-current-heading-ink: oklch(0.22 0.02 285);
+    --t-playroom-backdrop: oklch(1 0 0);
+    --t-playroom-paper: oklch(1 0 0);
+    --t-playroom-neutral-ink: oklch(0.37 0.02 285);
+    --t-playroom-heading-ink: oklch(0.22 0.02 285);
 
-    --t-current-skills-heading: oklch(0.385 0.132 158);
-    --t-current-skills-bullet: oklch(0.4 0.2 158);
-    --t-current-skills-line: oklch(0.93 0.042 158);
+    --t-playroom-skills-heading: oklch(0.385 0.132 158);
+    --t-playroom-skills-bullet: oklch(0.4 0.2 158);
+    --t-playroom-skills-line: oklch(0.93 0.042 158);
 
-    --t-current-projects-heading: oklch(0.385 0.132 294);
-    --t-current-projects-bullet: oklch(0.4 0.2 294);
-    --t-current-projects-line: oklch(0.93 0.042 294);
+    --t-playroom-projects-heading: oklch(0.385 0.132 294);
+    --t-playroom-projects-bullet: oklch(0.4 0.2 294);
+    --t-playroom-projects-line: oklch(0.93 0.042 294);
 
-    --t-current-experiences-heading: oklch(0.385 0.132 260);
-    --t-current-experiences-bullet: oklch(0.4 0.2 260);
-    --t-current-experiences-line: oklch(0.93 0.042 260);
+    --t-playroom-experiences-heading: oklch(0.385 0.132 260);
+    --t-playroom-experiences-bullet: oklch(0.4 0.2 260);
+    --t-playroom-experiences-line: oklch(0.93 0.042 260);
 
-    --t-current-education-heading: oklch(0.385 0.132 48);
-    --t-current-education-bullet: oklch(0.4 0.2 48);
-    --t-current-education-line: oklch(0.93 0.042 48);
+    --t-playroom-education-heading: oklch(0.385 0.132 48);
+    --t-playroom-education-bullet: oklch(0.4 0.2 48);
+    --t-playroom-education-line: oklch(0.93 0.042 48);
   }
 
   html,

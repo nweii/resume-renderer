@@ -55,7 +55,7 @@ Every section and entry can optionally carry `source` / `derivedFrom` fields. No
 
 ### Inline bold in bullets
 
-Bullet strings support a single inline convention: `**text**` renders as bold. The active template parses this at render time. No other inline formatting (italics, links, code) is supported; widen the convention in `renderRichText` in [`templates/current/index.tsx`](templates/current/index.tsx) if you need more.
+Bullet strings support a single inline convention: `**text**` renders as bold. Whichever template renders bullets owns the parser at render time. No other inline formatting (italics, links, code) is supported; widen the convention in that template (in this repo, see `renderRichText` in [`templates/playroom/index.tsx`](templates/playroom/index.tsx)) if you need more.
 
 ```json
 "**Built portfolio system** (Next.js + Sanity CMS) presenting multi-medium career collections"
@@ -69,16 +69,16 @@ Five knobs. Everything else is framework.
 
 1. **Your content** — rewrite `resumes/default.json`. See the schema in `lib/schema.ts` for the exact shape.
 2. **Your monomark / logo** — replace `public/monomark.svg`. Update the reference in `resumes/default.json` (`header.monomark`) if you rename the file.
-3. **Theme colors** — for the default full-page template (`templates/current/`), section accents are `{ heading, bullet, line }` CSS variable references in the `accents` map at the top of [`templates/current/index.tsx`](templates/current/index.tsx), backed by OKLCH values under the `--t-current-*` namespace in [`app/globals.css`](app/globals.css) (light, dark, print). Theme values are applied per route via `data-resume-theme`, so two paths can share a template while using different palettes.
+3. **Theme colors** — variants set a `themeId` in [`lib/resume-variants.ts`](lib/resume-variants.ts). The page root gets `data-resume-theme="<id>"`; match that id in [`app/globals.css`](app/globals.css) with a block of CSS custom properties (this repo uses a `--t-<id>-*` prefix per theme). Templates point section accents and surfaces at those variables. Two routes can reuse the same `templateId` with different `themeId` values if you define both theme blocks.
 4. **Page metadata** — `app/layout.tsx` sets the `<title>` and `<meta description>`. Update to your name.
 5. **Fonts** — `lib/fonts.ts` wires up fonts via `next/font`. Funnel Sans (Google Fonts) for body, Nimbus Sans Extended (local woff2 files in `public/fonts/`) for the display `<h1>`. Swap either or both; the Tailwind theme tokens in `app/globals.css` (`--font-sans`, `--font-display`) are the mapping layer.
 
-Beyond these knobs, everything is regular React and Tailwind. Restyling section headers, changing the grid, adding print-only elements, swapping in a different font stack — all of it is component work under `templates/` and `app/globals.css`. [`app/page.tsx`](app/page.tsx) and [`app/[variant]/page.tsx`](app/[variant]/page.tsx) stay thin: they resolve a variant from [`lib/resume-variants.ts`](lib/resume-variants.ts), validate its JSON, and render whichever template is selected there.
+Beyond these knobs, everything is regular React and Tailwind. Restyling section headers, changing the grid, adding print-only elements, swapping in a different font stack — all of it is component work under `templates/` and `app/globals.css`. [`app/page.tsx`](app/page.tsx) and [`app/[variant]/page.tsx`](app/[variant]/page.tsx) stay thin: they resolve a variant from [`lib/resume-variants.ts`](lib/resume-variants.ts), validate its JSON, and render whichever template id the variant selects.
 
 ### Templates
 
-- **`templates/current/`** — the letter-size resume layout (header, section dividers, blocks, rich text). CSS tokens for this template use the `--t-current-*` prefix so another full template can ship its own token set later.
-- **`templates/index.ts`** — registry of full templates. Variants refer to these ids from [`lib/resume-variants.ts`](lib/resume-variants.ts), so route selection stays explicit and build-time.
+- **`templates/<id>/`** — one folder per layout. Each exports `shell` (outer layout classes) and `Document` (the resume body) consumed by [`templates/index.ts`](templates/index.ts).
+- **`templates/index.ts`** — maps template ids to those exports. Variants set `templateId` in [`lib/resume-variants.ts`](lib/resume-variants.ts); add a folder, register it, then point routes at the new id. This repo ships a single letter-size layout as the starting point (`playroom`); a second template would get its own folder, registry entry, and optional parallel `--t-<theme>-*` block in CSS if it needs a separate token set.
 
 The agent feedback toolbar (`Agentation` in `app/layout.tsx`) is dev-only and can be removed if you don't use it.
 
@@ -93,14 +93,14 @@ To add another public route, duplicate the `default` entry, point `resume` at an
 
 ## Adding a new section kind
 
-Four touchpoints for the default template (plus CSS values for the new accent variables). The discriminated union in the schema keeps the schema, the HTML renderer, and the Markdown serializer in type-lockstep.
+The schema is shared; every HTML template and the Markdown serializer must understand each `kind` you add. The discriminated union keeps schema, renderers, and `.md` output in type-lockstep.
 
 1. **`lib/schema.ts`** — add a new section variant to the `sectionSchema` discriminated union. Give it a unique `kind` literal and whatever entry shape you need.
-2. **`templates/current/index.tsx`** — add a `{ heading, bullet, line }` entry to the `accents` map for your new kind, and define matching `--t-current-…` variables in `app/globals.css` (including dark and `@media print` blocks).
-3. **`templates/current/index.tsx`** — add a `case` to the `switch` inside `Document`. If the new kind is shaped like projects/experiences/education (title + optional dateRange/summary/bullets per entry), reuse the generic `Section` component and pass a `renderLeft` override if you need a custom head; otherwise write a small dedicated block like `SkillsBlock`.
-4. **`lib/resume-markdown.ts`** — add a `case` to the `renderSection` switch so the new kind serializes into the `.md` endpoint.
+2. **Each registered template** in [`templates/index.ts`](templates/index.ts) — add a `case` in that template’s `Document` switch (and any accent map / section styling your layout uses). If the new kind matches an existing shape (title + optional dateRange/summary/bullets per entry), reuse the same patterns as other sections; otherwise add a small dedicated block.
+3. **`app/globals.css`** — if your themes use per-section CSS variables for the new kind, define them under each `[data-resume-theme="…"]` block that should support it (light, dark, `@media print` as needed).
+4. **`lib/resume-markdown.ts`** — add a `case` to the `renderSection` switch so the new kind serializes into the `.md` endpoint (shared default unless a template supplies its own `toMarkdown`).
 
-TypeScript will tell you if you miss one — both switches are exhaustive against the union.
+TypeScript will tell you if you miss a switch arm — exhaustiveness is checked against the union.
 
 ## Data endpoints
 
@@ -112,7 +112,7 @@ Every variant exposes three representations so agents, scripts, and downstream t
 | `/resume.json` · `/<slug>/resume.json` | JSON     | Schema-validated data, pretty-printed. Parse against `lib/schema.ts`. |
 | `/resume.md` · `/<slug>/resume.md`     | Markdown | Stable outline: H1 name · H2 section · H3 entry · `-` bullets.         |
 
-The Markdown converter lives in [`lib/resume-markdown.ts`](lib/resume-markdown.ts) and is schema-driven by default so any future template gets `.md` support for free. A template can export an optional `toMarkdown` in [`templates/index.ts`](templates/index.ts) if it genuinely diverges from the default outline (reorders sections, collapses kinds, etc.) — otherwise the shared converter is used. The inline `**bold**` convention used in bullets is already valid Markdown, so it passes through unchanged.
+The Markdown converter lives in [`lib/resume-markdown.ts`](lib/resume-markdown.ts) and is schema-driven by default so new templates get `.md` support without a custom serializer unless they need one. A template can export an optional `toMarkdown` in [`templates/index.ts`](templates/index.ts) when its outline genuinely diverges (reordered sections, merged section kinds, etc.). The inline `**bold**` convention used in bullets is already valid Markdown, so it passes through unchanged.
 
 All endpoints are built as static files by `next build` (`output: "export"`), so they're served directly from the CDN with no Worker execution cost.
 
@@ -124,7 +124,7 @@ Variants are independent artifacts, not filtered views of the default. Each one 
 
 ## Overflow and page fit
 
-The template targets a single 8.5 × 11 inch page (US letter). In `bun dev`, `app/PageEdge.tsx` measures the article on render and, if content exceeds 11 inches, draws a red dashed rule at the boundary labelled with the overflow magnitude (e.g. `OVERFLOWS BY 0.42IN`). When content fits, nothing appears. The indicator is stripped from production builds so the deployed page stays clean. Chrome's print pipeline paginates naturally if content spills past; `print:break-inside-avoid` on entry wrappers keeps chunks from splitting mid-entry.
+The shipped layout targets a single 8.5 × 11 inch page (US letter). In `bun dev`, `app/PageEdge.tsx` measures the article on render and, if content exceeds 11 inches, draws a red dashed rule at the boundary labelled with the overflow magnitude (e.g. `OVERFLOWS BY 0.42IN`). When content fits, nothing appears. The indicator is stripped from production builds so the deployed page stays clean. Chrome's print pipeline paginates naturally if content spills past; `print:break-inside-avoid` on entry wrappers keeps chunks from splitting mid-entry. A different template can choose its own page model; the overlay assumes a single-page intent aligned with how that template sizes the article.
 
 A measurement signal shared with `bun test` is planned but deferred: [`@chenglou/pretext`](https://www.npmjs.com/package/@chenglou/pretext) is the right primitive, but its server-side story isn't yet shipped (as of v0.0.5). When it lands, the plan is a `lib/measure.ts` shared by the dev-only overlay and a test assertion — so an agent iterating on content can fail a test rather than needing to look at a screen.
 

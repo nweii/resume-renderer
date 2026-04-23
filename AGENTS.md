@@ -25,13 +25,13 @@ If a usage note flags unresolved questions or thinking that's ahead of implement
 
 - `app/` — Next 16 App Router. `page.tsx` renders the default variant; `[variant]/page.tsx` statically exports configured slugs. Both delegate to `app/ResumePage.tsx`, which validates JSON and renders a template.
 - `resumes/` — one JSON file per content variant. `default.json` is canonical and public. Other files (`backend-staff.json`, etc.) are hand-tuned tailored variants and are **gitignored** by the `resumes/*.json` pattern in `.gitignore` — they live locally, never in public history.
-- `templates/` — React components consuming the resume schema. Design-opinionated, Tailwind-based. The default full-page layout is `templates/current/`. The registry in `templates/index.ts` maps `templateId → { shell, Document }`; templates are selected per-variant, not globally.
+- `templates/` — React components consuming the resume schema. Design-opinionated, Tailwind-based. The default full-page layout is `templates/playroom/`. The registry in `templates/index.ts` maps `templateId → { shell, Document }`; templates are selected per-variant, not globally.
 - `lib/schema.ts` — Zod schema. The contract between agent-authored JSON and the renderer. Validation failures surface as a readable error page in dev; they become build failures in the static export.
 - `lib/resume-variants.ts` — single source of truth for public URL paths. Each entry binds one slug to a resume JSON file, a `templateId`, and a `themeId`.
 - `lib/resume-markdown.ts` — schema-driven default Markdown converter for the `.md` data endpoints. Templates can override via an optional `toMarkdown` in the registry; most won't need to.
 - `lib/resume-responses.ts` — shared helpers that turn a variant into validated JSON / Markdown Responses. Used by the four `.json` / `.md` route handlers.
 - `lib/fonts.ts`, `lib/site.ts` — font wiring and site metadata.
-- `app/globals.css` — Tailwind layer, `@theme` tokens, and the `--t-current-*` CSS variable palette. Theme values are applied per route via `data-resume-theme`.
+- `app/globals.css` — Tailwind layer, `@theme` tokens, and the `--t-playroom-*` CSS variable palette. Theme values are applied per route via `data-resume-theme`.
 - `docs/working-log.md` — append-only decision log. `docs/usage/` — standalone design thinking.
 - `README.md` — user-facing docs (fork knobs, section-kind recipe, deploy). Read before duplicating content into this file.
 
@@ -51,7 +51,7 @@ bun run lint
 
 1. Edit `resumes/default.json` (the public canonical) or any local tailored variant (`resumes/<role>.json`, gitignored).
 2. Schema lives in `lib/schema.ts`. Top level: `{ header, sections[] }`. Sections are a discriminated union on `kind`: `skills`, `projects`, `experiences`, `education`. Read `lib/schema.ts` for exact shapes — don't guess from the JSON.
-3. Inline formatting inside bullet strings: `**text**` renders as bold. No other inline syntax (no italics, links, code). The parser is `renderRichText` in `templates/current/index.tsx`; widen it there if a future convention is genuinely needed.
+3. Inline formatting inside bullet strings: `**text**` renders as bold. No other inline syntax (no italics, links, code). The parser is `renderRichText` in `templates/playroom/index.tsx`; widen it there if a future convention is genuinely needed.
 4. Schema failures render as a red error page in dev with the raw `issues` array — path + message + code per issue. That's the feedback surface; don't `console.log` your way around it.
 5. Optional `source` / `derivedFrom` fields exist on every section and entry as provenance breadcrumbs for future authoring systems. Nothing consumes them today.
 
@@ -75,7 +75,7 @@ The Markdown endpoint is useful for keeping an agent-readable mirror of the live
 
 ### Adding a new section kind
 
-See the README's "Adding a new section kind" section for the three touchpoints (`lib/schema.ts`, the `accents` map + `switch` in `templates/current/index.tsx`, and matching `--t-current-*` variables in `app/globals.css`). Also extend the switch in `renderSection` inside `lib/resume-markdown.ts` so the new kind serializes in the Markdown endpoint. TypeScript exhaustiveness checking on the discriminated union catches missing cases in both places.
+See the README's "Adding a new section kind" section for the three touchpoints (`lib/schema.ts`, the `accents` map + `switch` in `templates/playroom/index.tsx`, and matching `--t-playroom-*` variables in `app/globals.css`). Also extend the switch in `renderSection` inside `lib/resume-markdown.ts` so the new kind serializes in the Markdown endpoint. TypeScript exhaustiveness checking on the discriminated union catches missing cases in both places.
 
 ### Changing the active template per route
 
@@ -83,7 +83,7 @@ Templates are resolved per-variant. To try a different template on a route: add 
 
 ### Exporting PDF
 
-Open the page in Chrome → `⌘P` → **Margins: None**, **Scale: 100**, **Background graphics: on** → Save as PDF. Print CSS lives in `app/globals.css` and `templates/current/`.
+Open the page in Chrome → `⌘P` → **Margins: None**, **Scale: 100**, **Background graphics: on** → Save as PDF. Print CSS lives in `app/globals.css` and `templates/playroom/`.
 
 ## Architectural principles
 

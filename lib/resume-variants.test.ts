@@ -11,8 +11,8 @@ describe("resume variant registry", () => {
 
     expect(variant.id).toBe("default");
     expect(variant.pathname).toBe("/");
-    expect(variant.templateId).toBe("current");
-    expect(variant.themeId).toBe("current");
+    expect(variant.templateId).toBe("playroom");
+    expect(variant.themeId).toBe("playroom");
   });
 
   test("resolves a configured slug route", () => {
