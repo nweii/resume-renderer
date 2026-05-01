@@ -65,7 +65,7 @@
           "dateRange": "2022 - Ongoing",
           "bullets": [
             "**Public library of 30+ agent skills (~1K weekly installs) on Vercel's registry:** modular workflows for knowledge maintenance, code review, and project shaping.",
-            "**Maintain a 5,000+ note Obsidian vault** as a personal/work context store, powering my Claude Code workflows and bridging GitHub repos.",
+            "**Maintain a 5,000+ note Obsidian vault** as a context store, powering my Claude Code workflows and bridging GitHub repos.",
             "**Published `obsidian-remote-mcp`,** open-source server exposing a vault to remote AI clients with OAuth + scoped access: agents pull an outline, read a section, or update a property without dumping whole files.",
             "**Built and operate a Synology-based personal server stack** hosting the vault, a persistent Claude Code agent, and `obsidian-remote-mcp`; Tailscale + Cloudflare Zero Trust SSO."
           ]
