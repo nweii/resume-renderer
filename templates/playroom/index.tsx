@@ -46,6 +46,11 @@ const PAGE_TOP_BOTTOM = "pt-[0.2in] pb-[0.3in] md:pt-[0.3in]";
 const HEADER_PADDING = "pt-0 pb-[0.16in]";
 const SECTION_PADDING = "py-[0.15in] sm:py-[0.2in]";
 
+// Header link list flips from a vertical stack to an inline `·`-separated
+// row at the `min-[420px]:` breakpoint below. Tailwind v4's class scanner
+// needs literal class strings, so the breakpoint can't be extracted into a
+// const and interpolated — search-replace `420px` here if you want to retune.
+
 /** Outer layout classes applied by the app shell to `<main>` and `<article>`. */
 export const shell = {
   mainClassName: "bg-(--t-playroom-backdrop) flex min-h-screen justify-center px-3 py-6 print:block print:bg-white print:p-0 sm:px-6 md:px-8",
@@ -138,11 +143,11 @@ function ResumeHeader({ header }: { header: Resume["header"] }) {
 
         <p className="font-semibold italic leading-[1.35]">{header.subtitle.join(" ")}</p>
 
-        <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 font-semibold leading-[1.35]">
+        <div className="flex flex-col gap-y-0.5 font-semibold leading-[1.35] print:flex-row print:flex-wrap print:items-baseline print:gap-x-2 min-[420px]:flex-row min-[420px]:flex-wrap min-[420px]:items-baseline min-[420px]:gap-x-2">
           {links.map((link, i) => (
             <span key={i} className="inline-flex items-baseline gap-x-2">
               {i > 0 && (
-                <span aria-hidden className="text-experiences-divider">
+                <span aria-hidden className="text-experiences-divider hidden print:inline min-[420px]:inline">
                   ·
                 </span>
               )}
