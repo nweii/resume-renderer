@@ -40,11 +40,20 @@ const accents = {
  * not a property of any internal row. Per-row vertical rhythm is
  * `HEADER_PADDING` / `SECTION_PADDING` below.
  */
-const PAGE_GUTTER = "px-4 sm:px-6 print:pl-[0.25in] md:pr-[0.35in] md:pl-[0.25in]";
+const PAGE_GUTTER = "px-4 sm:px-6 print:pl-[0.25in] md:pr-[0.35in] md:pl-[0.2in]";
 const PAGE_TOP_BOTTOM = "pt-[0.2in] pb-[0.3in] md:pt-[0.25in] md:pb-[0.3in] print:pb-[0.15in]";
 
 const HEADER_PADDING = "pt-0 pb-[0.15in]";
 const SECTION_PADDING = "py-[0.15in] sm:py-[0.15in]";
+
+/**
+ * Two-column grid shared by the header and every section: a fixed-width label
+ * column on the left, a flexible content column on the right, with a gutter
+ * between them. The label column holds section headings (and acts as a
+ * left-margin spacer in the header), so its width sets the rhythm of the page.
+ * Kept here so header + section grids stay in sync.
+ */
+const LABEL_COLUMN_GRID = "print:grid-cols-[1in_1fr] print:gap-x-[0.3in] md:grid-cols-[1in_1fr] md:gap-x-[0.3in]";
 
 // Header link list flips from a vertical stack to an inline `·`-separated
 // row at the `min-[420px]:` breakpoint below. Tailwind v4's class scanner
@@ -102,8 +111,7 @@ function BulletList({ accent, bullets }: { accent: SectionAccent; bullets: strin
 function SectionShell({ label, accent, children }: { label: string; accent: SectionAccent; children: ReactNode }) {
   return (
     <section className="border-t-[1.75pt] last:[&>div]:pb-0" style={{ borderTopColor: accent.line }}>
-      <div
-        className={`grid grid-cols-1 gap-y-2 print:grid-cols-[0.85in_1fr] print:gap-x-[0.3in] print:gap-y-0 md:grid-cols-[0.85in_1fr] md:gap-x-[0.3in] md:gap-y-0 ${PAGE_GUTTER} ${SECTION_PADDING}`}>
+      <div className={`grid grid-cols-1 gap-y-2 print:gap-y-0 md:gap-y-0 ${LABEL_COLUMN_GRID} ${PAGE_GUTTER} ${SECTION_PADDING}`}>
         <div className="text-[8.5pt] font-bold uppercase tracking-[0.05em]" style={{ color: accent.heading }}>
           {label}
         </div>
@@ -128,7 +136,7 @@ function ResumeHeader({ header }: { header: Resume["header"] }) {
   ];
 
   return (
-    <div className={`grid grid-cols-1 print:grid-cols-[0.85in_1fr] print:gap-x-[0.3in] md:grid-cols-[0.85in_1fr] md:gap-x-[0.3in] ${PAGE_GUTTER} ${HEADER_PADDING}`}>
+    <div className={`grid grid-cols-1 ${LABEL_COLUMN_GRID} ${PAGE_GUTTER} ${HEADER_PADDING}`}>
       <div className="hidden print:block md:block" aria-hidden />
       <div className="flex flex-col gap-y-[4pt]">
         <div className="flex items-start justify-between gap-x-[0.25in]">
