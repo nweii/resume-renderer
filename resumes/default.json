@@ -1,7 +1,7 @@
 {
   "header": {
     "name": "Nathan Cheng",
-    "subtitle": ["Designer who codes, with a background in film studies and graphic design."],
+    "subtitle": ["Film-trained designer who codes; Claude Code power user with engineering and AI-systems depth."],
     "monomark": "/monomark.svg",
     "contact": {
       "email": "nthn.wei@gmail.com",
@@ -33,8 +33,8 @@
           "organization": "Foundation Studio",
           "dateRange": "2023 - 2024",
           "bullets": [
-            "**Designed pitch decks for 3 Techstars startups** preparing for Demo Day, sharpening positioning and competitive differentiation.",
-            "**Built a React/Next.js config generator for an LLM interview chatbot** for another client, cutting setup errors for screening flows."
+            "**Designed pitch decks for 3 Techstars startups,** sharpening positioning and competitive differentiation.",
+            "**Built a React/Next.js config generator for an LLM interview chatbot,** cutting setup errors for screening flows."
           ]
         },
         {
@@ -85,7 +85,7 @@
           "dateRange": "2016 - 2020",
           "bullets": [
             "**3.71 GPA;** Honors, Dean's List; Frank Capra Prize for excellence in cinematic filmmaking, humor, and pathos",
-            "**Led team to first place in game development intensive led by Bethesda founder:** Managed 4-person team from concept to iOS demo, planned levels and art direction, worked in Unity game engine, pitched to industry jury (AFI, Warner Bros. Games)"
+            "**Led team to first place in Bethesda-founder-led game-dev intensive:** shipped iOS demo, pitched to AFI / Warner Bros. Games / Demiurge industry jury."
           ]
         }
       ]
@@ -94,9 +94,8 @@
       "kind": "skills",
       "label": "Skills",
       "bullets": [
-        "**Development:** JavaScript/TypeScript, Next.js, Tailwind CSS, Astro, Bun, Supabase, Framer Motion, Cloudflare (Workers, R2, Zero Trust), MCP server development, agent skills",
-        "**Design & UX:** Interface design, Design systems, Information architecture, Visual design, Typography, CSS animation, Motion graphics, Accessibility (ARIA, keyboard handling)",
-        "**Tools & Platforms:** Claude Code, Cursor, Figma, Vercel, Mintlify, Obsidian, Portainer, Synology DSM"
+        "**Development:** JavaScript/TypeScript, Next.js, Tailwind CSS, Astro, Bun, Supabase, Framer Motion, Cloudflare (Workers, R2, Zero Trust), MCP server development, agent skills, Claude Code, Cursor, Vercel",
+        "**Design & UX:** Interface design, Design systems, Information architecture, Visual design, Typography, CSS animation, Motion graphics, Accessibility (ARIA, keyboard handling), Figma"
       ]
     }
   ]
