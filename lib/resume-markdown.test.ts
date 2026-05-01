@@ -32,21 +32,26 @@ describe("resumeToMarkdown", () => {
     expect(md).toContain("Line A  \nLine B");
   });
 
-  test("renders email as an autolink and website as a Markdown link", () => {
+  test("renders email as an autolink and links joined with separators", () => {
     const md = resumeToMarkdown(
       buildResume({
         header: {
           ...minimalHeader,
           contact: {
             email: "e@x.com",
-            website: { url: "https://nathancheng.work", label: "nathancheng.work" },
+            links: [
+              { url: "https://nathancheng.work", label: "nathancheng.work" },
+              { url: "https://github.com/nweii", label: "github.com/nweii" },
+            ],
           },
         },
       }),
     );
     expect(md).toContain("<e@x.com>");
     expect(md).toContain("[nathancheng.work](https://nathancheng.work)");
-    expect(md).toContain("<e@x.com> · [nathancheng.work](https://nathancheng.work)");
+    expect(md).toContain(
+      "<e@x.com> · [nathancheng.work](https://nathancheng.work) · [github.com/nweii](https://github.com/nweii)",
+    );
   });
 
   test("renders a skills section as H2 plus bulleted list", () => {

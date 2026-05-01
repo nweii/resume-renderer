@@ -39,8 +39,8 @@ function renderHeader(header: Resume["header"]): string {
   }
 
   const contactBits: string[] = [`<${header.contact.email}>`];
-  if (header.contact.website) {
-    contactBits.push(`[${header.contact.website.label}](${header.contact.website.url})`);
+  for (const link of header.contact.links ?? []) {
+    contactBits.push(`[${link.label}](${link.url})`);
   }
   lines.push("", contactBits.join(" · "));
 

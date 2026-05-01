@@ -1,11 +1,5 @@
 import type { ReactNode } from "react";
-import type {
-  EducationSection,
-  ExperiencesSection,
-  ProjectsSection,
-  Resume,
-  SkillsSection,
-} from "@/lib/schema";
+import type { EducationSection, ExperiencesSection, ProjectsSection, Resume, SkillsSection } from "@/lib/schema";
 
 /**
  * Per-section accent colors. Each section kind (skills, projects, experiences,
@@ -106,62 +100,47 @@ function SectionShell({ label, accent, children }: { label: string; accent: Sect
 }
 
 function ResumeHeader({ header }: { header: Resume["header"] }) {
-  const linkCls =
-    "text-(--t-playroom-heading-ink) underline-offset-2 decoration-zinc-400/70 hover:underline dark:decoration-zinc-500";
+  const linkCls = "text-(--t-playroom-heading-ink) underline-offset-2 decoration-zinc-400/70 hover:underline dark:decoration-zinc-500";
 
-  const contact = (
-    <div className="space-y-0.5 font-semibold leading-[1.35]">
-      <div className="wrap-break-words">
-        <a className={linkCls} href={`mailto:${header.contact.email}`}>
-          {header.contact.email}
-        </a>
-      </div>
-      {header.contact.website && (
-        <div className="wrap-break-words">
-          <a className={linkCls} href={header.contact.website.url} target="_blank" rel="noopener noreferrer">
-            {header.contact.website.label}
-          </a>
-        </div>
-      )}
-    </div>
-  );
-
-  const subtitle = (
-    <p className="mt-[5pt] max-w-full font-semibold italic leading-[1.35] print:col-start-2 print:row-start-2 print:mt-0 md:col-start-2 md:row-start-2 md:mt-0 md:max-w-[4.9in]">
-      {header.subtitle.map((line, i) => (
-        <span key={i}>
-          {line}
-          {i < header.subtitle.length - 1 && <br />}
-        </span>
-      ))}
-    </p>
-  );
+  const links = [
+    <a key="email" className={linkCls} href={`mailto:${header.contact.email}`}>
+      {header.contact.email}
+    </a>,
+    ...(header.contact.links ?? []).map((link, i) => (
+      <a key={`link-${i}`} className={linkCls} href={link.url} target="_blank" rel="noopener noreferrer">
+        {link.label}
+      </a>
+    )),
+  ];
 
   return (
-    <div
-      className={`grid grid-cols-[minmax(0,1fr)_auto] gap-x-[0.3in] gap-y-3 print:grid-cols-[0.85in_1fr_auto] print:grid-rows-[auto_auto] print:gap-y-[5pt] md:grid-cols-[0.85in_1fr_auto] md:grid-rows-[auto_auto] md:gap-y-[5pt] ${PAGE_INSET} pb-[0.16in]`}>
-      <div className="hidden print:col-start-1 print:row-span-2 print:row-start-1 print:block md:col-start-1 md:row-span-2 md:row-start-1 md:block" aria-hidden />
+    <div className={`grid grid-cols-1 print:grid-cols-[0.85in_1fr] print:gap-x-[0.3in] md:grid-cols-[0.85in_1fr] md:gap-x-[0.3in] ${PAGE_INSET} pt-0 pb-[0.16in]`}>
+      <div className="hidden print:block md:block" aria-hidden />
+      <div className="flex flex-col gap-y-[5pt]">
+        <div className="flex items-start justify-between gap-x-[0.3in]">
+          <h1 className="text-(--t-playroom-heading-ink) min-w-0 text-[16pt] font-bold leading-[1.1] tracking-[0]" style={{ fontFamily: "var(--font-display)" }}>
+            {header.name}
+          </h1>
+          {header.monomark && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={header.monomark} alt={`${header.name} monomark`} className="h-[18pt] w-auto shrink-0 dark:invert print:invert-0" />
+          )}
+        </div>
 
-      <div className="col-start-1 row-start-1 min-w-0 print:contents md:contents">
-        <h1
-          className="text-(--t-playroom-heading-ink) text-[16pt] font-bold leading-[1.1] tracking-[0] print:col-start-2 print:row-start-1 md:col-start-2 md:row-start-1"
-          style={{ fontFamily: "var(--font-display)" }}>
-          {header.name}
-        </h1>
-        {subtitle}
-      </div>
+        <p className="font-semibold italic leading-[1.35]">{header.subtitle.join(" ")}</p>
 
-      {header.monomark && (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={header.monomark}
-          alt={`${header.name} monomark`}
-          className="col-start-2 row-start-1 h-[18pt] w-auto shrink-0 justify-self-end dark:invert print:col-start-3 print:row-start-1 print:invert-0 md:col-start-3 md:row-start-1"
-        />
-      )}
-
-      <div className="col-span-2 row-start-2 w-full min-w-0 print:col-span-1 print:col-start-3 print:row-start-2 print:text-right md:col-span-1 md:col-start-3 md:row-start-2 md:text-right">
-        {contact}
+        <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 font-semibold leading-[1.35]">
+          {links.map((link, i) => (
+            <span key={i} className="inline-flex items-baseline gap-x-2">
+              {i > 0 && (
+                <span aria-hidden className="text-experiences-divider">
+                  ·
+                </span>
+              )}
+              {link}
+            </span>
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -176,19 +155,7 @@ function EntryHead({ left, right }: { left: ReactNode; right?: ReactNode }) {
   );
 }
 
-function Entry({
-  accent,
-  left,
-  right,
-  summary,
-  bullets,
-}: {
-  accent: SectionAccent;
-  left: ReactNode;
-  right?: ReactNode;
-  summary?: string;
-  bullets?: string[];
-}) {
+function Entry({ accent, left, right, summary, bullets }: { accent: SectionAccent; left: ReactNode; right?: ReactNode; summary?: string; bullets?: string[] }) {
   return (
     <div className={ENTRY_STACK}>
       <EntryHead left={left} right={right} />
@@ -219,14 +186,7 @@ function Section<T extends { title: string; dateRange?: string; summary?: string
   return (
     <SectionShell label={label} accent={accent}>
       {entries.map((entry, i) => (
-        <Entry
-          key={i}
-          accent={accent}
-          left={renderLeft ? renderLeft(entry) : entry.title}
-          right={entry.dateRange}
-          summary={entry.summary}
-          bullets={entry.bullets}
-        />
+        <Entry key={i} accent={accent} left={renderLeft ? renderLeft(entry) : entry.title} right={entry.dateRange} summary={entry.summary} bullets={entry.bullets} />
       ))}
     </SectionShell>
   );
@@ -250,14 +210,7 @@ export function Document({ resume }: { resume: Resume }) {
           case "skills":
             return <SkillsBlock key={i} section={section} />;
           case "projects":
-            return (
-              <Section<ProjectsSection["entries"][number]>
-                key={i}
-                label={section.label}
-                accent={accents.projects}
-                entries={section.entries}
-              />
-            );
+            return <Section<ProjectsSection["entries"][number]> key={i} label={section.label} accent={accents.projects} entries={section.entries} />;
           case "experiences":
             return (
               <Section<ExperiencesSection["entries"][number]>
@@ -277,14 +230,7 @@ export function Document({ resume }: { resume: Resume }) {
               />
             );
           case "education":
-            return (
-              <Section<EducationSection["entries"][number]>
-                key={i}
-                label={section.label}
-                accent={accents.education}
-                entries={section.entries}
-              />
-            );
+            return <Section<EducationSection["entries"][number]> key={i} label={section.label} accent={accents.education} entries={section.entries} />;
         }
       })}
     </>

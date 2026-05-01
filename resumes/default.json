@@ -1,14 +1,14 @@
 {
   "header": {
     "name": "Nathan Cheng",
-    "subtitle": ["Designer who codes, with a background in film studies and graphic design.", "Bridges design, development, and business needs to make complex systems legible."],
+    "subtitle": ["Designer who codes, with a background in film studies and graphic design."],
     "monomark": "/monomark.svg",
     "contact": {
       "email": "nthn.wei@gmail.com",
-      "website": {
-        "url": "https://nathancheng.work",
-        "label": "nathancheng.work"
-      }
+      "links": [
+        { "url": "https://nathancheng.work", "label": "nathancheng.work" },
+        { "url": "https://github.com/nweii", "label": "github.com/nweii" }
+      ]
     }
   },
   "sections": [

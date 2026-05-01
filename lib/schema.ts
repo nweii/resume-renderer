@@ -16,11 +16,13 @@ const bullet = z.string();
 
 const contact = z.object({
   email: z.string(),
-  website: z
-    .object({
-      url: z.string(),
-      label: z.string(),
-    })
+  links: z
+    .array(
+      z.object({
+        url: z.string(),
+        label: z.string(),
+      }),
+    )
     .optional(),
 });
 
