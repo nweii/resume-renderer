@@ -33,15 +33,24 @@ const accents = {
   },
 } satisfies Record<string, SectionAccent>;
 
+/**
+ * Page-edge spacing. `PAGE_GUTTER` is the left/right inset applied to every
+ * row that touches the page edge (header + sections). `PAGE_TOP_BOTTOM` lives
+ * on the article shell because it's the white sheet's own top/bottom padding,
+ * not a property of any internal row. Per-row vertical rhythm is
+ * `HEADER_PADDING` / `SECTION_PADDING` below.
+ */
+const PAGE_GUTTER = "px-4 sm:px-6 print:pr-[0.35in] print:pl-[0.25in] md:pr-[0.35in] md:pl-[0.25in]";
+const PAGE_TOP_BOTTOM = "pt-[0.2in] pb-[0.3in] md:pt-[0.3in]";
+
+const HEADER_PADDING = "pt-0 pb-[0.16in]";
+const SECTION_PADDING = "py-[0.15in] sm:py-[0.2in]";
+
 /** Outer layout classes applied by the app shell to `<main>` and `<article>`. */
 export const shell = {
-  mainClassName:
-    "bg-(--t-playroom-backdrop) flex min-h-screen justify-center px-3 py-6 print:block print:bg-white print:p-0 sm:px-6 md:px-8",
-  articleClassName:
-    "bg-(--t-playroom-paper) text-body relative min-h-0 w-full max-w-[8.5in] rounded-lg pb-[0.3in] pt-[0.2in] font-sans text-[8.5pt] leading-[1.4] shadow-md [zoom:var(--t-playroom-scale)] print:min-h-[11in] print:w-[8.5in] print:max-w-[8.5in] print:rounded-none print:shadow-none print:[zoom:1] md:min-h-[11in] md:rounded-none md:pt-[0.35in]",
+  mainClassName: "bg-(--t-playroom-backdrop) flex min-h-screen justify-center px-3 py-6 print:block print:bg-white print:p-0 sm:px-6 md:px-8",
+  articleClassName: `bg-(--t-playroom-paper) text-body relative min-h-0 w-full max-w-[8.5in] rounded-lg font-sans text-[8.5pt] leading-[1.4] shadow-md [zoom:var(--t-playroom-scale)] ${PAGE_TOP_BOTTOM} print:min-h-[11in] print:w-[8.5in] print:max-w-[8.5in] print:rounded-none print:shadow-none print:[zoom:1] md:min-h-[11in] md:rounded-none`,
 } as const;
-
-const PAGE_INSET = "px-4 sm:px-6 print:pr-[0.35in] print:pl-[0.25in] md:pr-[0.35in] md:pl-[0.25in]";
 
 /** Vertical rhythm between entries inside a section. Kept tighter in print/md. */
 const ENTRY_STACK = "space-y-[8pt] print:space-y-[7pt] print:break-inside-avoid md:space-y-[7pt]";
@@ -89,7 +98,7 @@ function SectionShell({ label, accent, children }: { label: string; accent: Sect
   return (
     <section className="border-t-[1.75pt] last:[&>div]:pb-0" style={{ borderTopColor: accent.line }}>
       <div
-        className={`grid grid-cols-1 gap-y-2 print:grid-cols-[0.85in_1fr] print:gap-x-[0.3in] print:gap-y-0 md:grid-cols-[0.85in_1fr] md:gap-x-[0.3in] md:gap-y-0 ${PAGE_INSET} pb-[0.2in] pt-[0.2in]`}>
+        className={`grid grid-cols-1 gap-y-2 print:grid-cols-[0.85in_1fr] print:gap-x-[0.3in] print:gap-y-0 md:grid-cols-[0.85in_1fr] md:gap-x-[0.3in] md:gap-y-0 ${PAGE_GUTTER} ${SECTION_PADDING}`}>
         <div className="text-[8.5pt] font-bold uppercase tracking-[0.05em]" style={{ color: accent.heading }}>
           {label}
         </div>
@@ -114,7 +123,7 @@ function ResumeHeader({ header }: { header: Resume["header"] }) {
   ];
 
   return (
-    <div className={`grid grid-cols-1 print:grid-cols-[0.85in_1fr] print:gap-x-[0.3in] md:grid-cols-[0.85in_1fr] md:gap-x-[0.3in] ${PAGE_INSET} pt-0 pb-[0.16in]`}>
+    <div className={`grid grid-cols-1 print:grid-cols-[0.85in_1fr] print:gap-x-[0.3in] md:grid-cols-[0.85in_1fr] md:gap-x-[0.3in] ${PAGE_GUTTER} ${HEADER_PADDING}`}>
       <div className="hidden print:block md:block" aria-hidden />
       <div className="flex flex-col gap-y-[5pt]">
         <div className="flex items-start justify-between gap-x-[0.3in]">
