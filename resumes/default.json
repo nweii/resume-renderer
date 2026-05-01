@@ -16,7 +16,7 @@
       "kind": "skills",
       "label": "Skills",
       "bullets": [
-        "**Development:** JavaScript/React, Next.js, Tailwind CSS, Astro, Bun, Supabase, Zod, Framer Motion, Git, Cloudflare (Workers, R2, Zero Trust), OAuth 2.1, MCP and API integrations, Claude skills / MCP server development, agent context engineering, LLM prompt development",
+        "**Development:** JavaScript/TypeScript, Next.js, Tailwind CSS, Astro, Bun, Supabase, Framer Motion, Git, Cloudflare (Workers, R2, Zero Trust), MCP and API integrations, agent skills, MCP server development, agent context engineering",
         "**Design & UX:** Interface design, Design systems, Information architecture, Visual design, Typography, CSS animation, Motion graphics, Accessibility (ARIA, keyboard handling)",
         "**Tools & Platforms:** Claude Code, Cursor, Figma, Vercel, Cloudflare Pages, Netlify, Mintlify, Obsidian, Portainer, Synology DSM"
       ]
@@ -30,26 +30,17 @@
           "dateRange": "2024 - Ongoing",
           "bullets": [
             "**Designed and built a personal portfolio site** with filtered views by medium and category, shareable via URL state.",
-            "**Built motion details across the site,** including scroll-driven card stacking inspired by iOS notification physics and an animated hero.",
-            "**Consolidated content and media handling** to MDX in the repo + a single Cloudflare R2 bucket, replacing a Sanity CMS + Cloudinary split — so content edits ship in the same PRs as code and live as plain files coding agents can read and edit directly."
+            "**Built motion details across the site:** scroll-driven card stacking inspired by iOS notification physics, animated hero.",
+            "**Consolidated content and media to MDX in the repo + Cloudflare R2** (was Sanity CMS + Cloudinary) — content ships with code, agents can read and edit directly."
           ]
         },
         {
           "title": "Personal knowledge infrastructure",
           "dateRange": "2022 - Ongoing",
           "bullets": [
-            "**Maintain a public library of 30+ Claude skills (~1K weekly installs) on Vercel's registry** — modular workflows that steer AI agents through knowledge maintenance, frontend code review, and project spec shaping.",
-            "**Built and published `obsidian-remote-mcp`,** an open-source server that lets remote AI clients work on an Obsidian vault. Access is layered so a client only reaches what's been exposed (OAuth 2.1 + PKCE, vault-path sandboxing, `.mcpignore`); the tool surface lets agents pull an outline, read one section, or update a single property instead of dumping whole files.",
-            "**Built and operate a Synology-based personal server stack** hosting a 5,000+ note Obsidian vault, a persistent Claude Code agent session, the `obsidian-remote-mcp` deployment, and supporting services. Auth via Cloudflare Zero Trust + Google SSO; containers on a custom Bun + Node base image rebuilt weekly."
-          ]
-        },
-        {
-          "title": "resume-renderer — one-schema, many-surfaces resume pipeline",
-          "dateRange": "2026 - Ongoing",
-          "bullets": [
-            "**Built a resume-rendering pipeline** that turns one JSON source into a responsive web page, a print-perfect one-page PDF, a schema-validated JSON endpoint, and a Markdown outline — deployed as a static export at `res.nathancheng.cv`.",
-            "**Designed for swappability:** Zod discriminated union over section kinds; templates are React + Tailwind folders registered through a central index, so new layouts drop in without schema churn.",
-            "**Wired an agent-native publishing workflow end to end** — Claude.ai drafts variants from the live site's `/resume.md`, Claude Code reviews and commits, auto-deploy publishes. A positioning conversation can become a published change within minutes."
+            "**Maintain a public library of 30+ agent skills (~1K weekly installs) on Vercel's registry** — modular workflows for knowledge maintenance, frontend code review, and project spec shaping.",
+            "**Published `obsidian-remote-mcp`,** an open-source server exposing an Obsidian vault to remote AI clients with OAuth + scoped access — agents pull an outline, read a section, or update a property without dumping whole files.",
+            "**Built and operate a Synology-based personal server stack** hosting a 5,000+ note Obsidian vault, a persistent Claude Code agent, `obsidian-remote-mcp`, and supporting services. Cloudflare Zero Trust + Google SSO auth; custom Bun + Node container image rebuilt weekly."
           ]
         }
       ]
@@ -64,10 +55,10 @@
           "dateRange": "2021 - Present",
           "summary": "Solo designer / systems manager at family-run B2B software company (users at NASA, Eli Lilly, 3M, EPA, Nestle).",
           "bullets": [
-            "**Built a Next.js + Supabase replacement for a 25-year-old Microsoft Access customer database (40,000+ records, decades of licensing history).** Solo, ~54 commits in 37 days from prototype to live deploy on real data; outside firms had quoted $25–60k for a from-scratch rebuild.",
-            "**Replatformed customer support docs off WordPress onto Mintlify** via a Firecrawl + Bun + Python pipeline that migrated 219 articles into ~224 MDX files, with a Claude Haiku agent handling repetitive cleanup — built as version-controlled, machine-readable docs structured so AI crawlers can read them cleanly.",
-            "**Designed workflow builder interface unifying 40+ configuration options:** studied Windows UI patterns, created component system with progressive disclosure for serial device communication.",
-            "**Reduced recurring setup questions ~30%** by producing a walkthrough video series replacing 90s-era documentation — scripted, recorded, and edited with motion graphics."
+            "**Built a Next.js + Supabase replacement for a 25-year-old Microsoft Access customer database (40,000+ records, decades of licensing history).** Solo, ~54 commits in 37 days; outside firms had quoted $25–60k for a from-scratch rebuild.",
+            "**Replatformed customer support docs off WordPress onto Mintlify** via a Firecrawl + Bun + Python pipeline — migrated 219 articles into ~224 MDX files, with a Claude Haiku agent handling repetitive cleanup; built for AI-crawler legibility.",
+            "**Designed workflow builder interface unifying 40+ configuration options:** Windows UI patterns, component system with progressive disclosure for serial device communication.",
+            "**Reduced recurring setup questions ~30%** with a walkthrough video series replacing 90s-era documentation — scripted, recorded, edited with motion graphics."
           ]
         },
         {
@@ -75,9 +66,8 @@
           "organization": "Foundation Studio",
           "dateRange": "2023 - 2024",
           "bullets": [
-            "**Built React/Next.js config generator for LLM interview chatbot,** reducing setup errors for screening question flows.",
-            "**Wrote Python script workaround to preserve image fidelity** when late-notice Techstars delivery requirements revealed Google Slides compression would degrade designs.",
-            "**Led pitch deck and narrative strategy for 3 Techstars startups** preparing for Demo Day — competitor analysis, problem-focused storytelling, visual direction for investor presentations."
+            "**Built React/Next.js config generator for LLM interview chatbot,** cutting setup errors for screening flows.",
+            "**Led pitch deck and narrative strategy for 3 Techstars startups** preparing for Demo Day — competitor analysis, problem-focused storytelling, investor-presentation visual direction."
           ]
         },
         {
