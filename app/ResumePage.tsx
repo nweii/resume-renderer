@@ -4,6 +4,33 @@ import { getResumeTemplate } from "@/templates";
 import { PageEdge } from "./PageEdge";
 import { ResumeScaler } from "./ResumeScaler";
 
+/**
+ * Endpoint paths for the JSON + Markdown siblings of a variant's HTML page.
+ * Default variant lives at the site root (`/resume.json`); slugged variants
+ * live under their slug (`/<slug>/resume.json`).
+ */
+function dataEndpoints(variant: ResumeVariant) {
+  const prefix = variant.id === "default" ? "" : `/${variant.slug}`;
+  return { json: `${prefix}/resume.json`, markdown: `${prefix}/resume.md` };
+}
+
+function AgentEndpoints({ variant }: { variant: ResumeVariant }) {
+  const { json, markdown } = dataEndpoints(variant);
+  const linkCls = "underline-offset-2 hover:underline";
+  return (
+    <footer className="text-(--t-playroom-heading-ink)/70 mt-4 text-center text-[8.5pt] print:hidden">
+      Agent-readable:{" "}
+      <a className={linkCls} href={json}>
+        JSON
+      </a>{" "}
+      ·{" "}
+      <a className={linkCls} href={markdown}>
+        Markdown
+      </a>
+    </footer>
+  );
+}
+
 export function ResumePage({ variant }: { variant: ResumeVariant }) {
   const parsed = resumeSchema.safeParse(variant.resume);
   if (!parsed.success) {
@@ -39,6 +66,7 @@ export function ResumePage({ variant }: { variant: ResumeVariant }) {
         {process.env.NODE_ENV === "development" && <PageEdge />}
         <Document resume={{ header, sections }} />
       </article>
+      <AgentEndpoints variant={variant} />
     </main>
   );
 }

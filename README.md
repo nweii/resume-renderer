@@ -116,6 +116,8 @@ The Markdown converter lives in [`lib/resume-markdown.ts`](lib/resume-markdown.t
 
 All endpoints are built as static files by `next build` (`output: "export"`), so they're served directly from the CDN with no Worker execution cost.
 
+The HTML page advertises its JSON and Markdown siblings two ways: `<link rel="alternate" type="application/json" href="…">` and the matching `text/markdown` tag in the document head (set via Next's `metadata.alternates.types`), and a small "Agent-readable: JSON · Markdown" footer below the rendered resume. The first hits the standard discoverability path that crawlers and AI agents follow; the second is a visible signal to human readers that the page is dual-published.
+
 ## Variants
 
 `resumes/default.json` is the canonical public resume. Tailored-per-role variants (`backend-staff.json`, `design-lead.json`, etc.) are gitignored by convention — see `.gitignore`. They live in the same folder on your machine but don't land in public git history.

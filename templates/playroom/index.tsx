@@ -62,7 +62,7 @@ const LABEL_COLUMN_GRID = "print:grid-cols-[1in_1fr] print:gap-x-[0.3in] md:grid
 
 /** Outer layout classes applied by the app shell to `<main>` and `<article>`. */
 export const shell = {
-  mainClassName: "bg-(--t-playroom-backdrop) flex min-h-screen justify-center px-3 py-6 print:block print:bg-white print:p-0 sm:px-6 md:px-8",
+  mainClassName: "bg-(--t-playroom-backdrop) flex min-h-screen flex-col items-center px-3 py-6 print:block print:bg-white print:p-0 sm:px-6 md:px-8",
   articleClassName: `bg-(--t-playroom-paper) text-body relative min-h-0 w-full max-w-[8.5in] rounded-lg font-sans text-[8.5pt] leading-[1.4] shadow-md [zoom:var(--t-playroom-scale)] ${PAGE_TOP_BOTTOM} print:min-h-[11in] print:w-[8.5in] print:max-w-[8.5in] print:rounded-none print:shadow-none print:[zoom:1] md:min-h-[11in] md:rounded-none`,
 } as const;
 
