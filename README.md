@@ -116,7 +116,7 @@ The Markdown converter lives in [`lib/resume-markdown.ts`](lib/resume-markdown.t
 
 All endpoints are built as static files by `next build` (`output: "export"`), so they're served directly from the CDN with no Worker execution cost.
 
-The HTML page advertises its JSON and Markdown siblings two ways: `<link rel="alternate" type="application/json" href="…">` and the matching `text/markdown` tag in the document head (set via Next's `metadata.alternates.types`), and a small "Agent-readable: JSON · Markdown" footer below the rendered resume. The first hits the standard discoverability path that crawlers and AI agents follow; the second is a visible signal to human readers that the page is dual-published.
+The HTML page advertises its JSON and Markdown siblings two ways: `<link rel="alternate" type="application/json" href="…">` and the matching `text/markdown` tag in the document head (set via Next's `metadata.alternates.types`), and a small "JSON · Markdown · PDF" footer below the rendered resume — the PDF link triggers the browser print dialog. The first hits the standard discoverability path that crawlers and AI agents follow; the second is a visible signal to human readers that the page is dual-published.
 
 ## Variants
 
