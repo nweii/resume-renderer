@@ -23,7 +23,7 @@
           "summary": "Solo designer at a family-run B2B software company (users at NASA, Eli Lilly, 3M, EPA, Nestle); grew my role from sales and support into design, documentation, and lately engineering work.",
           "bullets": [
             "**Migrated our 25-year-old Microsoft Access customer database (40,000+ records) to Next.js + Supabase** over six weeks; phased the cutover so the legacy shape stayed editable while a relational model grew underneath. Vendors had quoted $25–60k for a rebuild.",
-            "**Replatformed customer support docs from WordPress to Mintlify** with a Firecrawl + Bun + Python pipeline migrating 219 articles into MDX; reads cleanly to AI agents and is easier to update.",
+            "**Replatformed customer support docs from WordPress to Mintlify** with a Firecrawl + Bun + Python pipeline migrating 219 articles into MDX; reads cleanly to AI agents.",
             "**Proposed a redesign of our flagship workflow builder,** unifying 40+ configuration options for serial-device communication into a Windows-pattern component system with progressive disclosure.",
             "**Reduced recurring setup questions ~30%** with a walkthrough video series that replaced 90s-era documentation."
           ]
@@ -67,7 +67,7 @@
             "**Public library of 30+ agent skills (~1K weekly installs) on Vercel's registry:** modular workflows for knowledge maintenance, code review, and project shaping.",
             "**Maintain a 5,000+ note Obsidian vault** as a personal/work context store, powering my Claude Code workflows and bridging GitHub repos.",
             "**Published `obsidian-remote-mcp`,** open-source server exposing a vault to remote AI clients with OAuth + scoped access: agents pull an outline, read a section, or update a property without dumping whole files.",
-            "**Built and operate a Synology-based personal server stack** hosting the vault, a persistent Claude Code agent, `obsidian-remote-mcp`, and supporting services; Tailscale + Cloudflare Zero Trust SSO."
+            "**Built and operate a Synology-based personal server stack** hosting the vault, a persistent Claude Code agent, and `obsidian-remote-mcp`; Tailscale + Cloudflare Zero Trust SSO."
           ]
         }
       ]

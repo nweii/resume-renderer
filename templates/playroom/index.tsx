@@ -40,8 +40,8 @@ const accents = {
  * not a property of any internal row. Per-row vertical rhythm is
  * `HEADER_PADDING` / `SECTION_PADDING` below.
  */
-const PAGE_GUTTER = "px-4 sm:px-6 print:pr-[0.35in] print:pl-[0.25in] md:pr-[0.25in] md:pl-[0.25in]";
-const PAGE_TOP_BOTTOM = "pt-[0.2in] pb-[0.3in] md:pt-[0.25in] md:pb-[0.3in]";
+const PAGE_GUTTER = "px-4 sm:px-6 print:pl-[0.25in] md:pr-[0.35in] md:pl-[0.25in]";
+const PAGE_TOP_BOTTOM = "pt-[0.2in] pb-[0.3in] md:pt-[0.25in] md:pb-[0.3in] print:pb-[0.15in]";
 
 const HEADER_PADDING = "pt-0 pb-[0.15in]";
 const SECTION_PADDING = "py-[0.15in] sm:py-[0.15in]";
