@@ -20,7 +20,7 @@
           "title": "Design and Systems Manager",
           "organization": "TALtech",
           "dateRange": "2021 - Present",
-          "summary": "Solo designer at a family-run B2B software company (users at NASA, Eli Lilly, 3M, EPA, Nestle); grew my role from sales and support into design, documentation, and lately engineering work.",
+          "summary": "Part-time, wide-ranging role at a family-run B2B software company (users include 3M, EPA, Eli Lilly); grew from sales and support into design, documentation, and lately engineering work.",
           "bullets": [
             "**Migrated our 25-year-old Microsoft Access customer database (40,000+ records) to Next.js + Supabase** over six weeks; phased the cutover so the legacy shape stayed editable while a relational model grew underneath. Vendors had quoted $25–60k for a rebuild.",
             "**Replatformed customer support docs from WordPress to Mintlify** with a Firecrawl + Bun + Python pipeline migrating 219 articles into MDX; reads cleanly to AI agents.",
