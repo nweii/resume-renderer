@@ -112,6 +112,16 @@ body {
 }
 
 @media print {
+  /* Agentation toolbar uses React portals that escape any parent
+     `print:hidden` wrapper. Target its data attributes directly so the
+     toolbar, palette, and any sibling portaled UI never appear in print. */
+  [data-agentation-palette],
+  [data-agentation-theme],
+  [class*="agentation"],
+  [class*="Agentation"] {
+    display: none !important;
+  }
+
   [data-resume-theme="playroom"] {
     color-scheme: light;
 
