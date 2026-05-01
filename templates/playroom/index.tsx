@@ -40,11 +40,11 @@ const accents = {
  * not a property of any internal row. Per-row vertical rhythm is
  * `HEADER_PADDING` / `SECTION_PADDING` below.
  */
-const PAGE_GUTTER = "px-4 sm:px-6 print:pr-[0.35in] print:pl-[0.25in] md:pr-[0.35in] md:pl-[0.25in]";
-const PAGE_TOP_BOTTOM = "pt-[0.2in] pb-[0.3in] md:pt-[0.3in]";
+const PAGE_GUTTER = "px-4 sm:px-6 print:pr-[0.35in] print:pl-[0.25in] md:pr-[0.25in] md:pl-[0.25in]";
+const PAGE_TOP_BOTTOM = "pt-[0.2in] pb-[0.3in] md:pt-[0.25in] md:pb-[0.3in]";
 
-const HEADER_PADDING = "pt-0 pb-[0.16in]";
-const SECTION_PADDING = "py-[0.15in] sm:py-[0.2in]";
+const HEADER_PADDING = "pt-0 pb-[0.15in]";
+const SECTION_PADDING = "py-[0.15in] sm:py-[0.15in]";
 
 // Header link list flips from a vertical stack to an inline `·`-separated
 // row at the `min-[420px]:` breakpoint below. Tailwind v4's class scanner
@@ -130,30 +130,30 @@ function ResumeHeader({ header }: { header: Resume["header"] }) {
   return (
     <div className={`grid grid-cols-1 print:grid-cols-[0.85in_1fr] print:gap-x-[0.3in] md:grid-cols-[0.85in_1fr] md:gap-x-[0.3in] ${PAGE_GUTTER} ${HEADER_PADDING}`}>
       <div className="hidden print:block md:block" aria-hidden />
-      <div className="flex flex-col gap-y-[5pt]">
-        <div className="flex items-start justify-between gap-x-[0.3in]">
-          <h1 className="text-(--t-playroom-heading-ink) min-w-0 text-[16pt] font-bold leading-[1.1] tracking-[0]" style={{ fontFamily: "var(--font-display)" }}>
-            {header.name}
-          </h1>
+      <div className="flex flex-col gap-y-[4pt]">
+        <div className="flex items-start justify-between gap-x-[0.25in]">
+          <h1 className="text-(--t-playroom-heading-ink) font-display min-w-0 text-[16pt] font-bold leading-[1.1] tracking-[0]">{header.name}</h1>
           {header.monomark && (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={header.monomark} alt={`${header.name} monomark`} className="h-[18pt] w-auto shrink-0 dark:invert print:invert-0" />
           )}
         </div>
 
-        <p className="font-semibold italic leading-[1.35]">{header.subtitle.join(" ")}</p>
+        <div className="flex flex-col gap-y-[4pt] md:gap-y-[1pt]">
+          <p className="font-semibold italic">{header.subtitle.join(" ")}</p>
 
-        <div className="flex flex-col gap-y-0.5 font-semibold leading-[1.35] print:flex-row print:flex-wrap print:items-baseline print:gap-x-2 min-[420px]:flex-row min-[420px]:flex-wrap min-[420px]:items-baseline min-[420px]:gap-x-2">
-          {links.map((link, i) => (
-            <span key={i} className="inline-flex items-baseline gap-x-2">
-              {i > 0 && (
-                <span aria-hidden className="text-experiences-divider hidden print:inline min-[420px]:inline">
-                  ·
-                </span>
-              )}
-              {link}
-            </span>
-          ))}
+          <div className="flex flex-col gap-y-0.5 font-semibold print:flex-row print:flex-wrap print:items-baseline print:gap-x-2 min-[420px]:flex-row min-[420px]:flex-wrap min-[420px]:items-baseline min-[420px]:gap-x-2">
+            {links.map((link, i) => (
+              <span key={i} className="inline-flex items-baseline gap-x-2">
+                {i > 0 && (
+                  <span aria-hidden className="text-experiences-divider hidden print:inline min-[420px]:inline">
+                    ·
+                  </span>
+                )}
+                {link}
+              </span>
+            ))}
+          </div>
         </div>
       </div>
     </div>
