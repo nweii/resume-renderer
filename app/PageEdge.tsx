@@ -98,7 +98,13 @@ export function PageEdge() {
     return () => ro.disconnect();
   }, []);
 
-  const showWarning = overflowPx > 0 && isPageLayoutViewport;
+  // Trigger on character overflow rather than pixel overflow. The article's
+  // screen bottom padding (`md:pb-[0.3in]`) is larger than print's
+  // (`print:pb-[0.15in]`), so a content layout that fits print can still
+  // show a few px of padding past the 11in mark on screen. Counting chars
+  // past the boundary ignores that whitespace and only fires when real
+  // content overflows.
+  const showWarning = overflowChars > 0 && isPageLayoutViewport;
 
   if (!showWarning) {
     // Keep the ref attached so ResizeObserver can find the article on first mount.
