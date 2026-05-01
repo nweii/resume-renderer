@@ -38,11 +38,13 @@ function renderHeader(header: Resume["header"]): string {
     lines.push("", header.subtitle.join("  \n"));
   }
 
-  const contactBits: string[] = [`<${header.contact.email}>`];
+  const contactLines: string[] = [`<${header.contact.email}>`];
   for (const link of header.contact.links ?? []) {
-    contactBits.push(`[${link.label}](${link.url})`);
+    contactLines.push(`[${link.label}](${link.url})`);
   }
-  lines.push("", contactBits.join(" · "));
+  // Hard-line-break (two trailing spaces) keeps the contact rows in one
+  // paragraph without gluing them into a single visual line.
+  lines.push("", contactLines.join("  \n"));
 
   return lines.join("\n");
 }
@@ -89,7 +91,7 @@ function renderEducationEntry(entry: EducationSection["entries"][number]): strin
 }
 
 function entryHead(title: string, dateRange?: string): string {
-  return dateRange ? `### ${title} — ${dateRange}` : `### ${title}`;
+  return dateRange ? `### ${title}\n\n*${dateRange}*` : `### ${title}`;
 }
 
 function bulletList(bullets: string[]): string {

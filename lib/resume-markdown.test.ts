@@ -49,8 +49,10 @@ describe("resumeToMarkdown", () => {
     );
     expect(md).toContain("<e@x.com>");
     expect(md).toContain("[nathancheng.work](https://nathancheng.work)");
+    // Each contact bit lives on its own line, joined by a hard-line-break so
+    // they render as a stacked block rather than a single visual line.
     expect(md).toContain(
-      "<e@x.com> · [nathancheng.work](https://nathancheng.work) · [github.com/nweii](https://github.com/nweii)",
+      "<e@x.com>  \n[nathancheng.work](https://nathancheng.work)  \n[github.com/nweii](https://github.com/nweii)",
     );
   });
 
@@ -77,7 +79,7 @@ describe("resumeToMarkdown", () => {
         ],
       }),
     );
-    expect(md).toContain("### Widget — 2024");
+    expect(md).toContain("### Widget\n\n*2024*");
     expect(md).toContain("- Built it");
   });
 
@@ -94,7 +96,7 @@ describe("resumeToMarkdown", () => {
       }),
     );
     expect(md).toContain("### Dateless\n");
-    expect(md).not.toContain("Dateless —");
+    expect(md).not.toMatch(/Dateless\n\n\*/);
   });
 
   test("experience uses 'at' when organization is present", () => {
@@ -116,7 +118,7 @@ describe("resumeToMarkdown", () => {
         ],
       }),
     );
-    expect(md).toContain("### Software Engineer at Acme — 2020–2024");
+    expect(md).toContain("### Software Engineer at Acme\n\n*2020–2024*");
   });
 
   test("experience omits 'at' when organization is absent", () => {
@@ -171,9 +173,9 @@ describe("resumeToMarkdown", () => {
         ],
       }),
     );
-    expect(md).toContain("### The Odin Project — 2022");
+    expect(md).toContain("### The Odin Project\n\n*2022*");
     // No stray empty bullet list below the head.
-    expect(md).not.toMatch(/The Odin Project — 2022\n\n-/);
+    expect(md).not.toMatch(/\*2022\*\n\n-/);
   });
 
   test("preserves **bold** markers verbatim (inline bold is already Markdown)", () => {
