@@ -22,8 +22,9 @@
           "dateRange": "2021 - Present",
           "summary": "Part-time, wide-ranging role at a family-run B2B software company (users include 3M, EPA, Eli Lilly); grew from sales and support into design, documentation, and lately engineering work.",
           "bullets": [
-            "**Migrated our 25-year-old Microsoft Access customer database (40,000+ records) to Next.js + Supabase** over six weeks; phased the cutover so the legacy shape stayed editable while a relational model grew underneath. Vendors had quoted $25–60k for a rebuild.",
-            "**Replatformed customer support docs from WordPress to Mintlify** with a Firecrawl + Bun + Python pipeline migrating 219 articles into MDX; reads cleanly to AI agents.",
+            "**Migrated our Microsoft Access customer database (40,000+ mixed-convention records over 3 decades) to Next.js + Supabase**; phased the cutover to address user-facing and operational license-data tangles in stages, keeping legacy data accessible while a properly relational model grows in parallel. Vendors had quoted $25–60k for a rebuild.",
+            "**Replatformed customer support docs from WordPress to Mintlify** via a custom Firecrawl + Bun + Python migration pipeline; built to read cleanly to AI agents and serve as a content base for AEO landing pages and integration docs.",
+            "**Led information architecture + visual refinement on a company website redesign that consolidated 500+ pages into a focused core,** partnering with the VP of Sales on content strategy and an outside agency on the build.",
             "**Proposed a redesign of our flagship workflow builder,** unifying 40+ configuration options for serial-device communication into a Windows-pattern component system with progressive disclosure.",
             "**Reduced recurring setup questions ~30%** with a walkthrough video series that replaced 90s-era documentation."
           ]
@@ -33,16 +34,8 @@
           "organization": "Foundation Studio",
           "dateRange": "2023 - 2024",
           "bullets": [
-            "**Designed pitch decks for 3 Techstars startups,** sharpening positioning and competitive differentiation.",
+            "**Designed pitch decks for 3 pre-seed startups (Techstars),** sharpening positioning and competitive differentiation.",
             "**Built a React/Next.js config generator for an LLM interview chatbot,** cutting setup errors for screening flows."
-          ]
-        },
-        {
-          "title": "Fellowship at Venture for America (now Ember Fellowship)",
-          "dateRange": "2023 - 2024",
-          "bullets": [
-            "**Selected for competitive national entrepreneurship fellowship (10% acceptance):** workshops with McKinsey, IDEO, and Frog Design on product strategy and design thinking.",
-            "**Led 5-person team to Judge Pick and Crowd Favorite in 3-day design sprint:** designed and pitched a city exploration app to a VC/executive panel."
           ]
         }
       ]
@@ -76,14 +69,21 @@
       "kind": "skills",
       "label": "Skills",
       "bullets": [
-        "**Engineering:** Java/TypeScript, Next.js, Tailwind, Astro, Bun, Supabase, (Framer) Motion, Cloudflare (Workers, R2, Zero Trust), Vercel, Docker, AI agent architecture (skills, memory, sandboxes, MCP server development), Claude Code, Cursor",
-        "**UX, Design, Content:** Figma, Paper, Adobe Photoshop, Final Cut, Afinity, Interface design, Design systems, Visual design, Branding, Icons, Typography, CSS animation, Motion graphics, Accessibility (ARIA, keyboard handling)"
+        "**Engineering:** Javascript/TypeScript, Next.js, Tailwind, Astro, Bun, Supabase, (Framer) Motion, Cloudflare (Workers, R2, Zero Trust), Vercel, Docker, AI agent architecture (skills, memory, sandboxes, MCP servers), Claude Code, Cursor",
+        "**UX, Design, Content:** Figma, Paper, Adobe Photoshop, Final Cut, Affinity, Interface design, Design systems, Visual design, Branding, Icons, Typography, CSS animation, Motion graphics, Accessibility (ARIA, keyboard handling)"
       ]
     },
     {
       "kind": "education",
       "label": "Education",
       "entries": [
+        {
+          "title": "Venture for America Fellowship (now Ember Fellowship)",
+          "dateRange": "2023 - 2024",
+          "bullets": [
+            "**Selected for national entrepreneurship fellowship (10% acceptance);** workshops with McKinsey, IDEO, Frog Design. Led 5-person team to Judge Pick + Crowd Favorite in 3-day  sprint, designing and pitching a city exploration app."
+          ]
+        },
         {
           "title": "Web development foundations (The Odin Project) + Animations on the Web (Emil Kowalski)",
           "dateRange": "2022 - 2024"
