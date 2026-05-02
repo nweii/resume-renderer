@@ -69,7 +69,7 @@
       "kind": "skills",
       "label": "Skills",
       "bullets": [
-        "**Engineering:** Javascript/TypeScript, Next.js, Tailwind, Astro, Bun, Supabase, (Framer) Motion, Cloudflare (Workers, R2, Zero Trust), Vercel, Docker, AI agent architecture (skills, memory, sandboxes, MCP servers), Claude Code, Cursor",
+        "**Engineering:** Javascript/TypeScript, Next.js, Tailwind, Astro, Bun, Supabase, Framer Motion, Cloudflare (Workers, R2, Zero Trust), Vercel, Docker, AI agent architecture (skills, context engineering, memory, MCP servers), Claude Code, Cursor",
         "**UX, Design, Content:** Figma, Paper, Adobe Photoshop, Final Cut, Affinity, Interface design, Design systems, Visual design, Branding, Icons, Typography, CSS animation, Motion graphics, Accessibility (ARIA, keyboard handling)"
       ]
     },
