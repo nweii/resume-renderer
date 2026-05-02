@@ -76,8 +76,8 @@
       "kind": "skills",
       "label": "Skills",
       "bullets": [
-        "**Engineering:** JavaScript/TypeScript, Next.js, Tailwind CSS, Astro, Bun, Supabase, Framer Motion, Cloudflare (Workers, R2, Zero Trust), MCP server development, agent skills, Claude Code, Cursor, Vercel",
-        "**Design & UX:** Interface design, Design systems, Information architecture, Visual design, Typography, CSS animation, Motion graphics, Accessibility (ARIA, keyboard handling), Figma"
+        "**Engineering:** Java/TypeScript, Next.js, Tailwind, Astro, Bun, Supabase, (Framer) Motion, Cloudflare (Workers, R2, Zero Trust), Vercel, Docker, AI agent architecture (skills, memory, sandboxes, MCP server development), Claude Code, Cursor",
+        "**UX, Design, Content:** Figma, Paper, Adobe Photoshop, Final Cut, Afinity, Interface design, Design systems, Visual design, Branding, Icons, Typography, CSS animation, Motion graphics, Accessibility (ARIA, keyboard handling)"
       ]
     },
     {
