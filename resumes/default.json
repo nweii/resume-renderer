@@ -22,8 +22,8 @@
           "dateRange": "2021 - Present",
           "summary": "Part-time, wide-ranging role at a family-run B2B software company (users include 3M, EPA, Eli Lilly); grew from sales and support into design, documentation, and lately engineering work.",
           "bullets": [
-            "**Migrated our Microsoft Access customer database (40,000+ mixed-convention records over 3 decades) to Next.js + Supabase**; phased the cutover to address user-facing and operational license-data tangles in stages, keeping legacy data accessible while a properly relational model grows in parallel. Vendors had quoted $25–60k for a rebuild.",
-            "**Replatformed customer support docs from WordPress to Mintlify** via a custom Firecrawl + Bun + Python migration pipeline; built to read cleanly to AI agents and serve as a content base for AEO landing pages and integration docs.",
+            "**Migrated local Microsoft Access customer database (3 decades of 40,000+ mixed-convention records) to hosted Next.js + Supabase system; vendors had quoted $25–60k for a rebuild.** Phased cutover to address user-facing and operational license-data bottlenecks in stages, keeping legacy data accessible while a properly relational model grows over it.",
+            "**Replatformed customer support docs from WordPress to Mintlify** via a custom Firecrawl + Python migration/cleanup pipeline, built to read cleanly to AI agents and serve as a content base for AEO landing pages & integration docs.",
             "**Led information architecture + visual refinement on a company website redesign that consolidated 500+ pages into a focused core,** partnering with the VP of Sales on content strategy and an outside agency on the build.",
             "**Proposed a redesign of our flagship workflow builder,** unifying 40+ configuration options for serial-device communication into a Windows-pattern component system with progressive disclosure.",
             "**Reduced recurring setup questions ~30%** with a walkthrough video series that replaced 90s-era documentation."
