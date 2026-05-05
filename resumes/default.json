@@ -49,7 +49,7 @@
           "dateRange": "2024 - Ongoing",
           "bullets": [
             "**Designed and built a personal portfolio site** with filtered views by medium and category, shareable via URL state.",
-            "**Built motion details across the site:** scroll-driven card stacking from iOS notification physics, shader-driven hero, layout-animated selection indicators.",
+            "**Built motion details across the site:** scroll-driven card stacking from iOS notification physics, shader-driven hero, layout-animated selection indicators, motion timing and layering specced frame-by-frame from annotated reference videos.",
             "**Consolidated content + media to MDX in repo + Cloudflare R2** (was Sanity CMS + Cloudinary): simpler stack, content edits ship with code, agents read and edit directly."
           ]
         },
@@ -70,7 +70,7 @@
       "label": "Skills",
       "bullets": [
         "**Engineering:** Javascript/TypeScript, Next.js, Tailwind, Astro, Bun, Supabase, Framer Motion, Cloudflare (Workers, R2, Zero Trust), Vercel, Docker, AI agent architecture (skills, context engineering, memory, MCP servers), Claude Code, Cursor",
-        "**UX, Design, Content:** Figma, Paper, Adobe Photoshop, Final Cut, Affinity, Interface design, Design systems, Visual design, Branding, Icons, Typography, CSS animation, Motion graphics, Accessibility (ARIA, keyboard handling)"
+        "**UX, Design, Content:** Figma, Paper, Adobe Photoshop, Final Cut, Affinity, UI, Design systems, Visual design, Branding, Icons, Typography, Information architecture, Prototyping, CSS animation, Accessibility (ARIA, keyboard handling)"
       ]
     },
     {
@@ -93,7 +93,7 @@
           "dateRange": "2016 - 2020",
           "bullets": [
             "**3.71 GPA;** Honors, Dean's List; Frank Capra Prize for excellence in cinematic filmmaking, humor, and pathos",
-            "**Led team to first place in Bethesda-founder-led game-dev intensive:** shipped iOS demo, pitched to AFI / Warner Bros. Games / Demiurge industry jury."
+            "**Led team to first place in Bethesda-founder-led game-dev intensive:** shipped iOS demo, designed level structure and UI, pitched to AFI / Warner Bros. Games / Demiurge industry jury."
           ]
         }
       ]
