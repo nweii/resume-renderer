@@ -104,3 +104,15 @@ Open the page in Chrome → `⌘P` → **Margins: None**, **Scale: 100**, **Back
 The public git history is part of the portfolio — treat it as a curated change log, not a save stream. Group meaningful edits into single commits with descriptive messages. Squash local WIP before pushing. Prefer `Reframe TALtech bullet around UX pain points` over `edit`, `fix`, `more`, `word change`. Twenty thoughtful commits over six months tell a story; two hundred noisy commits feel like jitter.
 
 Never push to `main` without explicit user confirmation. Content edits to `default.json` are public when pushed — double-check phrasing before committing, and ask before pushing if the change was conversational rather than reviewed.
+
+## Install policy
+
+`bunfig.toml` gates installs. Don't remove it.
+
+- New package versions younger than 3 days aren't eligible — defends against malicious-publish supply-chain attacks (the May 2026 npm incident and its family).
+- `frozenLockfile = true` — commit `bun.lock` and never run `--no-frozen-lockfile` unless you have a reason.
+- `exact = true` — `bun add <pkg>` saves the version without a caret.
+
+**CVE response** — when a patch lands inside the 3-day window and you need it now, add the package to `minimumReleaseAgeExclude` in `bunfig.toml`, run `bun install`, then revert the exclude in the same diff. The git history of the override is the audit trail.
+
+`package.json` already gates lifecycle scripts for `sharp` and `unrs-resolver` via `ignoreScripts` + `trustedDependencies`. Leave that alone.
