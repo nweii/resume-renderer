@@ -236,3 +236,22 @@ Followup items:
 - The variant-registry work from 2026-04-20 is still uncommitted. This session's doc and endpoint changes sit on top of it. Next commit should probably bundle the registry, the endpoints, and the doc refresh under a single "path-based variants + data endpoints" message — they're one coherent story.
 - Phone-to-resume workflow (capture drafts on phone, review and commit on Mac) is still notional. Deferred until the shape is validated through real use.
 - `/resume.pdf` and `/resume/og.png` endpoints would slot in naturally next to the existing representations if a downstream consumer ever wants them. Deferred until there's one.
+
+---
+
+## 2026-05-21 — Explicit charset + Content-Disposition on data endpoints
+
+**Agent**: Claude Code / Opus 4.7
+**Scope**: data endpoints, deploy
+
+Nathan spotted "$25â€"60k" in a TALtech bullet of `/resume.md` — classic `e2 80 93` (UTF-8 en-dash) mojibaked through Windows-1252. The bytes on disk in `out/resume.md` are correct UTF-8; the issue was that Cloudflare Workers static assets serves `.md` with `Content-Type: text/markdown` (no `charset=utf-8`), and the route handler's response headers don't survive Next's static export. Some clients then fall back to Windows-1252 for non-ASCII bytes.
+
+Fix: added [`public/_headers`](../public/_headers) (copied to `out/_headers` at build, parsed by Workers static assets) pinning `Content-Type: …; charset=utf-8` on the four agent-legible endpoints (`/resume.{md,json}` and `/:variant/resume.{md,json}`). Verified with `wrangler dev`: "Parsed 4 valid header rules" + curl shows the correct headers on all four. Bytes round-trip cleanly (`342 200 223` = U+2013) and now decode as the en-dash regardless of client.
+
+Also tacked `Content-Disposition: inline; filename="Nathan Cheng - Resume.{md,json}"` onto the same routes. Two reasons: "Save as" gets a recognizable name instead of `resume.md`, and some browsers use the filename as the tab title when the content is non-HTML — addressing Nathan's nice-to-have on the agent endpoints showing as bare URLs in the tab bar. (Tab-title behavior is browser-dependent; the Save-as benefit is universal.)
+
+`lib/resume-responses.ts` was updated to set the same Content-Disposition in dev mode (charset was already explicit there), so dev parity holds — production reads the `_headers` rules instead because Next drops Response headers on static export.
+
+Fork knob: filenames in `public/_headers` are hardcoded ("Nathan Cheng"). Documented in the README's customization section to mirror `siteConfig.name` in `lib/site.ts`. Could be generated from siteConfig at build time later if the duplication starts to bite, but for a one-author repo the manual mirror is fine.
+
+Endpoint discoverability question deferred: this only fixes serialization integrity and Save-as ergonomics. If we wanted real tab titles for the data endpoints, the only reliable path is serving an HTML wrapper — which contradicts the "agents fetch raw bytes" design. Stuck with Content-Disposition as a partial improvement.
