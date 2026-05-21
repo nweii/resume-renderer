@@ -1,0 +1,28 @@
+# Cloudflare Workers static assets honors this file. The default content-type
+# for `.md` doesn't carry `charset=utf-8`, so en-dashes / curly quotes / other
+# non-ASCII bytes can decode as Windows-1252 mojibake (e2 80 93 → "â€"") in
+# clients that don't assume UTF-8. Set the charset explicitly here.
+#
+# `Content-Disposition: inline` keeps the file viewed in-browser, while the
+# `filename` argument gives "Save as" a recognizable name (and is picked up
+# by some browsers as the tab title for non-HTML content).
+#
+# Fork knob: change the filenames below to match `siteConfig.name` in
+# `lib/site.ts` if you fork this repo.
+# Docs: https://developers.cloudflare.com/workers/static-assets/headers/
+
+/resume.md
+  Content-Type: text/markdown; charset=utf-8
+  Content-Disposition: inline; filename="Nathan Cheng - Resume.md"
+
+/:variant/resume.md
+  Content-Type: text/markdown; charset=utf-8
+  Content-Disposition: inline; filename="Nathan Cheng - Resume.md"
+
+/resume.json
+  Content-Type: application/json; charset=utf-8
+  Content-Disposition: inline; filename="Nathan Cheng - Resume.json"
+
+/:variant/resume.json
+  Content-Type: application/json; charset=utf-8
+  Content-Disposition: inline; filename="Nathan Cheng - Resume.json"
