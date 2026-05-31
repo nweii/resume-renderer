@@ -67,7 +67,7 @@ export const shell = {
 } as const;
 
 /** Vertical rhythm between entries inside a section. Kept tighter in print/md. */
-const ENTRY_STACK = "space-y-[8pt] print:space-y-[7pt] print:break-inside-avoid md:space-y-[7pt]";
+const ENTRY_STACK = "space-y-[8pt] print:space-y-[7pt] md:space-y-[7pt]";
 
 /**
  * Bullet text may contain `**bold**` runs authored in the resume JSON. Split on
