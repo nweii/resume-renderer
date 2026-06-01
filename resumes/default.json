@@ -1,7 +1,7 @@
 {
   "header": {
     "name": "Nathan Cheng",
-    "subtitle": ["Film-trained designer-engineer who ships from front-end to infrastructure."],
+    "subtitle": ["Film-trained designer-engineer with cross-disciplinary range who ships from front-end to infrastructure."],
     "monomark": "/monomark.svg",
     "contact": {
       "email": "nthn.wei@gmail.com",
@@ -20,11 +20,11 @@
           "title": "Design & Systems",
           "organization": "TALtech",
           "dateRange": "2021 - Present",
-          "summary": "Part-time, wide-ranging role at a family-run B2B software company (users include 3M, EPA, Eli Lilly); grew from sales and support into design, documentation, and engineering to modernize long-static products and internal systems.",
+          "summary": "Wide-ranging part-time role at a family-run B2B software company (users: 3M, EPA, Lilly); expanded sales and support work with design, video, and engineering.",
           "bullets": [
-            "**Replaced a Microsoft Access customer database (40,000+ records, thirty years of mixed conventions) with a live, relational Next.js + Supabase system; vendors had quoted $25–60k to rebuild it.** Modeled the licensing domain from years in support and sales, with a reconciliation layer fed by the still-running legacy systems.",
+            "**Architected a relational Next.js + Supabase system to replace a legacy Access customer database of 40k+ records; outside vendors had quoted $25–60k for the project.** Designed data model unifying customer & operational logic over 30 years of mixed conventions, speeding lookups & unblocking automation, with new APIs keeping legacy systems live.",
             "**Replatformed customer support docs from WordPress to Mintlify** with a custom Firecrawl + Python pipeline, making the content easy to edit with AI and discoverable for AEO.",
-            "**Streamlined a 700+ page website to ~200 core pages,** leading information architecture and content strategy.",
+            "**Streamlined marketing website from 700+ to ~200 core pages,** leading information architecture and visual refinement.",
             "**Designed a component-system concept for the flagship workflow builder,** unifying 40+ serial-device configuration options into a single progressive-disclosure flow modeled on native Windows patterns.",
             "**Reduced recurring setup questions ~30%** with a walkthrough video series that replaced 90s-era documentation."
           ]
