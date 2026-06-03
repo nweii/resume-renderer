@@ -57,7 +57,7 @@
           "title": "AI context infrastructure",
           "dateRange": "2022 - Ongoing",
           "bullets": [
-            "**Released public agent tooling for knowledge work:** 30+ Vercel-registry skills (~1K weekly installs) plus `web-clipper-headless` for server-side Obsidian clipping by agents, webhooks, and cron.",
+            "**Released public agent tooling for knowledge work:** 30+ Vercel-registry skills (1K+ installs) plus `web-clipper-headless` for server-side Obsidian clipping by agents, webhooks, and cron.",
             "**Structured a 5,400+ note Obsidian vault for agent access:** typed metadata, live Bases dashboards, hybrid semantic search, and recent-context injection at session start.",
             "**Published `obsidian-remote-mcp`,** an OAuth 2.1 server for remote AI access to a headless Obsidian vault, with concurrency-safe section edits across multiple agents.",
             "**Built and operate a Synology-based personal server stack** running the vault, a persistent Claude Code agent, and self-built MCP servers accessed via Tailscale and Cloudflare Zero Trust SSO."
