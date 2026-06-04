@@ -22,8 +22,15 @@ describe("resume variant registry", () => {
     expect(variant?.pathname).toBe("/default");
   });
 
-  test("lists only non-root static slugs for export", () => {
-    expect(listStaticResumeVariantSlugs()).toEqual([{ variant: "default" }]);
+  test("lists static slugs for export, including the canonical default", () => {
+    // Local tailored variants (gitignored) extend the registry, so assert on
+    // shape and the always-present default rather than the exact list.
+    const slugs = listStaticResumeVariantSlugs();
+
+    expect(slugs).toContainEqual({ variant: "default" });
+    for (const entry of slugs) {
+      expect(Object.keys(entry)).toEqual(["variant"]);
+    }
   });
 
   test("returns nothing for an unknown slug", () => {
