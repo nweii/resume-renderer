@@ -30,6 +30,8 @@ Set up this resume site for me: https://github.com/nweii/resume-renderer
 Read AGENTS.md, CONTEXT.md, and lib/schema.ts before you change anything.
 
 1. Ask me where to host it. If I already deploy things somewhere, use that.
+   If I don't know, pick Cloudflare for me: this repo ships its config, so it
+   is the fewest steps. Tell me I can move to another host later.
 2. Replace resumes/default.json with my content. Ask me for a resume, or
    interview me. This step is done when every section I want is filled and
    every claim in the file traces to something I told you. Invent nothing.
@@ -69,7 +71,7 @@ For your own domain, uncomment the `routes` block in `wrangler.jsonc` and deploy
 
 If that deploy fails, the zone belongs to another account, or something already serves that hostname. Fix it in the dashboard: open Workers, select your worker, and go to **Domains & Routes**.
 
-On another host, delete `wrangler.jsonc` and point that host at `out/`.
+On another host, delete `wrangler.jsonc` and point that host at `out/`. Netlify is the closest swap, because it reads `public/_headers` as it is. Vercel and GitHub Pages ignore that file, so reproduce those two headers in that host's own config. Skip that step and your Markdown endpoint loses its UTF-8 charset.
 
 [`public/_headers`](public/_headers) sets the character set and the file name for the data endpoints. Cloudflare and Netlify read this file. On another host, set the same headers the way that host does it. Without them, an en dash in your Markdown endpoint can reach some readers as mojibake.
 
