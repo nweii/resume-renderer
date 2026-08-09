@@ -27,17 +27,23 @@ You do not have to do any of the setup yourself. Paste this to an agent that can
 ```text
 Set up this resume site for me: https://github.com/nweii/resume-renderer
 
-1. Read AGENTS.md and CONTEXT.md. Read lib/schema.ts before you touch content.
-2. Ask me where to host it. If I already deploy things somewhere, use that.
-3. Replace resumes/default.json with my content. Ask me for a resume, or
-   interview me until you have enough. Follow the schema exactly.
-4. Put my name in lib/site.ts. Match the file names in public/_headers.
+Read AGENTS.md, CONTEXT.md, and lib/schema.ts before you change anything.
+
+1. Ask me where to host it. If I already deploy things somewhere, use that.
+2. Replace resumes/default.json with my content. Ask me for a resume, or
+   interview me. This step is done when every section I want is filled and
+   every claim in the file traces to something I told you. Invent nothing.
+   Ask me for a number rather than estimating one.
+3. Run `bun dev` and open the page. The layout targets one letter page, and
+   a red rule appears when the content runs past it. Cut with me until no
+   red rule appears. Tell me what you cut.
+4. Put my name in lib/site.ts and in the file names in public/_headers.
 5. public/_headers works on Cloudflare and Netlify only. On another host, set
    the same two headers the way that host does it.
 6. Build and deploy. My browser opens once to approve the host. Relay any
-   prompt the deploy asks me. Then give me the URL.
-7. Add this template repo as a remote named upstream. You can then port its
-   later changes into my copy.
+   prompt it asks. Then give me the URL.
+7. Add this repo as a remote named upstream, so you can port its later
+   changes into my copy.
 
 Ask me first before anything that spends money or needs my login.
 ```
