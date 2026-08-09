@@ -34,7 +34,8 @@ Set up this resume site for me: https://github.com/nweii/resume-renderer
 4. Put my name in lib/site.ts. Match the file names in public/_headers.
 5. public/_headers works on Cloudflare and Netlify only. On another host, set
    the same two headers the way that host does it.
-6. Build, deploy, and give me the URL.
+6. Build and deploy. My browser opens once to approve the host. Relay any
+   prompt the deploy asks me. Then give me the URL.
 7. Add this template repo as a remote named upstream. You can then port its
    later changes into my copy.
 
@@ -54,7 +55,13 @@ bunx wrangler login   # one time on each machine
 bun run deploy        # builds, then deploys
 ```
 
-You land on a `*.workers.dev` address, with no DNS and no dashboard. For your own domain, uncomment the `routes` block in `wrangler.jsonc` and deploy again. Cloudflare provisions DNS and the certificate at deploy time. This works when that domain's zone sits on the same Cloudflare account.
+`wrangler login` opens your browser once, so you can approve the connection. On your first ever Workers deploy, wrangler also asks you to register a `*.workers.dev` subdomain. Answer it once and you never see it again.
+
+You land on a `*.workers.dev` address, with no DNS and no dashboard.
+
+For your own domain, uncomment the `routes` block in `wrangler.jsonc` and deploy again. Cloudflare provisions DNS and the certificate at deploy time. This works when that domain's zone sits on the same Cloudflare account.
+
+If that deploy fails, the zone belongs to another account, or something already serves that hostname. Fix it in the dashboard: open Workers, select your worker, and go to **Domains & Routes**.
 
 On another host, delete `wrangler.jsonc` and point that host at `out/`.
 
