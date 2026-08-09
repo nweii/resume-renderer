@@ -1,0 +1,23 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+
+  // Cloudflare Workers config for the static export in `out/`.
+  // Run `bun run build` first, so `out/` exists. Then run `bun run deploy`.
+  //
+  // Change `name`. It becomes your address: <name>.<your-subdomain>.workers.dev.
+  "name": "my-resume",
+  "compatibility_date": "2026-08-09",
+
+  "assets": {
+    "directory": "./out",
+    "not_found_handling": "404-page"
+  }
+
+  // A custom domain is an upgrade, not a setup step. When you want one, and its
+  // zone is on this Cloudflare account, add the block below and deploy. DNS and
+  // the certificate are provisioned at deploy time.
+  //
+  // "routes": [
+  //   { "pattern": "resume.example.com", "custom_domain": true }
+  // ]
+}

@@ -8,6 +8,9 @@ Versions are 0.x semver read as severity, not compatibility: a minor bump means 
 
 ## Unreleased
 
+- **Adopter surface** · Not breaking · Ships `wrangler.jsonc`, restores the `deploy` script, and adds a setup prompt to the README that an adopter hands to their own agent. Files: `wrangler.jsonc`, `package.json`, `README.md`, `AGENTS.md`.
+- **Port note** — nothing to port unless you want it. If your copy already has host config, keep it and delete `wrangler.jsonc`. If you deploy somewhere other than Cloudflare, translate the two headers in `public/_headers` to that host's mechanism, or your Markdown endpoint loses its UTF-8 charset.
+
 ## 0.1.0 — 2026-08-09
 
 Initial release.

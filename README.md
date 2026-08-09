@@ -20,24 +20,45 @@ Edit `resumes/default.json`. The page reloads as you save.
 
 The content in the repo is a fictional person, Mira Sedgewick. It uses every section kind. Replace it with your own.
 
-## Deploy it
+## Hand it to your agent
 
-The site is a static export. `next.config.ts` sets `output: "export"`, so `bun run build` writes plain HTML, CSS, and JavaScript to `out/`. There is no server. Any static host works.
+You do not have to do any of the setup yourself. Paste this to an agent that can run commands, such as Claude Code:
 
-No host configuration ships in this repo, because the host is your choice. For Cloudflare Workers, add a `wrangler.toml` that points [static assets](https://developers.cloudflare.com/workers/static-assets/) at `out/`:
+```text
+Set up this resume site for me: https://github.com/nweii/resume-renderer
 
-```toml
-name = "my-resume"
-compatibility_date = "2026-04-19"
+1. Read AGENTS.md and CONTEXT.md. Read lib/schema.ts before you touch content.
+2. Ask me where to host it. If I already deploy things somewhere, use that.
+3. Replace resumes/default.json with my content. Ask me for a resume, or
+   interview me until you have enough. Follow the schema exactly.
+4. Put my name in lib/site.ts. Match the file names in public/_headers.
+5. public/_headers works on Cloudflare and Netlify only. On another host, set
+   the same two headers the way that host does it.
+6. Build, deploy, and give me the URL.
+7. Add this template repo as a remote named upstream. You can then port its
+   later changes into my copy.
 
-[assets]
-directory = "./out"
-not_found_handling = "404-page"
+Ask me first before anything that spends money or needs my login.
 ```
 
-Then run `bunx wrangler login` one time on each machine. To publish, run `bun run build && bunx wrangler deploy`. You get a `*.workers.dev` address. To use your own domain, open Workers, select your worker, and go to **Domains & Routes**.
+The agent needs the repo on disk. Press **Use this template**, clone your copy, then paste the prompt.
 
-[`public/_headers`](public/_headers) sets the character set and the file name for the data endpoints. Cloudflare and Netlify read this file. On another host, set the same headers the way that host does it.
+## Deploy it yourself
+
+The site is a static export. `next.config.ts` sets `output: "export"`, so `bun run build` writes plain HTML, CSS, and JavaScript to `out/`. There is no server, so any static host works.
+
+[`wrangler.jsonc`](wrangler.jsonc) ships for Cloudflare Workers, and it points [static assets](https://developers.cloudflare.com/workers/static-assets/) at `out/`. Change `name` in that file first. It becomes your address.
+
+```bash
+bunx wrangler login   # one time on each machine
+bun run deploy        # builds, then deploys
+```
+
+You land on a `*.workers.dev` address, with no DNS and no dashboard. For your own domain, uncomment the `routes` block in `wrangler.jsonc` and deploy again. Cloudflare provisions DNS and the certificate at deploy time. This works when that domain's zone sits on the same Cloudflare account.
+
+On another host, delete `wrangler.jsonc` and point that host at `out/`.
+
+[`public/_headers`](public/_headers) sets the character set and the file name for the data endpoints. Cloudflare and Netlify read this file. On another host, set the same headers the way that host does it. Without them, an en dash in your Markdown endpoint can reach some readers as mojibake.
 
 ## Make a PDF
 

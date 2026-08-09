@@ -37,7 +37,7 @@ Apply the test before you place new code. State out loud what the code knows. If
 - `templates/` — one folder per template, registered in `templates/index.ts`. A variant selects its template. `templates/baseline/` is the one that ships.
 - `app/globals.css` — the Tailwind layer and the `--t-baseline-*` properties. `data-resume-theme` on the page root selects the values.
 
-No deploy command ships here. The host is the adopter's choice, and `README.md` covers the static-export options.
+`wrangler.jsonc` ships as a working Cloudflare Workers config for the static export, and `bun run deploy` builds and deploys it. Cloudflare is the path with the fewest steps, not a requirement. On another host, delete that file and serve `out/`. `README.md` carries the setup prompt an adopter hands to their own agent.
 
 ## Things that will bite you
 

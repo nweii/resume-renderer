@@ -7,7 +7,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "deploy": "bun run build && wrangler deploy"
   },
   "dependencies": {
     "agentation": "^3.0.2",
