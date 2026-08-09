@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
+  <!-- Placeholder mark: a sheet of paper with three lines of text. Replace
+       with your own glyph; `app/icon.tsx` swaps `currentColor` for the
+       foreground color in `lib/site.ts`. -->
+  <path d="M5 2.5h9.5L19 7v14.5H5z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" />
+  <path d="M14 2.5V7h5" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" />
+  <path d="M8.5 12h7M8.5 15.5h7M8.5 19h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+</svg>

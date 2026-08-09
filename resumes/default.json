@@ -1,0 +1,87 @@
+{
+  "header": {
+    "name": "Mira Sedgewick",
+    "subtitle": ["Operations designer · Minneapolis, Minnesota"],
+    "contact": {
+      "email": "mira.sedgewick@example.com",
+      "links": [
+        { "url": "tel:+12125550147", "label": "(212) 555-0147" },
+        { "url": "https://example.com/mira-sedgewick", "label": "example.com/mira-sedgewick" }
+      ]
+    }
+  },
+  "sections": [
+    {
+      "kind": "experiences",
+      "label": "Experience",
+      "entries": [
+        {
+          "title": "Senior operations designer",
+          "organization": "Northline Cooperative",
+          "dateRange": "2021–Present",
+          "summary": "Designs internal tools and service workflows for a regional building-supply network.",
+          "bullets": [
+            "**Redesigned the order exception workflow** used by 60 branch coordinators, reducing average resolution time from three days to one.",
+            "**Built a shared service blueprint** across sales, dispatch, and support, clarifying ownership for 14 recurring customer issues.",
+            "**Introduced monthly usability sessions** that give operations teams a direct role in prioritizing product changes."
+          ]
+        },
+        {
+          "title": "Product designer",
+          "organization": "Juniper Ledger",
+          "dateRange": "2018–2021",
+          "bullets": [
+            "**Led design for a small-business invoicing suite** from discovery through launch, working with two engineers and a product manager.",
+            "**Created the team's first component library,** reducing repeated interface work and improving keyboard navigation across core flows.",
+            "**Simplified account setup** from nine steps to five after interviews with new customers and support staff."
+          ]
+        },
+        {
+          "title": "Service design associate",
+          "organization": "Harborlight Transit Lab",
+          "dateRange": "2015–2018",
+          "bullets": [
+            "**Mapped rider support journeys** across web, phone, and station touchpoints for three municipal transit partners.",
+            "**Prototyped clearer disruption alerts** that tested successfully with riders using screen readers and low-bandwidth devices."
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "projects",
+      "label": "Selected project",
+      "entries": [
+        {
+          "title": "Shift Notes",
+          "dateRange": "2023–Present",
+          "bullets": [
+            "**Designed and built a lightweight handoff tool** for volunteer-run community kitchens using TypeScript and SQLite.",
+            "**Piloted the tool with four teams,** then added printable summaries for kitchens without reliable device access."
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "skills",
+      "label": "Skills",
+      "bullets": [
+        "**Design:** Service design, interaction design, research, facilitation, prototyping, information architecture, accessibility",
+        "**Tools:** Figma, FigJam, TypeScript, React, HTML, CSS, SQL, Git"
+      ]
+    },
+    {
+      "kind": "education",
+      "label": "Education",
+      "entries": [
+        {
+          "title": "B.S. in Industrial Design, Lakebridge College",
+          "dateRange": "2011–2015"
+        },
+        {
+          "title": "Certificate in Accessible Digital Services, Great Plains Extension",
+          "dateRange": "2020"
+        }
+      ]
+    }
+  ]
+}

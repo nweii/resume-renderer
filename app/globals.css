@@ -1,0 +1,79 @@
+@import "tailwindcss";
+
+/* System dark mode for `dark:` utilities (Tailwind v4). */
+@custom-variant dark (@media (prefers-color-scheme: dark));
+
+/*
+  Themes are named sets of CSS custom properties in a `--t-<template>-*`
+  namespace, selected per route by the `data-resume-theme` attribute that
+  `app/ResumePage.tsx` puts on the page root. Templates read the variables and
+  never hardcode colors, so a theme restyles a template without touching it.
+
+  Add a template: add a `[data-resume-theme="<id>"]` block here with that
+  template's variables, and a matching block inside `@media print` if the
+  printed page needs different values (usually it does — screen themes can go
+  dark, paper cannot).
+*/
+
+:root {
+  /* Preview-only zoom, owned by `app/ResumeScaler.tsx`. Print resets it to 1
+     so the printed page is always at true physical size. */
+  --resume-scale: 1;
+}
+
+[data-resume-theme="baseline"] {
+  color-scheme: light;
+
+  --t-baseline-backdrop: var(--color-zinc-100);
+  --t-baseline-paper: oklch(1 0 0);
+  --t-baseline-ink: oklch(0.16 0 0);
+  --t-baseline-heading: oklch(0.08 0 0);
+  --t-baseline-font: Georgia, "Times New Roman", Times, serif;
+}
+
+html,
+body {
+  background: var(--color-stone-50);
+  color: var(--color-neutral-900);
+}
+
+@media (prefers-color-scheme: dark) {
+  html,
+  body {
+    background: var(--color-stone-950);
+    color: var(--color-neutral-100);
+  }
+}
+
+@page {
+  size: letter;
+  margin: 0;
+}
+
+@media print {
+  /* Agentation toolbar uses React portals that escape any parent
+     `print:hidden` wrapper. Target its data attributes directly so the
+     toolbar, palette, and any sibling portaled UI never appear in print. */
+  [data-agentation-palette],
+  [data-agentation-theme],
+  [class*="agentation"],
+  [class*="Agentation"] {
+    display: none !important;
+  }
+
+  [data-resume-theme="baseline"] {
+    color-scheme: light;
+
+    --t-baseline-backdrop: oklch(1 0 0);
+    --t-baseline-paper: oklch(1 0 0);
+    --t-baseline-ink: oklch(0.16 0 0);
+    --t-baseline-heading: oklch(0.08 0 0);
+    --t-baseline-font: Georgia, "Times New Roman", Times, serif;
+  }
+
+  html,
+  body {
+    background: oklch(1 0 0);
+    color: oklch(0.22 0.02 285);
+  }
+}
