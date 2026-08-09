@@ -75,7 +75,7 @@ Every section and entry can carry optional `source` and `derivedFrom` fields. No
 A bullet supports one inline convention. `**text**` renders as bold. The template that renders bullets owns the parser. See `renderRichText` in [`templates/baseline/index.tsx`](templates/baseline/index.tsx). Italics, links, and code are not supported. You can widen the convention in your own template.
 
 ```json
-"**Built portfolio system** (Next.js + Sanity CMS) presenting multi-medium career collections"
+"**Redesigned the order exception workflow** used by 60 branch coordinators, reducing average resolution time from three days to one."
 ```
 
 Read `resumes/default.json` for a worked example of every section kind.
