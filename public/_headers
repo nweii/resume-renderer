@@ -26,3 +26,11 @@
 /:variant/resume.json
   Content-Type: application/json; charset=utf-8
   Content-Disposition: inline; filename="Resume.json"
+
+/resume.pdf
+  Content-Type: application/pdf
+  Content-Disposition: inline; filename="Resume.pdf"
+
+/:variant/resume.pdf
+  Content-Type: application/pdf
+  Content-Disposition: inline; filename="Resume.pdf"

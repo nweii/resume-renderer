@@ -36,6 +36,9 @@ Apply the test before you place new code. State out loud what the code knows. If
 - `lib/resume-responses.ts` — turns a variant into a JSON or Markdown `Response`. The four route handlers stay one line each.
 - `templates/` — one folder per template, registered in `templates/index.ts`. A variant selects its template. `templates/baseline/` is the one that ships.
 - `app/globals.css` — the Tailwind layer and the `--t-baseline-*` properties. `data-resume-theme` on the page root selects the values.
+- `scripts/` — build tooling outside Next, and opt-in. `print-pdf.ts` serves a directory and prints routes with headless Chrome, knowing nothing about resumes. `render-pdf.ts` names the resume routes and rejects any PDF that comes back a size other than US letter, which catches a broken print stylesheet before it deploys.
+
+`bun run pdf` writes `out/<slug>/resume.pdf`, and nothing calls it by default. Publishing a PDF adds a Chrome dependency and a deploy that can run it, which is a real cost to impose on someone who just wants a resume online, so the default stays a reader pressing `⌘P`. README's "Optional: publish the PDF as a file" is the recipe. Keep it that way: an adopter opts in, and the shipped setup path stays a template button and one deploy command.
 
 `wrangler.jsonc` ships as a working Cloudflare Workers config for the static export, and `bun run deploy` builds and deploys it. Cloudflare is the path with the fewest steps, not a requirement. On another host, delete that file and serve `out/`. `README.md` carries the setup prompt an adopter hands to their own agent.
 
@@ -45,6 +48,7 @@ Apply the test before you place new code. State out loud what the code knows. If
 - The schema error page is the feedback surface. A validation failure renders the raw `issues` array with a path and a message per problem. Read that page instead of adding logging.
 - Print layout is a design target of its own. Tune `@page`, `break-inside`, and type explicitly. A printed page is not a narrow web page.
 - WebKit prints 16/15 (~6.7%) larger than Blink, uniformly across every CSS unit and font size, so no choice of unit avoids it. The fixed print sheet in `templates/baseline/index.tsx` is load-bearing against this: `print:w-[8.5in]` and `print:min-h-[11in]` overflow WebKit's enlarged page, which triggers shrink-to-fit at 0.9375 and cancels the enlargement exactly. Keep both — page-relative sizing (`print:w-full`) removes the overflow, and with it the correction, printing 6.7% large across two pages in Safari. Safari's print preview shows the sheet small and floating, sometimes without the header, while the exported PDF is correct, so judge print changes from the PDF. Verified 2026-08-11, Safari vs Chrome on macOS 27; re-check by printing a page of known lengths (a `4in` bar, a `384px` bar, `24pt` text) from both and comparing `MediaBox` and text span sizes.
+- Chrome writes a PDF and then keeps running instead of exiting, so `scripts/print-pdf.ts` waits for a file ending in `%%EOF` and stops the browser itself. Waiting on process exit hangs forever. Verified on Chrome 151, macOS 27, on a page as small as one heading.
 - Templates hold no data-shaping logic. If a bullet runs long for one variant, edit that variant's file.
 - `**text**` is the only inline convention in a bullet. `renderRichText` in `templates/baseline/index.tsx` owns the parser.
 

@@ -75,6 +75,12 @@ On another host, delete `wrangler.jsonc` and point that host at `out/`. Netlify 
 
 [`public/_headers`](public/_headers) sets the character set and the file name for the data endpoints. Cloudflare and Netlify read this file. On another host, set the same headers the way that host does it. Without them, an en dash in your Markdown endpoint can reach some readers as mojibake.
 
+### Optional: deploy on every push
+
+`bun run deploy` from your machine is the shortest path, and nothing here requires CI. [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) is a worked example for when you want pushes to deploy instead, and it is the practical way to publish a PDF, because its runner ships Chrome.
+
+It runs manually until you add `CLOUDFLARE_API_TOKEN` (scoped to Workers Scripts: Edit) and `CLOUDFLARE_ACCOUNT_ID` as repository secrets and uncomment the `push` trigger. Use it instead of connecting a build in your host's dashboard, not alongside one: two connected builds race to deploy the same site. On another host, swap the final `wrangler deploy` step for that host's deploy command.
+
 ## Make a PDF
 
 1. Open the page in Chrome.
@@ -83,6 +89,22 @@ On another host, delete `wrangler.jsonc` and point that host at `out/`. Netlify 
 4. Save as PDF.
 
 The `@page { size: letter; margin: 0 }` rule in `app/globals.css` sets the page box. If you leave the margins on, Chrome adds its own margins and the layout doubles up.
+
+The footer's PDF link opens this dialog, so a reader can do the same in one click.
+
+### Optional: publish the PDF as a file
+
+Printing leaves the output up to the reader's browser, and browsers disagree: WebKit prints 16/15 larger than Blink. Publishing a PDF you rendered yourself gives everyone the same file, at the cost of the setup below. Nothing here runs until you wire it up.
+
+`bun run pdf` serves `out/`, prints each route with headless Chrome, and writes `out/<slug>/resume.pdf`. It needs Chrome, found at the usual install paths or at `CHROME_PATH`. The files land in the gitignored `out/`, so they are rebuilt on each deploy and never committed.
+
+Three steps to turn it on:
+
+1. Add `bun run pdf` to the `deploy` script, between the build and the deploy.
+2. Point the footer's PDF affordance at `${prefix}/resume.pdf` in [`app/AgentEndpoints.tsx`](app/AgentEndpoints.tsx), replacing the `window.print()` button with a link. The `"use client"` directive at the top exists only for that click handler, so drop it too. The link 404s under `bun dev`, where the file has not been built.
+3. Deploy from a machine that has Chrome, or from CI. [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) does the whole thing on a runner that ships Chrome, as "Optional: deploy on every push" above describes.
+
+[`public/_headers`](public/_headers) already names the PDF, so the file downloads with a sensible name once it exists.
 
 ## The data model
 
@@ -158,19 +180,20 @@ TypeScript reports any switch arm you miss, because it checks the union for comp
 
 ## Data endpoints
 
-Each variant publishes three representations. An agent or a script can read the resume without parsing HTML.
+Each variant publishes three representations, and a fourth if you turn the PDF on. An agent or a script can read the resume without parsing HTML.
 
 | URL                                    | Format   | Notes                                                                 |
 | -------------------------------------- | -------- | --------------------------------------------------------------------- |
 | `/` · `/<slug>`                        | HTML     | The rendered template.                                                |
 | `/resume.json` · `/<slug>/resume.json` | JSON     | Validated data, pretty-printed. Parse it against `lib/schema.ts`.     |
 | `/resume.md` · `/<slug>/resume.md`     | Markdown | Fixed outline: H1 name · H2 section · H3 entry · `-` bullets.          |
+| `/resume.pdf` · `/<slug>/resume.pdf`   | PDF      | US letter. Opt-in — see "Make a PDF".                                 |
 
 The Markdown converter in [`lib/resume-markdown.ts`](lib/resume-markdown.ts) reads the schema, so a new template gets Markdown without new code. A template can export its own `toMarkdown` in [`templates/index.ts`](templates/index.ts) when its outline is different. The `**bold**` convention is already valid Markdown and passes through unchanged.
 
-`next build` writes all three as static files. They serve straight from the CDN, and nothing runs on a server.
+`next build` writes the first three as static files, and `bun run pdf` adds the fourth when you enable it. They serve straight from the CDN, and nothing runs on a server.
 
-The HTML page points at its two siblings in two ways. The head carries `<link rel="alternate">` tags for JSON and Markdown, through Next's `metadata.alternates.types`. A small "JSON · Markdown · PDF" footer sits under the resume, where the PDF link opens the print dialog. The first is the path that crawlers and agents follow. The second tells a human reader that the page is published in more than one form.
+The HTML page points at its siblings in two ways. The head carries `<link rel="alternate">` tags for JSON and Markdown, through Next's `metadata.alternates.types`. A small "JSON · Markdown · PDF" footer sits under the resume, where the PDF entry opens the print dialog until you publish a PDF file. The first is the path that crawlers and agents follow. The second tells a human reader that the page is published in more than one form.
 
 ## Variants
 
