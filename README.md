@@ -77,9 +77,13 @@ On another host, delete `wrangler.jsonc` and point that host at `out/`. Netlify 
 
 ### Optional: deploy on every push
 
-`bun run deploy` from your machine is the shortest path, and nothing here requires CI. [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) is a worked example for when you want pushes to deploy instead, and it is the practical way to publish a PDF, because its runner ships Chrome.
+`bun run deploy` from your machine is the shortest path, and nothing here requires CI. [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) is an example for when you want pushes to deploy instead, and it is the practical way to publish a PDF, because its runner comes with Chrome.
 
-It runs manually until you add `CLOUDFLARE_API_TOKEN` (scoped to Workers Scripts: Edit) and `CLOUDFLARE_ACCOUNT_ID` as repository secrets and uncomment the `push` trigger. Use it instead of connecting a build in your host's dashboard, not alongside one: two connected builds race to deploy the same site. On another host, swap the final `wrangler deploy` step for that host's deploy command.
+It runs manually until you add `CLOUDFLARE_API_TOKEN` (scoped to Workers Scripts: Edit) and `CLOUDFLARE_ACCOUNT_ID` as repository secrets and uncomment the `push` trigger. On another host, swap the final `wrangler deploy` step for that host's deploy command.
+
+**If your host already rebuilds the site when you push, disconnect it from this repo first.** Cloudflare calls this Workers Builds; Netlify and Vercel connect a Git repository. Otherwise both will compete for each deploy. That build cannot print a PDF, because its image has no browser, so it deploys your new page next to a PDF that was never built and the link 404s — while the workflow that did everything right reports success. On Cloudflare, that switch is Workers & Pages → your worker → Settings → Build → disconnect the Git repository.
+
+Keep `name` in `wrangler.jsonc` matching the Worker that serves your domain. Wrangler does not fail on a name with no Worker behind it: it creates that Worker, deploys there, and leaves your domain pointing at the old one, so the live site quietly stops updating.
 
 ## Make a PDF
 
@@ -90,18 +94,18 @@ It runs manually until you add `CLOUDFLARE_API_TOKEN` (scoped to Workers Scripts
 
 The `@page { size: letter; margin: 0 }` rule in `app/globals.css` sets the page box. If you leave the margins on, Chrome adds its own margins and the layout doubles up.
 
-The footer's PDF link opens this dialog, so a reader can do the same in one click.
+The PDF link in the site footer opens this print dialog, so a reader can easily do the same.
 
 ### Optional: publish the PDF as a file
 
-Printing leaves the output up to the reader's browser, and browsers disagree: WebKit prints 16/15 larger than Blink. Publishing a PDF you rendered yourself gives everyone the same file, at the cost of the setup below. Nothing here runs until you wire it up.
+**Why?** Printing leaves the output up to the reader's browser, which can lead to inconsistent output. Publishing a PDF you rendered yourself gives everyone the same file, at the cost of the setup below.
 
-`bun run pdf` serves `out/`, prints each route with headless Chrome, and writes `out/<slug>/resume.pdf`. It needs Chrome, found at the usual install paths or at `CHROME_PATH`. The files land in the gitignored `out/`, so they are rebuilt on each deploy and never committed.
+`bun run pdf` serves `out/`, prints each route using an internal instance of Chrome, and writes `out/<slug>/resume.pdf`. The files land in the gitignored `out/`, so they are rebuilt on each deploy and never committed.
 
-Three steps to turn it on:
+To turn it on:
 
 1. Add `bun run pdf` to the `deploy` script, between the build and the deploy.
-2. Point the footer's PDF affordance at `${prefix}/resume.pdf` in [`app/AgentEndpoints.tsx`](app/AgentEndpoints.tsx), replacing the `window.print()` button with a link. The `"use client"` directive at the top exists only for that click handler, so drop it too. The link 404s under `bun dev`, where the file has not been built.
+2. Point the footer's PDF link at `${prefix}/resume.pdf` in [`app/AgentEndpoints.tsx`](app/AgentEndpoints.tsx), replacing the `window.print()` button. The `"use client"` directive at the top exists only for that click handler, so drop it too. The link will 404 under `bun dev`, where the file has not been built.
 3. Deploy from a machine that has Chrome, or from CI. [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) does the whole thing on a runner that ships Chrome, as "Optional: deploy on every push" above describes.
 
 [`public/_headers`](public/_headers) already names the PDF, so the file downloads with a sensible name once it exists.

@@ -6,11 +6,12 @@
 # Two secrets are needed: CLOUDFLARE_API_TOKEN, scoped to Workers Scripts: Edit,
 # and CLOUDFLARE_ACCOUNT_ID.
 #
-# This is meant to replace a dashboard-connected build, not run beside one. The
-# PDF step needs Chrome, which this runner carries and a Workers Builds image
-# does not, so two connected builds would race and the one without a PDF could
-# land second. Deploying somewhere other than Cloudflare? Swap the last step for
-# that host's command and keep the rest.
+# If your host rebuilds the site when you push, disconnect it before enabling the
+# push trigger below. Two builds race, and the one that cannot print a PDF may
+# land last. See "Optional: deploy on every push" in the README.
+#
+# Deploying somewhere other than Cloudflare? Swap the last step for that host's
+# command and keep the rest.
 
 name: Deploy
 

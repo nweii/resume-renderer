@@ -38,7 +38,7 @@ Apply the test before you place new code. State out loud what the code knows. If
 - `app/globals.css` — the Tailwind layer and the `--t-baseline-*` properties. `data-resume-theme` on the page root selects the values.
 - `scripts/` — build tooling outside Next, and opt-in. `print-pdf.ts` serves a directory and prints routes with headless Chrome, knowing nothing about resumes. `render-pdf.ts` names the resume routes and rejects any PDF that comes back a size other than US letter, which catches a broken print stylesheet before it deploys.
 
-`bun run pdf` writes `out/<slug>/resume.pdf`, and nothing calls it by default. Publishing a PDF adds a Chrome dependency and a deploy that can run it, which is a real cost to impose on someone who just wants a resume online, so the default stays a reader pressing `⌘P`. README's "Optional: publish the PDF as a file" is the recipe. Keep it that way: an adopter opts in, and the shipped setup path stays a template button and one deploy command.
+`bun run pdf` writes `out/<slug>/resume.pdf`. Nothing calls it, and nothing should: publishing a PDF needs Chrome and a deploy that can run it, and the setup path here is a template button and one deploy command. Adopters who want it follow "Optional: publish the PDF as a file" in the README.
 
 `wrangler.jsonc` ships as a working Cloudflare Workers config for the static export, and `bun run deploy` builds and deploys it. Cloudflare is the path with the fewest steps, not a requirement. On another host, delete that file and serve `out/`. `README.md` carries the setup prompt an adopter hands to their own agent.
 
@@ -58,7 +58,11 @@ Apply the test before you place new code. State out loud what the code knows. If
 
 Write the entry under `## Unreleased` in the commit that makes the change, while you still hold the intent. An entry written later goes vague.
 
-Each entry carries what changed, kernel or surface, breaking or not, the files touched, and a port note addressed to that porting agent. Some changes genuinely warrant no entry: comment-only edits, test-only changes, refactors invisible from a downstream. Say that explicitly in the commit rather than staying silent.
+Follow [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) — its `### Added`, `### Changed`, `### Deprecated`, `### Removed`, `### Fixed`, `### Security` groupings, under a version heading — plus two things that standard has no slot for. Tag each entry kernel or surface and say whether it breaks. Close each release with a `### Port` section written to the porting agent.
+
+Keep an entry to one line: what changed, and the files. Rationale and instructions go in the port note, which is where that reader is looking for them. An entry that grows into a paragraph is doing the port note's job.
+
+Some changes warrant no entry: comment-only edits, test-only changes, refactors invisible from a downstream. Say that explicitly in the commit rather than staying silent.
 
 A release is an annotated tag on `main`. Read the version off the unreleased section: one breaking kernel entry makes it a minor bump, and everything else is a patch. A breaking release also migrates the demo content, so the port note has a worked example beside it.
 
