@@ -6,6 +6,12 @@ import type { Resume, Section as ResumeSection } from "@/lib/schema";
 
 const PAGE_GUTTER = "px-5 sm:px-[0.6in] print:px-[0.6in]";
 
+/**
+ * `print:w-[8.5in]` and `print:min-h-[11in]` are load-bearing: the oversized
+ * sheet is what corrects WebKit's print scaling. Keep them, and see the WebKit
+ * entry under "Things that will bite you" in AGENTS.md before changing print
+ * sizing.
+ */
 export const shell = {
   mainClassName: "flex min-h-screen flex-col items-center bg-(--t-baseline-backdrop) px-3 py-6 print:block print:bg-white print:p-0 sm:px-6 md:px-8",
   articleClassName: `relative min-h-0 w-full max-w-[8.5in] rounded-sm bg-(--t-baseline-paper) py-6 text-[9pt] leading-[1.3] text-(--t-baseline-ink) shadow-md [font-family:var(--t-baseline-font)] [zoom:var(--resume-scale)] sm:py-[0.45in] print:min-h-[11in] print:w-[8.5in] print:max-w-[8.5in] print:rounded-none print:py-[0.42in] print:shadow-none print:[zoom:1] md:min-h-[11in] md:rounded-none`,
