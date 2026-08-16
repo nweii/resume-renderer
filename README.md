@@ -52,6 +52,31 @@ Ask me first before anything that spends money or needs my login.
 
 The agent needs the repo on disk. Press **Use this template**, clone your copy, then paste the prompt.
 
+## Edit through a working copy
+
+You do not have to edit the JSON by hand. Ask your agent to keep a working copy: a human-friendly mirror of the canonical content, in any format and any editor you like. Markdown is the plainest and the easiest to diff, so it is the recommended default. A word processor document or a cloud doc works the same way. The agent reconciles whatever you edit back into the canonical content. No special editor or extra application is involved.
+
+The loop has three parts:
+
+1. You edit the working copy in your own editor and save.
+2. Your agent watches the file. It validates each change against the schema in `lib/schema.ts` and compiles it into the canonical content — the variant's JSON file, the only source of truth.
+3. `bun dev` is the preview, or the deployed site once you push. The page reloads when the JSON changes.
+
+When an edit does not fit the schema, the agent tells you what is wrong instead of writing broken JSON. The canonical content never leaves a valid state.
+
+A concrete round trip in markdown. Your working copy holds an entry like this:
+
+```markdown
+### Senior Product Designer — Meridian Health
+2021 – present
+
+- **Redesigned the order exception workflow** used by 60 branch coordinators, reducing average resolution time from three days to one.
+```
+
+You tighten the bullet and save. The agent maps the heading to the matching entry in the `experiences` section, rewrites that entry's `bullets` array in `resumes/default.json`, validates, and the page reloads. The `**bold**` convention is already valid in both forms, so it passes through unchanged.
+
+To start a markdown working copy, ask the agent to write one from the current content. The `/resume.md` endpoint already renders the same outline, so the two stay easy to compare. If you would rather edit in a word processor or a cloud doc, say so — the loop is the same, only the file the agent reads changes.
+
 ## Deploy it yourself
 
 The site is a static export. `next.config.ts` sets `output: "export"`, so `bun run build` writes plain HTML, CSS, and JavaScript to `out/`. There is no server, so any static host works.

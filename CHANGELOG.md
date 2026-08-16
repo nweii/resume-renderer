@@ -15,6 +15,8 @@ Versions are 0.x semver read as severity, not compatibility: a minor bump means 
 - **Surface** · Not breaking · A deploy workflow that builds, prints the PDFs, and runs `wrangler deploy`. Manual until an adopter adds two Cloudflare secrets and uncomments the `push` trigger. `.github/workflows/deploy.yml`.
 - **Surface** · Not breaking · `wrangler.jsonc`, the restored `deploy` script, and a setup prompt an adopter hands to their own agent. `wrangler.jsonc`, `package.json`, `README.md`, `AGENTS.md`.
 
+- **Surface** · Not breaking · Docs only: the working-copy editing loop — edit any human-friendly mirror, the agent validates and compiles it into canonical content, `bun dev` previews. `README.md`.
+
 ### Changed
 
 - **Surface** · Not breaking · The setup prompt now bounds its content step (every claim traces to the adopter, nothing invented), gates on the one-page fit, and handles an adopter with no host in mind. `README.md`.
