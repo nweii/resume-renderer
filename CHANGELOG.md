@@ -11,6 +11,7 @@ Versions are 0.x semver read as severity, not compatibility: a minor bump means 
 
 ### Added
 
+- **Surface** · Not breaking · Docs only: `VISION.md` states the core idea and the three tenets that govern judgment calls; AGENTS.md points agents at it. `VISION.md`, `AGENTS.md`.
 - **Kernel** · Not breaking · An opt-in PDF representation. `bun run pdf` prints every route with headless Chrome into the gitignored `out/`. Nothing calls it by default. `scripts/print-pdf.ts`, `scripts/render-pdf.ts`, `package.json`, `public/_headers`.
 - **Surface** · Not breaking · A deploy workflow that builds, prints the PDFs, and runs `wrangler deploy`. Manual until an adopter adds two Cloudflare secrets and uncomments the `push` trigger. `.github/workflows/deploy.yml`.
 - **Surface** · Not breaking · `wrangler.jsonc`, the restored `deploy` script, and a setup prompt an adopter hands to their own agent. `wrangler.jsonc`, `package.json`, `README.md`, `AGENTS.md`.

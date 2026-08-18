@@ -6,6 +6,8 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 # Resume renderer
 
+Read `VISION.md` before making judgment calls — it holds the tenets that decide questions no written decision covers.
+
 Typed JSON in, a rendered resume out: a web page and a print-ready PDF. There is no GUI. An agent is the operator.
 
 `README.md` covers how to run, deploy, and extend the repo. `CONTEXT.md` defines the terms used here: variant, template, theme, representation, kernel, adopter surface, upstream, downstream.
