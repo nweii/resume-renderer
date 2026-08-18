@@ -18,6 +18,9 @@ const cli = Cli.create("resume", {
   description:
     "Operate the resume renderer: validate content and the changelog contract, and review upstream releases.",
   sync: {
+    // Bundled agent skills live in `skills/`, one folder per skill, and
+    // install alongside the generated command skills via `skills add`.
+    include: ["skills/*"],
     suggestions: [
       "check the resume repo before I commit",
       "check every commit on this branch against the changelog contract",

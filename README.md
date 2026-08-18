@@ -122,6 +122,8 @@ bun run cli skills add   # writes a skill file describing every command
 
 Without the link, the skill file it writes names a command your agent cannot run. `bun run check` works either way and needs no setup.
 
+`skills add` also installs the skills bundled in `skills/`. The first is `resume-intake`: an interview-driven intake that turns your existing material — old resumes, notes, a folder of documents, or nothing but conversation — into schema-valid content for a variant. Ask your agent to "run the resume intake" and it interviews you section by section, asking for missing facts instead of inventing them, until `check` passes.
+
 ## Deploy it yourself
 
 The site is a static export. `next.config.ts` sets `output: "export"`, so `bun run build` writes plain HTML, CSS, and JavaScript to `out/`. There is no server, so any static host works.
