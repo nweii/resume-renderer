@@ -9,12 +9,13 @@ import {
   describeChangelogFailures,
   EXEMPTION_TRAILER,
 } from "./changelog";
+import { checkContract, describeContractFailures } from "./contract";
 import { checkVariants, describeVariantFailures } from "./variants";
 
 export function registerCheck(cli: Cli.Cli) {
   return cli.command("check", {
     description:
-      "Validate every registered variant against the schema and enforce the changelog contract.",
+      "Validate every registered variant against the schema, enforce the changelog contract, and confirm the generated schema contract is fresh.",
     options: z.object({
       range: z
         .string()
@@ -33,9 +34,11 @@ export function registerCheck(cli: Cli.Cli) {
     run(c) {
       const variants = checkVariants();
       const changelog = checkChangelog(c.options.range);
+      const contract = checkContract();
       const problems = [
         ...describeVariantFailures(variants),
         ...describeChangelogFailures(changelog),
+        ...describeContractFailures(contract),
       ];
 
       // The envelope drops `hint`, so the message carries the whole report and
@@ -51,7 +54,7 @@ export function registerCheck(cli: Cli.Cli) {
           retryable: true,
         });
 
-      return { variants, changelog };
+      return { variants, changelog, contract };
     },
   });
 }

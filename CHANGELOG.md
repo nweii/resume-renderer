@@ -19,6 +19,8 @@ Versions are 0.x semver read as severity, not compatibility: a minor bump means 
 - **Surface** · Not breaking · Docs only: the working-copy editing loop — edit any human-friendly mirror, the agent validates and compiles it into canonical content, `bun dev` previews. `README.md`.
 - **Surface** · Not breaking · The working-copy convention: a gitignored `working/` home (one copy per variant, named by slug), a user-editable declaration table in AGENTS.md recording each variant's surface, and agent-facing lifecycle rules — canonical wins on conflict, copies stay regenerable, stale copies get cleaned up. `.gitignore`, `AGENTS.md`, `README.md`.
 - **Kernel** · Not breaking · A `resume` CLI on [incur](https://github.com/wevm/incur), with `check` as its first command: every registered variant must parse against the schema. `cli/`, `package.json`, `bun.lock`, `README.md`, `AGENTS.md`.
+- **Kernel** · Not breaking · `docs/schema-contract.md`, the agent-facing content contract generated from the Zod schema by `bun run cli contract`. `check` fails while it is stale, so the document agents read and the validator cannot drift apart. `cli/contract/`, `cli/check/contract.ts`, `cli/check/index.ts`, `cli/index.ts`, `docs/schema-contract.md`, `AGENTS.md`.
+- **Surface** · Not breaking · `.describe()` prose on the section-kind discriminators and the fields whose meaning is not obvious from the type; the generated contract carries it. `lib/schema.ts`.
 - **Surface** · Not breaking · `check` also enforces the changelog contract — a source-touching change needs an entry under `## Unreleased` or a `no-changelog: <reason>` commit trailer. `cli/check/changelog.ts`, `README.md`, `AGENTS.md`.
 
 ### Changed
@@ -35,6 +37,8 @@ Chrome must exist wherever you deploy from, so a host that rebuilds on push usua
 For the host config: if your copy already has its own, keep it and delete `wrangler.jsonc`. Off Cloudflare, translate the headers in `public/_headers` to that host's mechanism, or your Markdown endpoint loses its UTF-8 charset.
 
 The CLI is new and nothing else calls it, so take it or leave it. To take it, copy `cli/`, the `incur` dependency, and the `check` and `cli` scripts. `cli/check/variants.ts` reads your registry and your schema through the same two modules this repo uses, so it needs no adaptation however far your content has diverged.
+
+The contract generator (`cli/contract/`) reads your schema through `lib/schema.ts` like everything else, so it needs no adaptation. After porting any schema change, run `bun run cli contract` and commit `docs/schema-contract.md`, or `check` will name it stale.
 
 `cli/check/changelog.ts` is the part that assumes things about you. Keep it only if your copy still keeps a `CHANGELOG.md` with an `## Unreleased` section, and it is worth keeping only if your copy has downstreams of its own. Its one tunable is `OUTSIDE_CONTRACT`, the paths that never reach a copy. Widen that list rather than loosening the rule: a check that lets silence pass stops being a check.
 

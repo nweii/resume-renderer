@@ -32,13 +32,13 @@ Apply the test before you place new code. State out loud what the code knows. If
 ## Repo map
 
 - `app/` — Next 16 App Router. `page.tsx` renders the default variant. `[variant]/page.tsx` exports the configured slugs. Both hand off to `app/ResumePage.tsx`, which validates the JSON and renders a template.
-- `lib/schema.ts` — the Zod schema. This is the contract between agent-written JSON and the renderer.
+- `lib/schema.ts` — the Zod schema. This is the contract between agent-written JSON and the renderer. `docs/schema-contract.md` is its generated, agent-facing statement — the authoritative content contract to read before writing resume JSON. Regenerate it with `bun run cli contract` after any schema change; `check` fails while it is stale.
 - `lib/resume-variants.ts` — the one place that defines public URL paths.
 - `lib/resume-markdown.ts` — the schema-driven Markdown converter behind the `.md` endpoints. A template overrides it with `toMarkdown` only when its outline differs.
 - `lib/resume-responses.ts` — turns a variant into a JSON or Markdown `Response`. The four route handlers stay one line each.
 - `templates/` — one folder per template, registered in `templates/index.ts`. A variant selects its template. `templates/baseline/` is the one that ships.
 - `app/globals.css` — the Tailwind layer and the `--t-baseline-*` properties. `data-resume-theme` on the page root selects the values.
-- `cli/` — the `resume` CLI, built on [incur](https://github.com/wevm/incur). `index.ts` mounts commands; each command is a folder that exports a `register` function, so one that grows subcommands becomes its own group without touching the root. `check/` validates registered variants against the schema and enforces the changelog contract. Run it with `bun run check`, or `bun run cli <command>`.
+- `cli/` — the `resume` CLI, built on [incur](https://github.com/wevm/incur). `index.ts` mounts commands; each command is a folder that exports a `register` function, so one that grows subcommands becomes its own group without touching the root. `check/` validates registered variants against the schema, enforces the changelog contract, and fails when `docs/schema-contract.md` is stale. `contract/` regenerates that document from the schema. Run it with `bun run check`, or `bun run cli <command>`.
 - `scripts/` — build tooling outside Next, and opt-in. `print-pdf.ts` serves a directory and prints routes with headless Chrome, knowing nothing about resumes. `render-pdf.ts` names the resume routes and rejects any PDF that comes back a size other than US letter, which catches a broken print stylesheet before it deploys.
 
 `bun run pdf` writes `out/<slug>/resume.pdf`. Nothing calls it, and nothing should: publishing a PDF needs Chrome and a deploy that can run it, and the setup path here is a template button and one deploy command. Adopters who want it follow "Optional: publish the PDF as a file" in the README.
