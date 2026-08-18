@@ -12,8 +12,9 @@ This is alpha software. Breaking changes are expected, and `CHANGELOG.md` explai
 
 ```bash
 bun install
-bun dev       # http://localhost:3000
+bun dev            # http://localhost:3000
 bun test
+bun run check      # content and changelog checks
 ```
 
 Edit `resumes/default.json`. The page reloads as you save.
@@ -76,6 +77,44 @@ A concrete round trip in markdown. Your working copy holds an entry like this:
 You tighten the bullet and save. The agent maps the heading to the matching entry in the `experiences` section, rewrites that entry's `bullets` array in `resumes/default.json`, validates, and the page reloads. The `**bold**` convention is already valid in both forms, so it passes through unchanged.
 
 To start a markdown working copy, ask the agent to write one from the current content. The `/resume.md` endpoint already renders the same outline, so the two stay easy to compare. If you would rather edit in a word processor or a cloud doc, say so — the loop is the same, only the file the agent reads changes.
+
+## Check your work
+
+`bun run check` is the one command that says whether the repo is in a good state.
+
+```bash
+bun run check                                # the working tree
+bun run check --range origin/main..HEAD      # every commit a push would land
+```
+
+It makes two judgements.
+
+Every variant registered in `lib/resume-variants.ts` must parse against the schema. A failure names the file, the path into the JSON, and what was wrong, so an agent can fix it without opening a browser:
+
+```text
+resumes/default.json: sections.0.bullets.0 — Invalid input: expected string, received number
+```
+
+A change that touches source files must also carry a changelog decision. Either it adds an entry under `## Unreleased` in `CHANGELOG.md`, or its commit message carries a trailer that says it has nothing to port:
+
+```text
+no-changelog: comments only, invisible from a copy of this repo
+```
+
+A missing decision fails. An explicit "nothing to port" passes. What matters is that somebody chose, because `CHANGELOG.md` is the only thing a copy of this repo can read to find out what changed. The trailer needs a reason after the colon; a bare `no-changelog:` does not count.
+
+`CHANGELOG.md` itself and `.claude/` are outside the contract. Everything else counts as source, documentation included, because a copy reads the same documentation.
+
+The CLI is built on [incur](https://github.com/wevm/incur), so an agent can discover it without being told. `bun run cli --llms` prints the command manifest, `bun run check --schema` prints one command's arguments as JSON Schema, and `--format json` makes any output machine-readable. Commands live one folder deep under `cli/`, which is where the next one goes.
+
+To give your agent the CLI as a skill, put the `resume` command on your path first, once per machine:
+
+```bash
+bun link                 # `resume` and `bunx resume` now work anywhere
+bun run cli skills add   # writes a skill file describing every command
+```
+
+Without the link, the skill file it writes names a command your agent cannot run. `bun run check` works either way and needs no setup.
 
 ## Deploy it yourself
 
