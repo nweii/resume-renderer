@@ -11,6 +11,7 @@ import { Cli } from "incur";
 import { registerCheck } from "./check";
 import { registerContract } from "./contract";
 import { registerUpdate } from "./update";
+import { registerVariant } from "./variant";
 
 const cli = Cli.create("resume", {
   version: "0.1.0",
@@ -27,5 +28,6 @@ const cli = Cli.create("resume", {
 registerCheck(cli);
 registerContract(cli);
 registerUpdate(cli);
+registerVariant(cli);
 
 cli.serve();

@@ -22,6 +22,7 @@ Versions are 0.x semver read as severity, not compatibility: a minor bump means 
 - **Kernel** · Not breaking · `docs/schema-contract.md`, the agent-facing content contract generated from the Zod schema by `bun run cli contract`. `check` fails while it is stale, so the document agents read and the validator cannot drift apart. `cli/contract/`, `cli/check/contract.ts`, `cli/check/index.ts`, `cli/index.ts`, `docs/schema-contract.md`, `AGENTS.md`.
 - **Surface** · Not breaking · `.describe()` prose on the section-kind discriminators and the fields whose meaning is not obvious from the type; the generated contract carries it. `lib/schema.ts`.
 - **Kernel** · Not breaking · `update`, the CLI command for a downstream copy: fetch the `upstream` remote, compare its tagged releases against the last-reviewed marker, and print each unreviewed release's changelog section oldest-first for the operating agent to judge and port. It never applies anything, and being behind is never an error. `--reviewed <tag>` records the review in `.upstream-reviewed`, a gitignored per-copy dotfile. `cli/update/`, `cli/index.ts`, `.gitignore`, `AGENTS.md`.
+- **Kernel** · Not breaking · A `variant` command group: `variant create <slug>` scaffolds a schema-valid content file, registers it in the variant registry and `.gitignore`, and yields a rendering route; `variant list` reads the registry back. Deletion stays manual and is documented. `cli/variant/`, `cli/index.ts`, `README.md`, `AGENTS.md`.
 - **Surface** · Not breaking · `check` also enforces the changelog contract — a source-touching change needs an entry under `## Unreleased` or a `no-changelog: <reason>` commit trailer. `cli/check/changelog.ts`, `README.md`, `AGENTS.md`.
 
 ### Changed
@@ -38,6 +39,8 @@ Chrome must exist wherever you deploy from, so a host that rebuilds on push usua
 For the host config: if your copy already has its own, keep it and delete `wrangler.jsonc`. Off Cloudflare, translate the headers in `public/_headers` to that host's mechanism, or your Markdown endpoint loses its UTF-8 charset.
 
 The CLI is new and nothing else calls it, so take it or leave it. To take it, copy `cli/`, the `incur` dependency, and the `check` and `cli` scripts. `cli/check/variants.ts` reads your registry and your schema through the same two modules this repo uses, so it needs no adaptation however far your content has diverged.
+
+`cli/variant/` edits `lib/resume-variants.ts` and `.gitignore` by text anchors: the last `import ... from "@/resumes/*.json"` line, the closing `} satisfies Record<string, ResumeVariant>;` line, and the `!resumes/default.json` line. If your copies keep those shapes, it ports as-is; if they diverged, update the anchors in `cli/variant/create.ts` — the command refuses to edit a file it does not recognize, so a mismatch fails loudly rather than corrupting the registry.
 
 The contract generator (`cli/contract/`) reads your schema through `lib/schema.ts` like everything else, so it needs no adaptation. After porting any schema change, run `bun run cli contract` and commit `docs/schema-contract.md`, or `check` will name it stale.
 

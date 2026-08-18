@@ -273,6 +273,10 @@ The HTML page points at its siblings in two ways. The head carries `<link rel="a
 
 A variant is one whole content file. It is bound to a template and a theme, at its own URL.
 
+`bun run cli variant create <slug>` does the whole registration in one step: it writes a schema-valid placeholder file to `resumes/<slug>.json`, adds the registry entry in `lib/resume-variants.ts` (pass `--template` to bind a template other than `baseline`), and adds the `.gitignore` un-ignore line, so the new route builds immediately. Replace the placeholder content, then run `bun run check`. `bun run cli variant list` prints every registered variant with its slug and template.
+
+Deleting a variant is manual for now: reverse the three edits `create` makes. Delete `resumes/<slug>.json`, remove the entry and its import from `lib/resume-variants.ts`, and remove the `!resumes/<slug>.json` line from `.gitignore`. Delete its working copy too, if one exists. `bun run check` confirms nothing dangles.
+
 Files for a specific role, such as `backend-staff.json`, stay untracked. The `resumes/*.json` rule in `.gitignore` keeps drafts off the record. When you register one in `lib/resume-variants.ts`, add a matching un-ignore line and commit the file. The build imports every registered variant, so a fresh clone cannot render without it.
 
 A variant is not a filtered view of the default. Each one is a whole file, tuned by hand. The duplication is on purpose. It lets you cut, reorder, and re-emphasize for one role, and no other variant changes.
