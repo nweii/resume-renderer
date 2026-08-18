@@ -78,6 +78,12 @@ You tighten the bullet and save. The agent maps the heading to the matching entr
 
 To start a markdown working copy, ask the agent to write one from the current content. The `/resume.md` endpoint already renders the same outline, so the two stay easy to compare. If you would rather edit in a word processor or a cloud doc, say so — the loop is the same, only the file the agent reads changes.
 
+### Where working copies live
+
+Working copies kept in the repo live in `working/`, one per variant, named by variant slug: `working/default.md`. The directory is gitignored, because a working copy is always regenerable from the variant's JSON — the canonical content is what gets committed.
+
+A working copy can also live outside the repo: a cloud doc, a word processor file in your documents folder. That is fine, but its location gets declared, not remembered. The "Working copies" section in `AGENTS.md` records your chosen surface per variant — format, location, and whether the copy is a persistent mirror or regenerated on demand — so any agent session picks up the same setup. Tell your agent your preference once and it writes the declaration; edit the section by hand whenever you like.
+
 ## Check your work
 
 `bun run check` is the one command that says whether the repo is in a good state.

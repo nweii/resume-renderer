@@ -55,6 +55,28 @@ Apply the test before you place new code. State out loud what the code knows. If
 - Templates hold no data-shaping logic. If a bullet runs long for one variant, edit that variant's file.
 - `**text**` is the only inline convention in a bullet. `renderRichText` in `templates/baseline/index.tsx` owns the parser.
 
+## Working copies
+
+A working copy is a human-friendly mirror of a variant's canonical content — the editing loop in the README's "Edit through a working copy" section. This section is the standing convention for where those copies live and how you manage them.
+
+### Declared surfaces
+
+The table below is user-editable. It records the user's chosen surface per variant. Read it at the start of any editing-loop work and honor it; when the user states a new preference, update the table for them. `mirror` means the copy persists between sessions and you keep it reconciled; `regenerated` means you write a fresh copy from canonical content when asked and may discard it after reconciling.
+
+| Variant slug | Format | Location | Mirror or regenerated |
+| --- | --- | --- | --- |
+| `default` | markdown | `working/default.md` | mirror |
+| _(slug)_ | _(markdown, docx, cloud doc, …)_ | _(path or doc link)_ | _(mirror / regenerated)_ |
+
+The first row is the shipped example; it is also the default for any variant with no row of its own. Replace or extend it as the user declares preferences.
+
+### Lifecycle rules
+
+- **Canonical content wins on conflict.** When a working copy and the variant's JSON disagree and you cannot tell which edit is newer, regenerate the working copy from the JSON and tell the user what you replaced. Never guess the JSON into agreement with a stale copy.
+- **A working copy is always regenerable.** Never treat one as the only record of anything. If content exists only in a working copy, reconcile it into canonical content before doing anything else with it.
+- **Clean up stale and orphaned copies.** When a variant is deleted, delete its working copy. When the user switches a variant's format or location, update the table and remove the copy at the old surface. Do not leave abandoned copies behind.
+- **Nothing outside the declared home.** In-repo working copies live in `working/`, named by variant slug. Do not write mirrors, drafts, or scratch conversions of variant content anywhere else in the repo. A copy outside the repo exists only where the table declares it.
+
 ## Write the changelog entry in the same commit
 
 `CHANGELOG.md` is the contract with downstreams. Its reader is an agent porting your change into a copy that already diverged from this one.

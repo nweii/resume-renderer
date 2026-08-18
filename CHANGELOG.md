@@ -17,6 +17,7 @@ Versions are 0.x semver read as severity, not compatibility: a minor bump means 
 - **Surface** · Not breaking · `wrangler.jsonc`, the restored `deploy` script, and a setup prompt an adopter hands to their own agent. `wrangler.jsonc`, `package.json`, `README.md`, `AGENTS.md`.
 
 - **Surface** · Not breaking · Docs only: the working-copy editing loop — edit any human-friendly mirror, the agent validates and compiles it into canonical content, `bun dev` previews. `README.md`.
+- **Surface** · Not breaking · The working-copy convention: a gitignored `working/` home (one copy per variant, named by slug), a user-editable declaration table in AGENTS.md recording each variant's surface, and agent-facing lifecycle rules — canonical wins on conflict, copies stay regenerable, stale copies get cleaned up. `.gitignore`, `AGENTS.md`, `README.md`.
 - **Kernel** · Not breaking · A `resume` CLI on [incur](https://github.com/wevm/incur), with `check` as its first command: every registered variant must parse against the schema. `cli/`, `package.json`, `bun.lock`, `README.md`, `AGENTS.md`.
 - **Surface** · Not breaking · `check` also enforces the changelog contract — a source-touching change needs an entry under `## Unreleased` or a `no-changelog: <reason>` commit trailer. `cli/check/changelog.ts`, `README.md`, `AGENTS.md`.
 
