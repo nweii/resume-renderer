@@ -10,11 +10,12 @@ import { Cli } from "incur";
 
 import { registerCheck } from "./check";
 import { registerContract } from "./contract";
+import { registerUpdate } from "./update";
 
 const cli = Cli.create("resume", {
   version: "0.1.0",
   description:
-    "Operate the resume renderer: validate content and the changelog contract.",
+    "Operate the resume renderer: validate content and the changelog contract, and review upstream releases.",
   sync: {
     suggestions: [
       "check the resume repo before I commit",
@@ -25,5 +26,6 @@ const cli = Cli.create("resume", {
 
 registerCheck(cli);
 registerContract(cli);
+registerUpdate(cli);
 
 cli.serve();

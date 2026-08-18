@@ -21,6 +21,7 @@ Versions are 0.x semver read as severity, not compatibility: a minor bump means 
 - **Kernel** · Not breaking · A `resume` CLI on [incur](https://github.com/wevm/incur), with `check` as its first command: every registered variant must parse against the schema. `cli/`, `package.json`, `bun.lock`, `README.md`, `AGENTS.md`.
 - **Kernel** · Not breaking · `docs/schema-contract.md`, the agent-facing content contract generated from the Zod schema by `bun run cli contract`. `check` fails while it is stale, so the document agents read and the validator cannot drift apart. `cli/contract/`, `cli/check/contract.ts`, `cli/check/index.ts`, `cli/index.ts`, `docs/schema-contract.md`, `AGENTS.md`.
 - **Surface** · Not breaking · `.describe()` prose on the section-kind discriminators and the fields whose meaning is not obvious from the type; the generated contract carries it. `lib/schema.ts`.
+- **Kernel** · Not breaking · `update`, the CLI command for a downstream copy: fetch the `upstream` remote, compare its tagged releases against the last-reviewed marker, and print each unreviewed release's changelog section oldest-first for the operating agent to judge and port. It never applies anything, and being behind is never an error. `--reviewed <tag>` records the review in `.upstream-reviewed`, a gitignored per-copy dotfile. `cli/update/`, `cli/index.ts`, `.gitignore`, `AGENTS.md`.
 - **Surface** · Not breaking · `check` also enforces the changelog contract — a source-touching change needs an entry under `## Unreleased` or a `no-changelog: <reason>` commit trailer. `cli/check/changelog.ts`, `README.md`, `AGENTS.md`.
 
 ### Changed
@@ -41,6 +42,8 @@ The CLI is new and nothing else calls it, so take it or leave it. To take it, co
 The contract generator (`cli/contract/`) reads your schema through `lib/schema.ts` like everything else, so it needs no adaptation. After porting any schema change, run `bun run cli contract` and commit `docs/schema-contract.md`, or `check` will name it stale.
 
 `cli/check/changelog.ts` is the part that assumes things about you. Keep it only if your copy still keeps a `CHANGELOG.md` with an `## Unreleased` section, and it is worth keeping only if your copy has downstreams of its own. Its one tunable is `OUTSIDE_CONTRACT`, the paths that never reach a copy. Widen that list rather than loosening the rule: a check that lets silence pass stops being a check.
+
+`cli/update/` is written for you, the downstream. It needs the `upstream` remote from the README's setup steps and nothing else; copy it with the rest of `cli/` and add `.upstream-reviewed` to your `.gitignore`. If your copy has no downstreams of its own, the command still earns its keep — it is how you review these very port notes.
 
 Adding `incur` is the first dependency this repo has taken since it was published, which surfaced a trap now written down under "Installs" in `AGENTS.md` — `frozenLockfile = true` blocks `bun add`, and no flag overrides it.
 

@@ -51,6 +51,11 @@ next-env.d.ts
 # JSON, so never committed. See "Edit through a working copy" in README.md.
 working/
 
+# upstream review marker — per-copy state naming the newest upstream release
+# the operator reviewed. Written by `bun run cli update --reviewed <tag>`;
+# meaningful only to this copy, so never committed.
+.upstream-reviewed
+
 # resume variants — keep default public, variants stay local.
 # Tailored-per-role variants expose targeting machinery in a way that's less
 # comfortable to have in public git history. Default is the canonical, variants
