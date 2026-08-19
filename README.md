@@ -138,6 +138,8 @@ bun run cli deploy        # build, then ship to production
 
 `preview` builds and runs `wrangler versions upload`: the version gets its own preview URL to look at or share, and what production serves does not change until you `deploy`. A preview needs an existing Worker to attach to, so the first ever publish is a `deploy`.
 
+When something in the environment is off and you cannot tell what, `bun run cli doctor` diagnoses the whole stitched-together setup — variants, the generated schema contract, `wrangler.jsonc`, Cloudflare authentication, whether the Worker exists, and how far behind upstream the copy is. It changes nothing anywhere; each problem it finds names the fix, network checks skip with a note when offline, and being behind upstream is reported as information, never a failure.
+
 Both commands need only Cloudflare authentication. `wrangler login` opens your browser once, so you can approve the connection; headless, set `CLOUDFLARE_API_TOKEN` to a token with the Workers Scripts: Edit permission instead. An unauthenticated run fails with these same instructions. On your first ever Workers deploy, wrangler also asks you to register a `*.workers.dev` subdomain. Answer it once and you never see it again.
 
 You land on a `*.workers.dev` address, with no DNS and no dashboard.

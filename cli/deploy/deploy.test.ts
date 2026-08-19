@@ -32,6 +32,14 @@ describe("isAuthFailure", () => {
     ).toBe(true);
   });
 
+  test("matches a malformed Authorization header", () => {
+    expect(
+      isAuthFailure(
+        "Invalid request headers [code: 6003]\n- Invalid format for Authorization header [code: 6111]",
+      ),
+    ).toBe(true);
+  });
+
   test("ignores an ordinary deploy failure", () => {
     expect(
       isAuthFailure("Uploading... X [ERROR] A request to the API failed."),

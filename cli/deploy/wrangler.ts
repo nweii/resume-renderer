@@ -30,11 +30,12 @@ export function runWrangler(args: string[]): RunResult {
 /**
  * True when wrangler failed for lack of Cloudflare credentials rather than a
  * broken deploy. Wrangler phrases this differently across paths (interactive
- * login prompt, CI token hint, expired OAuth, API auth codes 9106 and 10000),
- * so match them all.
+ * login prompt, CI token hint, expired OAuth, API auth codes 9106 and 10000,
+ * malformed-token codes 6003 and 6111, invalid-token code 6103), so match
+ * them all.
  */
 export function isAuthFailure(output: string): boolean {
-  return /wrangler login|CLOUDFLARE_API_TOKEN|not authenticated|authentication (error|failed)|\[code: (9106|10000)\]|oauth token/i.test(
+  return /wrangler login|CLOUDFLARE_API_TOKEN|not authenticated|authentication (error|failed)|\[code: (9106|10000|6003|6103|6111)\]|invalid api token|oauth token/i.test(
     output,
   );
 }

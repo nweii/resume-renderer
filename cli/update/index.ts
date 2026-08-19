@@ -78,14 +78,14 @@ function git(args: string[]): { ok: boolean; stdout: string; stderr: string } {
   };
 }
 
-function hasUpstreamRemote(): boolean {
+export function hasUpstreamRemote(): boolean {
   return git(["remote"])
     .stdout.split("\n")
     .some((name) => name.trim() === UPSTREAM_REMOTE);
 }
 
 /** Upstream's tags with a parseable version, oldest first. */
-function upstreamReleases(): Release[] {
+export function upstreamReleases(): Release[] {
   const tags = git(["tag", "--list"])
     .stdout.split("\n")
     .map((line) => line.trim())
