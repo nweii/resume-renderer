@@ -36,6 +36,10 @@ Versions are 0.x semver read as severity, not compatibility: a minor bump means 
 - **Surface** · Not breaking · The setup prompt now bounds its content step (every claim traces to the adopter, nothing invented), gates on the one-page fit, and handles an adopter with no host in mind. `README.md`.
 - **Surface** · Not breaking · Deploy docs cover the one-time `workers.dev` subdomain prompt, rank the host alternatives by how much config each needs, and keep the dashboard as the fallback when a custom-domain deploy fails. `README.md`.
 
+### Fixed
+
+- **Kernel** · Not breaking · `next build`'s TypeScript pass fails on a fresh copy: `cli/variant/create.ts` used the Bun-only `import.meta.dir`, which that pass rejects; a warm incremental cache hid it. Replaced with a URL-derived path. `cli/variant/create.ts`.
+
 ### Port
 
 Nothing to port unless you want to publish a PDF. If you do, copy `scripts/` as it is — `print-pdf.ts` has no resume knowledge and needs no adaptation. In `render-pdf.ts`, check the route-to-file mapping against your variants and the expected page size against your `@page` rule. Then follow "Optional: publish the PDF as a file" in the README.

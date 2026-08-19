@@ -13,7 +13,7 @@ import type { ResumeTemplateId } from "@/templates";
 export const REGISTRY_FILE = "lib/resume-variants.ts";
 export const GITIGNORE_FILE = ".gitignore";
 
-const REPO_ROOT = join(import.meta.dir, "..", "..");
+const REPO_ROOT = new URL("../..", import.meta.url).pathname;
 
 /** URL-safe slugs only: lowercase words separated by single hyphens. */
 export const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
