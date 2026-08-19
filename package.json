@@ -14,6 +14,7 @@
     "start": "next start",
     "lint": "eslint",
     "pdf": "bun run scripts/render-pdf.ts",
+    "setup": "bun run cli/index.ts setup",
     "deploy": "bun run cli/index.ts deploy",
     "preview": "bun run cli/index.ts preview"
   },

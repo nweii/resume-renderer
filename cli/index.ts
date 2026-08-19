@@ -12,6 +12,7 @@ import { registerCheck } from "./check";
 import { registerContract } from "./contract";
 import { registerDeploy, registerPreview } from "./deploy";
 import { registerDoctor } from "./doctor";
+import { registerSetup } from "./setup";
 import { registerUpdate } from "./update";
 import { registerVariant } from "./variant";
 
@@ -35,6 +36,7 @@ registerContract(cli);
 registerDeploy(cli);
 registerDoctor(cli);
 registerPreview(cli);
+registerSetup(cli);
 registerUpdate(cli);
 registerVariant(cli);
 

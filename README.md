@@ -43,8 +43,10 @@ Read AGENTS.md, CONTEXT.md, and lib/schema.ts before you change anything.
 4. Put my name in lib/site.ts and in the file names in public/_headers.
 5. public/_headers works on Cloudflare and Netlify only. On another host, set
    the same two headers the way that host does it.
-6. Build and deploy. My browser opens once to approve the host. Relay any
-   prompt it asks. Then give me the URL.
+6. Deploy. On Cloudflare, run `bun run cli setup` — it handles login, the
+   Worker name, and the first deploy, and every prompt is also a flag. My
+   browser opens once to approve the host. Relay any prompt it asks. Then
+   give me the URL.
 7. Add this repo as a remote named upstream, so you can port its later
    changes into my copy.
 
@@ -126,15 +128,22 @@ Without the link, the skill file it writes names a command your agent cannot run
 
 ## Deploy it yourself
 
-Two CLI commands cover it:
+The first time, one command covers it:
 
 ```bash
-bunx wrangler login       # one time on each machine
+bun run cli setup
+```
+
+`setup` walks a fresh copy to a live site on a `*.workers.dev` address, in numbered stages with a confirmation before anything touches your Cloudflare account: log in (your browser opens once), name the Worker (it suggests one from the folder name and writes your answer into `wrangler.jsonc`), then build and deploy. It detects what is already done, so rerunning it on a configured copy reports the state and repairs only what is missing — it never duplicates a Worker. Every prompt is also a flag (`--name`, `--yes`, `--skip-deploy`), so an agent can run the whole thing for you: `bun run cli setup --name jane-doe-resume --yes`.
+
+After that, two commands cover everything:
+
+```bash
 bun run cli preview       # stage a shareable preview URL; production untouched
 bun run cli deploy        # build, then ship to production
 ```
 
-`deploy` builds and runs `wrangler deploy` against [`wrangler.jsonc`](wrangler.jsonc), which ships for Cloudflare Workers and points [static assets](https://developers.cloudflare.com/workers/static-assets/) at `out/`. Change `name` in that file first. It becomes your address. `bun run deploy` is the same command.
+`deploy` builds and runs `wrangler deploy` against [`wrangler.jsonc`](wrangler.jsonc), which ships for Cloudflare Workers and points [static assets](https://developers.cloudflare.com/workers/static-assets/) at `out/`. The `name` in that file becomes your address; `setup` writes it, or change it by hand. `bun run deploy` is the same command.
 
 `preview` builds and runs `wrangler versions upload`: the version gets its own preview URL to look at or share, and what production serves does not change until you `deploy`. A preview needs an existing Worker to attach to, so the first ever publish is a `deploy`.
 
