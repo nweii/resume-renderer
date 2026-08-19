@@ -14,7 +14,8 @@
     "start": "next start",
     "lint": "eslint",
     "pdf": "bun run scripts/render-pdf.ts",
-    "deploy": "bun run build && wrangler deploy"
+    "deploy": "bun run cli/index.ts deploy",
+    "preview": "bun run cli/index.ts preview"
   },
   "dependencies": {
     "agentation": "^3.0.2",

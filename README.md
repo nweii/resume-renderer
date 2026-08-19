@@ -126,18 +126,23 @@ Without the link, the skill file it writes names a command your agent cannot run
 
 ## Deploy it yourself
 
-The site is a static export. `next.config.ts` sets `output: "export"`, so `bun run build` writes plain HTML, CSS, and JavaScript to `out/`. There is no server, so any static host works.
-
-[`wrangler.jsonc`](wrangler.jsonc) ships for Cloudflare Workers, and it points [static assets](https://developers.cloudflare.com/workers/static-assets/) at `out/`. Change `name` in that file first. It becomes your address.
+Two CLI commands cover it:
 
 ```bash
-bunx wrangler login   # one time on each machine
-bun run deploy        # builds, then deploys
+bunx wrangler login       # one time on each machine
+bun run cli preview       # stage a shareable preview URL; production untouched
+bun run cli deploy        # build, then ship to production
 ```
 
-`wrangler login` opens your browser once, so you can approve the connection. On your first ever Workers deploy, wrangler also asks you to register a `*.workers.dev` subdomain. Answer it once and you never see it again.
+`deploy` builds and runs `wrangler deploy` against [`wrangler.jsonc`](wrangler.jsonc), which ships for Cloudflare Workers and points [static assets](https://developers.cloudflare.com/workers/static-assets/) at `out/`. Change `name` in that file first. It becomes your address. `bun run deploy` is the same command.
+
+`preview` builds and runs `wrangler versions upload`: the version gets its own preview URL to look at or share, and what production serves does not change until you `deploy`. A preview needs an existing Worker to attach to, so the first ever publish is a `deploy`.
+
+Both commands need only Cloudflare authentication. `wrangler login` opens your browser once, so you can approve the connection; headless, set `CLOUDFLARE_API_TOKEN` to a token with the Workers Scripts: Edit permission instead. An unauthenticated run fails with these same instructions. On your first ever Workers deploy, wrangler also asks you to register a `*.workers.dev` subdomain. Answer it once and you never see it again.
 
 You land on a `*.workers.dev` address, with no DNS and no dashboard.
+
+The site is a static export. `next.config.ts` sets `output: "export"`, so `bun run build` writes plain HTML, CSS, and JavaScript to `out/`. There is no server, so any static host works.
 
 For your own domain, uncomment the `routes` block in `wrangler.jsonc` and deploy again. Cloudflare provisions DNS and the certificate at deploy time. This works when that domain's zone sits on the same Cloudflare account.
 
@@ -149,7 +154,7 @@ On another host, delete `wrangler.jsonc` and point that host at `out/`. Netlify 
 
 ### Optional: deploy on every push
 
-`bun run deploy` from your machine is the shortest path, and nothing here requires CI. [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) is an example for when you want pushes to deploy instead, and it is the practical way to publish a PDF, because its runner comes with Chrome.
+`bun run cli deploy` from your machine is the shortest path, and nothing here requires CI. [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) is an example for when you want pushes to deploy instead, and it is the practical way to publish a PDF, because its runner comes with Chrome.
 
 It runs manually until you add `CLOUDFLARE_API_TOKEN` (scoped to Workers Scripts: Edit) and `CLOUDFLARE_ACCOUNT_ID` as repository secrets and uncomment the `push` trigger. On another host, swap the final `wrangler deploy` step for that host's deploy command.
 

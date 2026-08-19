@@ -10,6 +10,7 @@ import { Cli } from "incur";
 
 import { registerCheck } from "./check";
 import { registerContract } from "./contract";
+import { registerDeploy, registerPreview } from "./deploy";
 import { registerUpdate } from "./update";
 import { registerVariant } from "./variant";
 
@@ -30,6 +31,8 @@ const cli = Cli.create("resume", {
 
 registerCheck(cli);
 registerContract(cli);
+registerDeploy(cli);
+registerPreview(cli);
 registerUpdate(cli);
 registerVariant(cli);
 

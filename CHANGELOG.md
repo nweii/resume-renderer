@@ -26,8 +26,11 @@ Versions are 0.x semver read as severity, not compatibility: a minor bump means 
 - **Surface** · Not breaking · `skills/resume-intake/`, the first bundled agent skill: an interview-driven intake that turns a user's material into schema-valid variant content, loading `docs/schema-contract.md` for the shape and finishing only when `check` passes. `skills add` installs it alongside the generated command skills. `skills/resume-intake/SKILL.md`, `cli/index.ts`, `.gitignore`, `README.md`, `AGENTS.md`.
 - **Surface** · Not breaking · `check` also enforces the changelog contract — a source-touching change needs an entry under `## Unreleased` or a `no-changelog: <reason>` commit trailer. `cli/check/changelog.ts`, `README.md`, `AGENTS.md`.
 
+- **Kernel** · Not breaking · `deploy` and `preview`, the CLI's publishing commands. `deploy` builds the static export and runs `wrangler deploy` — the explicit production deploy. `preview` builds and runs `wrangler versions upload`, printing the staged version's preview URL while production stays as it was. Both work from a fresh copy given only Cloudflare authentication; an unauthenticated run fails naming the fix (`bunx wrangler login`, or `CLOUDFLARE_API_TOKEN` with Workers Scripts: Edit). The `deploy` npm script now routes through the CLI, and a `preview` script joins it. `cli/deploy/`, `cli/index.ts`, `package.json`, `README.md`, `AGENTS.md`.
+
 ### Changed
 
+- **Surface** · Not breaking · The README deploy section leads with `bun run cli preview` and `bun run cli deploy` instead of the raw wrangler invocation. `README.md`.
 - **Surface** · Not breaking · The setup prompt now bounds its content step (every claim traces to the adopter, nothing invented), gates on the one-page fit, and handles an adopter with no host in mind. `README.md`.
 - **Surface** · Not breaking · Deploy docs cover the one-time `workers.dev` subdomain prompt, rank the host alternatives by how much config each needs, and keep the dashboard as the fallback when a custom-domain deploy fails. `README.md`.
 
