@@ -36,6 +36,7 @@ Versions are 0.x semver read as severity, not compatibility: a minor bump means 
 - **Surface** · Not breaking · The README deploy section leads with `bun run cli preview` and `bun run cli deploy` instead of the raw wrangler invocation. `README.md`.
 - **Surface** · Not breaking · The setup prompt now bounds its content step (every claim traces to the adopter, nothing invented), gates on the one-page fit, and handles an adopter with no host in mind. `README.md`.
 - **Surface** · Not breaking · Deploy docs cover the one-time `workers.dev` subdomain prompt, rank the host alternatives by how much config each needs, and keep the dashboard as the fallback when a custom-domain deploy fails. `README.md`.
+- **Surface** · Not breaking · The baseline template's type and rhythm: body 9.5pt at 1.55 leading (was 9pt at 1.3), name 25pt, section labels 12.5pt in a new accent color over a faded rule, entry titles 11pt, page margins 0.5in top and 0.7in sides. Two new theme tokens, `--t-baseline-accent` and `--t-baseline-rule`, carry the accent; before and after renders are in `docs/baseline-craft-pass/`. `templates/baseline/index.tsx`, `app/globals.css`, `docs/baseline-craft-pass/`.
 
 ### Fixed
 
@@ -56,6 +57,8 @@ The CLI is new and nothing else calls it, so take it or leave it. To take it, co
 The contract generator (`cli/contract/`) reads your schema through `lib/schema.ts` like everything else, so it needs no adaptation. After porting any schema change, run `bun run cli contract` and commit `docs/schema-contract.md`, or `check` will name it stale.
 
 `cli/check/changelog.ts` is the part that assumes things about you. Keep it only if your copy still keeps a `CHANGELOG.md` with an `## Unreleased` section, and it is worth keeping only if your copy has downstreams of its own. Its one tunable is `OUTSIDE_CONTRACT`, the paths that never reach a copy. Widen that list rather than loosening the rule: a check that lets silence pass stops being a check.
+
+The baseline template change is a set of numbers, so port it by value rather than by diff: the template's class strings name every size and spacing in points, and the comment above `shell` in `templates/baseline/index.tsx` summarizes the scale. Your theme block needs the two new tokens or the section labels, bullet markers, and contact links render in the fallback color: add `--t-baseline-accent` and `--t-baseline-rule` to both the screen and `@media print` blocks in `app/globals.css` (or whatever namespace your theme uses). The rule is `color-mix()` of the accent at 40% toward transparent; set the accent to your heading color for an all-black document. After porting, open `/` under `bun dev` and confirm your own content still fits one page — the looser leading adds roughly 15% height, and the overflow ruler tells you the moment it spills.
 
 `cli/update/` is written for you, the downstream. It needs the `upstream` remote from the README's setup steps and nothing else; copy it with the rest of `cli/` and add `.upstream-reviewed` to your `.gitignore`. If your copy has no downstreams of its own, the command still earns its keep — it is how you review these very port notes.
 

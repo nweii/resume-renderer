@@ -28,6 +28,11 @@
   --t-baseline-paper: oklch(1 0 0);
   --t-baseline-ink: oklch(0.16 0 0);
   --t-baseline-heading: oklch(0.08 0 0);
+  /* One restrained accent carries section labels, bullet markers, and contact
+     links. The rule under a section label is the accent faded toward the
+     paper. Set the accent to the heading color for an all-black document. */
+  --t-baseline-accent: oklch(0.52 0.1 258);
+  --t-baseline-rule: color-mix(in srgb, var(--t-baseline-accent) 40%, transparent);
   --t-baseline-font: Georgia, "Times New Roman", Times, serif;
 }
 
@@ -68,6 +73,8 @@ body {
     --t-baseline-paper: oklch(1 0 0);
     --t-baseline-ink: oklch(0.16 0 0);
     --t-baseline-heading: oklch(0.08 0 0);
+    --t-baseline-accent: oklch(0.52 0.1 258);
+    --t-baseline-rule: color-mix(in srgb, var(--t-baseline-accent) 40%, transparent);
     --t-baseline-font: Georgia, "Times New Roman", Times, serif;
   }
 
