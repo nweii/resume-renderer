@@ -22,7 +22,7 @@ export function registerVariant(cli: Cli.Cli) {
   })
     .command("create", {
       description:
-        "Scaffold a schema-valid content file, register it in lib/resume-variants.ts, and un-ignore it so the new route builds.",
+        "Scaffold a schema-valid content file (JSON, or markdown in the dialect), register it in lib/resume-variants.ts, and un-ignore it so the new route builds.",
       args: z.object({
         slug: z
           .string()
@@ -33,16 +33,26 @@ export function registerVariant(cli: Cli.Cli) {
           .enum(templateIds)
           .default("baseline")
           .describe("Template id the variant binds to"),
+        // Not `--format`: incur reserves that for its own output format.
+        markdown: z
+          .boolean()
+          .default(false)
+          .describe("Write the content file as markdown in the dialect (docs/markdown-dialect.md) instead of JSON"),
       }),
       examples: [
         {
           args: { slug: "backend-staff" },
           description: "Scaffold a variant rendered at /backend-staff",
         },
+        {
+          args: { slug: "backend-staff" },
+          options: { markdown: true },
+          description: "Scaffold the same variant with a markdown content file",
+        },
       ],
       run(c) {
         try {
-          return createVariant(c.args.slug, c.options.template);
+          return createVariant(c.args.slug, c.options.template, c.options.markdown ? "md" : "json");
         } catch (error) {
           if (!(error instanceof Error)) throw error;
           return c.error({

@@ -22,7 +22,7 @@ Read `docs/schema-contract.md`. Note the header shape and each section kind: wha
 
 ### 2. Pick the variant
 
-Ask which variant this content is for. For a new one, run `bun run cli variant create <slug>`; it scaffolds a registered, schema-valid placeholder you will replace. For an existing one, open `resumes/<slug>.json` and confirm with the user whether you are replacing or extending it.
+Ask which variant this content is for. For a new one, run `bun run cli variant create <slug>`; it scaffolds a registered, schema-valid placeholder you will replace. For an existing one, open its content file (`resumes/<slug>.json`, or `resumes/<slug>.md` in the dialect of `docs/markdown-dialect.md`) and confirm with the user whether you are replacing or extending it.
 
 ### 3. Gather the material
 
@@ -45,7 +45,7 @@ Order the sections the way the user wants them read; the file's order is the ren
 
 ### 6. Validate
 
-Write the content to `resumes/<slug>.json` and run `bun run cli check`. A failure names the file, the path into the JSON, and what is wrong. Fix and rerun. The intake is not done until check passes.
+Write the content to the variant's content file and run `bun run cli check`. A failure names the file, where in it (a JSON path, or a line and heading for markdown), and what is wrong. Fix and rerun. The intake is not done until check passes.
 
 ### 7. Offer a working copy
 
@@ -53,4 +53,4 @@ Ask whether the user wants a working copy to edit in their own editor. If yes, f
 
 ## Finishing
 
-Show the user their resume at the variant's URL under `bun dev`. Remind them that the JSON file is the only source of truth and that a registered variant must be committed.
+Show the user their resume at the variant's URL under `bun dev`. Remind them that the content file is the only source of truth and that a registered variant must be committed.

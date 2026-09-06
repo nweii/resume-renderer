@@ -1,12 +1,13 @@
-// Scaffolds a new variant: a schema-valid content file, a registry entry in
-// lib/resume-variants.ts, the .gitignore un-ignore line that keeps the file
-// tracked, and therefore a rendering route. The registry and .gitignore edits
-// are anchor-based and refuse to run when either file has drifted from the
-// shape they expect.
+// Scaffolds a new variant: a schema-valid content file (JSON, or markdown in
+// the dialect), a registry entry in lib/resume-variants.ts, the .gitignore
+// un-ignore line that keeps the file tracked, and therefore a rendering route.
+// The registry and .gitignore edits are anchor-based and refuse to run when
+// either file has drifted from the shape they expect.
 
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
+import { resumeToMarkdown } from "@/lib/resume-markdown";
 import { resumeSchema, type Resume } from "@/lib/schema";
 import type { ResumeTemplateId } from "@/templates";
 
@@ -14,6 +15,9 @@ export const REGISTRY_FILE = "lib/resume-variants.ts";
 export const GITIGNORE_FILE = ".gitignore";
 
 const REPO_ROOT = new URL("../..", import.meta.url).pathname;
+
+/** The content file's format, by extension. `md` follows docs/markdown-dialect.md. */
+export type ContentFormat = "json" | "md";
 
 /** URL-safe slugs only: lowercase words separated by single hyphens. */
 export const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -54,7 +58,7 @@ export class DriftError extends Error {}
 // The two anchors the registry edit relies on. If either is missing, the file
 // has been restructured and a human (or a more careful agent) must register
 // the variant by hand, as described under "Variant paths" in README.md.
-const IMPORT_ANCHOR = /^import .+ from "@\/resumes\/.+\.json";$/m;
+const IMPORT_ANCHOR = /^import .+ from "@\/resumes\/.+\.(?:json|md)";$/m;
 const ENTRY_ANCHOR = "} satisfies Record<string, ResumeVariant>;";
 
 /**
@@ -66,8 +70,9 @@ export function addVariantToRegistry(
   source: string,
   slug: string,
   templateId: ResumeTemplateId,
+  format: ContentFormat = "json",
 ): string {
-  if (source.includes(`resumeFile: "resumes/${slug}.json"`)) {
+  if (new RegExp(`resumeFile: "resumes/${slug}\\.(?:json|md)"`).test(source)) {
     throw new Error(`"${slug}" is already registered in ${REGISTRY_FILE}.`);
   }
 
@@ -76,21 +81,21 @@ export function addVariantToRegistry(
   const lastImport = importMatches.at(-1);
   if (!lastImport || lastImport.index === undefined) {
     throw new DriftError(
-      `${REGISTRY_FILE} has no \`import ... from "@/resumes/*.json"\` line to anchor on. Register the variant by hand (see "Variant paths" in README.md).`,
+      `${REGISTRY_FILE} has no \`import ... from "@/resumes/*.json"\` (or \`*.md\`) line to anchor on. Register the variant by hand (see "Variants" in README.md).`,
     );
   }
   const identifier = slugToIdentifier(slug);
   const importEnd = lastImport.index + lastImport[0].length;
   let next =
     source.slice(0, importEnd) +
-    `\nimport ${identifier} from "@/resumes/${slug}.json";` +
+    `\nimport ${identifier} from "@/resumes/${slug}.${format}";` +
     source.slice(importEnd);
 
   // Insert the entry just above the closing `satisfies` line.
   const anchorIndex = next.indexOf(ENTRY_ANCHOR);
   if (anchorIndex === -1) {
     throw new DriftError(
-      `${REGISTRY_FILE} has no \`${ENTRY_ANCHOR}\` line to anchor on. Register the variant by hand (see "Variant paths" in README.md).`,
+      `${REGISTRY_FILE} has no \`${ENTRY_ANCHOR}\` line to anchor on. Register the variant by hand (see "Variants" in README.md).`,
     );
   }
   const key = SLUG_PATTERN.test(slug) && !slug.includes("-") ? slug : JSON.stringify(slug);
@@ -99,7 +104,7 @@ export function addVariantToRegistry(
     `    id: "${slug}",`,
     `    slug: "${slug}",`,
     `    pathname: "/${slug}",`,
-    `    resumeFile: "resumes/${slug}.json",`,
+    `    resumeFile: "resumes/${slug}.${format}",`,
     `    resume: ${identifier},`,
     `    templateId: "${templateId}",`,
     `    themeId: "baseline",`,
@@ -113,11 +118,15 @@ export function addVariantToRegistry(
 
 /**
  * Returns .gitignore with an un-ignore line for the new file, added after the
- * existing `!resumes/*.json` lines so a registered variant stays tracked.
+ * existing `!resumes/*` lines so a registered variant stays tracked.
  * No-ops when the line already exists.
  */
-export function addVariantToGitignore(source: string, slug: string): string {
-  const line = `!resumes/${slug}.json`;
+export function addVariantToGitignore(
+  source: string,
+  slug: string,
+  format: ContentFormat = "json",
+): string {
+  const line = `!resumes/${slug}.${format}`;
   if (source.split("\n").includes(line)) return source;
   const anchor = "!resumes/default.json";
   const anchorIndex = source.indexOf(anchor);
@@ -142,6 +151,7 @@ export type CreateResult = {
 export function createVariant(
   slug: string,
   templateId: ResumeTemplateId,
+  format: ContentFormat = "json",
 ): CreateResult {
   if (!SLUG_PATTERN.test(slug)) {
     throw new Error(
@@ -149,7 +159,7 @@ export function createVariant(
     );
   }
 
-  const resumeFile = `resumes/${slug}.json`;
+  const resumeFile = `resumes/${slug}.${format}`;
   const resumePath = join(REPO_ROOT, resumeFile);
   if (existsSync(resumePath)) {
     throw new Error(
@@ -163,12 +173,18 @@ export function createVariant(
     readFileSync(registryPath, "utf8"),
     slug,
     templateId,
+    format,
   );
   const gitignore = addVariantToGitignore(
     readFileSync(gitignorePath, "utf8"),
     slug,
+    format,
   );
-  const resume = JSON.stringify(scaffoldResume(slug), null, 2) + "\n";
+  const scaffold = scaffoldResume(slug);
+  const resume =
+    format === "md"
+      ? resumeToMarkdown(scaffold)
+      : JSON.stringify(scaffold, null, 2) + "\n";
 
   writeFileSync(resumePath, resume);
   writeFileSync(registryPath, registry);
@@ -179,6 +195,6 @@ export function createVariant(
     file: resumeFile,
     registry: REGISTRY_FILE,
     route: `/${slug}`,
-    next: `Replace the placeholder content in ${resumeFile} (see docs/schema-contract.md), then run \`bun run check\`.`,
+    next: `Replace the placeholder content in ${resumeFile} (see ${format === "md" ? "docs/markdown-dialect.md" : "docs/schema-contract.md"}), then run \`bun run check\`.`,
   };
 }

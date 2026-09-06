@@ -1,8 +1,8 @@
 # Resume renderer
 
-Typed JSON goes in. A designed resume comes out, as a web page and as a print-ready PDF from the same content. Templates are plain React and Tailwind.
+Typed content goes in, as JSON or as markdown in a small dialect. A designed resume comes out, as a web page and as a print-ready PDF from the same content. Templates are plain React and Tailwind.
 
-This repo is built for an agent to operate. You edit the JSON, the page reloads, you look at it, and you repeat.
+This repo is built for an agent to operate. You edit the content file, the page reloads, you look at it, and you repeat.
 
 It is a GitHub template repository. Press **Use this template**, and the copy is yours. The copy does not depend on this repo at run time, so you can rewrite any part of it. `CONTEXT.md` defines the words this project uses, such as variant, template, and theme.
 
@@ -17,7 +17,7 @@ bun test
 bun run check      # content and changelog checks
 ```
 
-Edit `resumes/default.json`. The page reloads as you save.
+Edit `resumes/default.json`. The page reloads as you save. If you would rather write markdown, `bun run cli variant create <slug> --markdown` gives you a variant whose content file is `resumes/<slug>.md` in the dialect described in [`docs/markdown-dialect.md`](docs/markdown-dialect.md); it renders the same page.
 
 The content in the repo is a fictional person, Mira Sedgewick. It uses every section kind. Replace it with your own.
 
@@ -55,34 +55,44 @@ Ask me first before anything that spends money or needs my login.
 
 The agent needs the repo on disk. Press **Use this template**, clone your copy, then paste the prompt.
 
-## Edit through a working copy
+## Edit in markdown
 
-You do not have to edit the JSON by hand. Ask your agent to keep a working copy: a human-friendly mirror of the canonical content, in any format and any editor you like. Markdown is the plainest and the easiest to diff, so it is the recommended default. A word processor document or a cloud doc works the same way. The agent reconciles whatever you edit back into the canonical content. No special editor or extra application is involved.
+You do not have to edit JSON by hand. A variant's content file can be markdown instead, in the dialect described in [`docs/markdown-dialect.md`](docs/markdown-dialect.md): frontmatter for the header, `##` per section, `###` per entry with an organization-and-date line, `-` bullets. The file is canonical content, not a mirror of it. Nothing reconciles it into JSON; the renderer parses it against the same schema, and a problem is reported by line and heading:
 
-The loop has three parts:
+```text
+resumes/default.md: line 14 (## Experience) — bullets under `## Experience` belong to an entry; add a `### ` heading above them
+```
 
-1. You edit the working copy in your own editor and save.
-2. Your agent watches the file. It validates each change against the schema in `lib/schema.ts` and compiles it into the canonical content — the variant's JSON file, the only source of truth.
-3. `bun dev` is the preview, or the deployed site once you push. The page reloads when the JSON changes.
-
-When an edit does not fit the schema, the agent tells you what is wrong instead of writing broken JSON. The canonical content never leaves a valid state.
-
-A concrete round trip in markdown. Your working copy holds an entry like this:
+An entry looks like this:
 
 ```markdown
-### Senior Product Designer — Meridian Health
-2021 – present
+### Senior operations designer
+**Northline Cooperative** · *2021–Present*
 
 - **Redesigned the order exception workflow** used by 60 branch coordinators, reducing average resolution time from three days to one.
 ```
 
-You tighten the bullet and save. The agent maps the heading to the matching entry in the `experiences` section, rewrites that entry's `bullets` array in `resumes/default.json`, validates, and the page reloads. The `**bold**` convention is already valid in both forms, so it passes through unchanged.
+You tighten the bullet, save, and the page reloads. The `**bold**` convention is the same in both forms.
 
-To start a markdown working copy, ask the agent to write one from the current content. The `/resume.md` endpoint already renders the same outline, so the two stay easy to compare. If you would rather edit in a word processor or a cloud doc, say so — the loop is the same, only the file the agent reads changes.
+To switch an existing variant to markdown, save its `/resume.md` endpoint (or ask your agent for `resumeToMarkdown` of the JSON) as `resumes/<slug>.md`, point the registry entry's import and `resumeFile` at it, and un-ignore it in `.gitignore`. `bun run cli variant create <slug> --markdown` does all of that for a new variant. The dialect reads and writes the same, so `/resume.md` of any variant is a valid content file for it.
+
+## Edit through a working copy
+
+Markdown in the dialect needs no working copy: the file is the content. A working copy is for every other surface — a word processor document, a cloud doc, markdown in some other shape — that you would rather write in. Ask your agent to keep one: a human-friendly mirror of the canonical content, in any format and any editor you like. The agent reconciles whatever you edit back into the canonical content. No special editor or extra application is involved.
+
+The loop has three parts:
+
+1. You edit the working copy in your own editor and save.
+2. Your agent watches the file. It validates each change against the schema in `lib/schema.ts` and compiles it into the canonical content — the variant's content file, the only source of truth.
+3. `bun dev` is the preview, or the deployed site once you push. The page reloads when the content file changes.
+
+When an edit does not fit the schema, the agent tells you what is wrong instead of writing broken content. The canonical content never leaves a valid state.
+
+To start a working copy, ask the agent to write one from the current content. If you would rather edit in a word processor or a cloud doc, say so — the loop is the same, only the file the agent reads changes.
 
 ### Where working copies live
 
-Working copies kept in the repo live in `working/`, one per variant, named by variant slug: `working/default.md`. The directory is gitignored, because a working copy is always regenerable from the variant's JSON — the canonical content is what gets committed.
+Working copies kept in the repo live in `working/`, one per variant, named by variant slug: `working/default.docx`. The directory is gitignored, because a working copy is always regenerable from the variant's content file — the canonical content is what gets committed. A markdown file in the dialect does not belong there; it belongs in `resumes/`, as the variant's content file.
 
 A working copy can also live outside the repo: a cloud doc, a word processor file in your documents folder. That is fine, but its location gets declared, not remembered. The "Working copies" section in `AGENTS.md` records your chosen surface per variant — format, location, and whether the copy is a persistent mirror or regenerated on demand — so any agent session picks up the same setup. Tell your agent your preference once and it writes the declaration; edit the section by hand whenever you like.
 
@@ -97,10 +107,11 @@ bun run check --range origin/main..HEAD      # every commit a push would land
 
 It makes two judgements.
 
-Every variant registered in `lib/resume-variants.ts` must parse against the schema. A failure names the file, the path into the JSON, and what was wrong, so an agent can fix it without opening a browser:
+Every variant registered in `lib/resume-variants.ts` must parse against the schema. A failure names the file, where in it, and what was wrong, so an agent can fix it without opening a browser. A JSON file is located by path; a markdown file by line and heading:
 
 ```text
 resumes/default.json: sections.0.bullets.0 — Invalid input: expected string, received number
+resumes/backend.md: line 14 (## Experience) — bullets under `## Experience` belong to an entry; add a `### ` heading above them
 ```
 
 A change that touches source files must also carry a changelog decision. Either it adds an entry under `## Unreleased` in `CHANGELOG.md`, or its commit message carries a trailer that says it has nothing to port:
@@ -200,7 +211,7 @@ To turn it on:
 
 ## The data model
 
-`resumes/default.json` holds the content. The renderer validates it against the Zod schema in `lib/schema.ts`. A schema error gives you a readable page that lists every problem, instead of a half-rendered resume.
+`resumes/default.json` holds the content. The renderer validates it against the Zod schema in `lib/schema.ts`. A schema error gives you a readable page that lists every problem, instead of a half-rendered resume. A markdown content file (`resumes/<slug>.md`, in the dialect of [`docs/markdown-dialect.md`](docs/markdown-dialect.md)) is parsed into this same shape first, and its problems are listed by line and heading.
 
 The top level looks like this:
 
@@ -234,12 +245,12 @@ Read `resumes/default.json` for a worked example of every section kind.
 
 There are four knobs. The rest is framework.
 
-1. **Your content.** Rewrite `resumes/default.json`. The exact shape is in `lib/schema.ts`.
+1. **Your content.** Rewrite `resumes/default.json`, or register a markdown file in its place. The exact shape is in `lib/schema.ts`; the markdown notation for it is in `docs/markdown-dialect.md`.
 2. **Your identity.** [`lib/site.ts`](lib/site.ts) holds the name, title, description, and favicon colors. Replace `app/favicon-mark.svg` with your own mark. Copy the name into the file names in [`public/_headers`](public/_headers), so a saved file gets a name you recognize.
 3. **Your colors.** Each variant names a `themeId` in [`lib/resume-variants.ts`](lib/resume-variants.ts). The page root then gets `data-resume-theme="<id>"`. Add a block with that id in [`app/globals.css`](app/globals.css) and declare CSS custom properties in it. Templates read those properties, so a theme restyles a template without changing it. Two routes can share one template and use different themes.
 4. **Your font.** The baseline template reads one property, `--t-baseline-font`. For a system font or a self-hosted font, edit that value in `app/globals.css`. For a Google Font, load it with `next/font/google` in your own `lib/fonts.ts`. Put its CSS variable on `<html>` in `app/layout.tsx`, then point `--t-baseline-font` at that variable. `next/font` copies the font files into the build, so the live page makes no request to Google.
 
-Past these knobs it is ordinary React and Tailwind. Section headers, the grid, print-only elements: all of it is component work in `templates/` and `app/globals.css`. [`app/page.tsx`](app/page.tsx) and [`app/[variant]/page.tsx`](app/[variant]/page.tsx) stay thin. They look up a variant in [`lib/resume-variants.ts`](lib/resume-variants.ts), validate its JSON, and render the template that the variant names.
+Past these knobs it is ordinary React and Tailwind. Section headers, the grid, print-only elements: all of it is component work in `templates/` and `app/globals.css`. [`app/page.tsx`](app/page.tsx) and [`app/[variant]/page.tsx`](app/[variant]/page.tsx) stay thin. They look up a variant in [`lib/resume-variants.ts`](lib/resume-variants.ts), read its content through [`lib/resume-content.ts`](lib/resume-content.ts) (which parses markdown and validates either format), and render the template that the variant names.
 
 ### Templates
 
@@ -252,23 +263,24 @@ The agent feedback toolbar (`Agentation` in `app/layout.tsx`) runs in developmen
 
 ### Variant paths
 
-[`lib/resume-variants.ts`](lib/resume-variants.ts) is the one place that defines public paths. Each entry binds one URL slug to a JSON file, a template id, and a theme id.
+[`lib/resume-variants.ts`](lib/resume-variants.ts) is the one place that defines public paths. Each entry binds one URL slug to a content file (`.json`, or `.md` in the dialect), a template id, and a theme id.
 
 - `/` renders the default variant.
 - `/default` renders the same content through the path-based mechanism.
 
-To add a route, copy the `default` entry. Point `resume` at another imported JSON file. Then change `slug` and `pathname`, and change `templateId` or `themeId` if you want. The static export finds it through `generateStaticParams()`.
+To add a route, copy the `default` entry. Point `resume` at another imported content file and `resumeFile` at its path; a `.md` import is the file's text (the `[loader]` table in `bunfig.toml` and the `*.md` rule in `next.config.ts` make it so). Then change `slug` and `pathname`, and change `templateId` or `themeId` if you want. The static export finds it through `generateStaticParams()`.
 
 ## Add a section kind
 
-All templates and the Markdown converter share the schema. Each one must handle every kind you add. The discriminated union keeps them in step.
+All templates and the markdown dialect share the schema. Each one must handle every kind you add. The discriminated union keeps them in step.
 
 1. Add a section variant to the `sectionSchema` union in **`lib/schema.ts`**. Give it a unique `kind` value and its entry shape.
 2. Add a `case` to the `Document` switch in each template listed in **[`templates/index.ts`](templates/index.ts)**. Add the section styling that the layout needs.
 3. If your themes use per-section properties, declare them in **`app/globals.css`**. Add them to each `[data-resume-theme="…"]` block, and to the block inside `@media print`.
-4. Add a `case` to the `renderSection` switch in **`lib/resume-markdown.ts`**, so the kind appears in the `.md` endpoint.
+4. Add the labels that name the kind to `sectionKindLabels` in **`lib/resume-markdown.ts`**. The dialect reads the rest from the schema: a kind built from the existing fields (`title`, `organization`, `dateRange`, `summary`, `bullets`) needs nothing more. A new field needs a notation, in both `resumeToMarkdown` and the parser, and a line in `docs/markdown-dialect.md`.
+5. Run `bun run cli contract` and commit `docs/schema-contract.md`.
 
-TypeScript reports any switch arm you miss, because it checks the union for completeness.
+TypeScript reports any switch arm or label row you miss, because it checks the union for completeness.
 
 ## Data endpoints
 
@@ -278,10 +290,10 @@ Each variant publishes three representations, and a fourth if you turn the PDF o
 | -------------------------------------- | -------- | --------------------------------------------------------------------- |
 | `/` · `/<slug>`                        | HTML     | The rendered template.                                                |
 | `/resume.json` · `/<slug>/resume.json` | JSON     | Validated data, pretty-printed. Parse it against `lib/schema.ts`.     |
-| `/resume.md` · `/<slug>/resume.md`     | Markdown | Fixed outline: H1 name · H2 section · H3 entry · `-` bullets.          |
+| `/resume.md` · `/<slug>/resume.md`     | Markdown | The dialect in `docs/markdown-dialect.md`; a valid content file as-is. |
 | `/resume.pdf` · `/<slug>/resume.pdf`   | PDF      | US letter. Opt-in — see "Make a PDF".                                 |
 
-The Markdown converter in [`lib/resume-markdown.ts`](lib/resume-markdown.ts) reads the schema, so a new template gets Markdown without new code. A template can export its own `toMarkdown` in [`templates/index.ts`](templates/index.ts) when its outline is different. The `**bold**` convention is already valid Markdown and passes through unchanged.
+The markdown writer in [`lib/resume-markdown.ts`](lib/resume-markdown.ts) reads the schema, so a new template gets Markdown without new code, and its output parses back into the same content. A template can export its own `toMarkdown` in [`templates/index.ts`](templates/index.ts) when its outline is different; an override leaves the dialect, so its output no longer round-trips. The `**bold**` convention is already valid Markdown and passes through unchanged.
 
 `next build` writes the first three as static files, and `bun run pdf` adds the fourth when you enable it. They serve straight from the CDN, and nothing runs on a server.
 
@@ -291,11 +303,11 @@ The HTML page points at its siblings in two ways. The head carries `<link rel="a
 
 A variant is one whole content file. It is bound to a template and a theme, at its own URL.
 
-`bun run cli variant create <slug>` does the whole registration in one step: it writes a schema-valid placeholder file to `resumes/<slug>.json`, adds the registry entry in `lib/resume-variants.ts` (pass `--template` to bind a template other than `baseline`), and adds the `.gitignore` un-ignore line, so the new route builds immediately. Replace the placeholder content, then run `bun run check`. `bun run cli variant list` prints every registered variant with its slug and template.
+`bun run cli variant create <slug>` does the whole registration in one step: it writes a schema-valid placeholder file to `resumes/<slug>.json` (or `resumes/<slug>.md` in the markdown dialect, with `--markdown`), adds the registry entry in `lib/resume-variants.ts` (pass `--template` to bind a template other than `baseline`), and adds the `.gitignore` un-ignore line, so the new route builds immediately. Replace the placeholder content, then run `bun run check`. `bun run cli variant list` prints every registered variant with its slug and template.
 
-Deleting a variant is manual for now: reverse the three edits `create` makes. Delete `resumes/<slug>.json`, remove the entry and its import from `lib/resume-variants.ts`, and remove the `!resumes/<slug>.json` line from `.gitignore`. Delete its working copy too, if one exists. `bun run check` confirms nothing dangles.
+Deleting a variant is manual for now: reverse the three edits `create` makes. Delete the content file, remove the entry and its import from `lib/resume-variants.ts`, and remove its `!resumes/<slug>.…` line from `.gitignore`. Delete its working copy too, if one exists. `bun run check` confirms nothing dangles.
 
-Files for a specific role, such as `backend-staff.json`, stay untracked. The `resumes/*.json` rule in `.gitignore` keeps drafts off the record. When you register one in `lib/resume-variants.ts`, add a matching un-ignore line and commit the file. The build imports every registered variant, so a fresh clone cannot render without it.
+Files for a specific role, such as `backend-staff.json` or `backend-staff.md`, stay untracked. The `resumes/*.json` and `resumes/*.md` rules in `.gitignore` keep drafts off the record. When you register one in `lib/resume-variants.ts`, add a matching un-ignore line and commit the file. The build imports every registered variant, so a fresh clone cannot render without it.
 
 A variant is not a filtered view of the default. Each one is a whole file, tuned by hand. The duplication is on purpose. It lets you cut, reorder, and re-emphasize for one role, and no other variant changes.
 

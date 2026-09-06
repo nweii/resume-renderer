@@ -50,8 +50,10 @@ yarn-error.log*
 next-env.d.ts
 
 # working copies — human-friendly mirrors of canonical content, one per
-# variant, named by slug (working/default.md). Regenerable from the variant
-# JSON, so never committed. See "Edit through a working copy" in README.md.
+# variant, named by slug (working/default.docx). Regenerable from the variant's
+# content file, so never committed. Markdown in the dialect is not a working
+# copy; it lives in resumes/ as the content file itself. See "Edit through a
+# working copy" in README.md.
 working/
 
 # upstream review marker — per-copy state naming the newest upstream release
@@ -64,4 +66,5 @@ working/
 # comfortable to have in public git history. Default is the canonical, variants
 # are personal drafts.
 resumes/*.json
+resumes/*.md
 !resumes/default.json

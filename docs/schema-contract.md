@@ -4,6 +4,8 @@ Generated from `lib/schema.ts` by `bun run cli contract`. Do not edit by hand â€
 
 Reading a line: `?` marks an optional field, `/* â€¦ */` carries the field's prose, and a capitalized bare name (`Header`, `Contact`) is a shape defined under its own heading.
 
+A content file is this shape as JSON, or as markdown in the dialect stated in `docs/markdown-dialect.md`, where each field below has one notation.
+
 ## Document shape
 
 - resume({ header: Header, sections: Section[] })

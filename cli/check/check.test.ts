@@ -52,6 +52,55 @@ describe("variant validation", () => {
     expect(problem).toContain("sections.0.bullets.0");
   });
 
+  test("reports a markdown variant by line and heading, not a JSON path", () => {
+    const broken = {
+      ...validVariant,
+      resumeFile: "resumes/sample.md",
+      resume: [
+        "---",
+        "name: Sample Person",
+        "subtitle:",
+        "contact:",
+        "  email: sample@example.com",
+        "---",
+        "",
+        "## Experience",
+        "",
+        "- a bullet with no entry above it",
+        "",
+      ].join("\n"),
+    };
+
+    const [problem] = describeVariantFailures(checkVariants([broken]));
+
+    expect(problem).toContain("resumes/sample.md");
+    expect(problem).toContain("line 10 (## Experience)");
+    expect(problem).not.toContain("sections.");
+  });
+
+  test("validates a markdown variant through the schema like a JSON one", () => {
+    const markdown = {
+      ...validVariant,
+      resumeFile: "resumes/sample.md",
+      resume: [
+        "---",
+        "name: Sample Person",
+        "subtitle:",
+        "  - Line one",
+        "contact:",
+        "  email: sample@example.com",
+        "---",
+        "",
+        "## Skills",
+        "",
+        "- One",
+        "",
+      ].join("\n"),
+    };
+
+    expect(checkVariants([markdown]).failures).toEqual([]);
+  });
+
   test("names an unknown section kind rather than silently skipping it", () => {
     const broken = {
       ...validVariant,

@@ -40,11 +40,15 @@ _Avoid_: page size, aspect ratio (a geometry may be expressed as either)
 ### Content and editing
 
 **Canonical content**:
-The variant's JSON file. Every other editing surface is a convenience that reconciles back to it.
+The variant's content file: JSON, or markdown in the dialect (`docs/markdown-dialect.md`). Every other editing surface is a convenience that reconciles back to it.
 _Avoid_: source of truth (say which one), master
 
 **Working copy**:
-Any human-friendly mirror of canonical content — markdown, a word processor document, a cloud doc — that the user edits and the agent reconciles into canonical content. The format is the user's choice; nothing in the product assumes one.
+Any human-friendly mirror of canonical content — a word processor document, a cloud doc, markdown outside the dialect — that the user edits and the agent reconciles into canonical content. The format is the user's choice; nothing in the product assumes one. Markdown in the dialect is canonical content itself, not a working copy.
+
+**Dialect**:
+The markdown notation for the schema: one construct per field, parsed deterministically, written by the `.md` representation. A file in the dialect is canonical content.
+_Avoid_: markdown format, template (a template renders)
 _Avoid_: middle surface, mirror file
 
 **Source pool**:

@@ -38,6 +38,8 @@ export function renderContract(): string {
     "",
     "Reading a line: `?` marks an optional field, `/* … */` carries the field's prose, and a capitalized bare name (`Header`, `Contact`) is a shape defined under its own heading.",
     "",
+    "A content file is this shape as JSON, or as markdown in the dialect stated in `docs/markdown-dialect.md`, where each field below has one notation.",
+    "",
     "## Document shape",
     "",
     `- resume(${formatObject(resume, definitions, 1)})`,

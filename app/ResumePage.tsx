@@ -1,26 +1,34 @@
+import { readResume } from "@/lib/resume-content";
 import type { ResumeVariant } from "@/lib/resume-variants";
-import { resumeSchema } from "@/lib/schema";
 import { getResumeTemplate } from "@/templates";
 import { AgentEndpoints } from "./AgentEndpoints";
 import { PageEdge } from "./PageEdge";
 import { ResumeScaler } from "./ResumeScaler";
 
 export function ResumePage({ variant }: { variant: ResumeVariant }) {
-  const parsed = resumeSchema.safeParse(variant.resume);
-  if (!parsed.success) {
+  const content = readResume(variant);
+  if (!content.resume) {
     // Fail loud and readable. This is the error path the agent loop sees
-    // when JSON drifts from the schema — surface the raw issues array so edits
-    // can be fixed without round-tripping through the console.
+    // when content drifts from the schema or the markdown dialect — one line
+    // per problem, located in the file's own terms (a JSON path, or a line
+    // and heading), so edits can be fixed without round-tripping through the
+    // console.
     return (
       <main className="min-h-screen bg-red-50 p-8 font-mono text-sm text-red-900 dark:bg-red-950/50 dark:text-red-100">
-        <h1 className="mb-4 text-lg font-bold">{variant.resumeFile} failed schema validation</h1>
-        <pre className="whitespace-pre-wrap">{JSON.stringify(parsed.error.issues, null, 2)}</pre>
+        <h1 className="mb-4 text-lg font-bold">{variant.resumeFile} failed validation</h1>
+        <ul className="space-y-2">
+          {content.issues.map((issue, index) => (
+            <li key={index} className="whitespace-pre-wrap">
+              <span className="font-bold">{issue.at}</span> — {issue.message}
+            </li>
+          ))}
+        </ul>
       </main>
     );
   }
 
   const { shell, Document } = getResumeTemplate(variant.templateId);
-  const { header, sections } = parsed.data;
+  const { header, sections } = content.resume;
 
   return (
     <main

@@ -8,3 +8,9 @@ minimumReleaseAge = 259200
 exact = true
 frozenLockfile = true
 saveTextLockfile = true
+
+# A `.md` import is its text, so a registered markdown content file reaches the
+# variant registry the same way a `.json` one does. Turbopack does the same for
+# `next build` and `next dev` through the `*.md` rule in next.config.ts.
+[loader]
+".md" = "text"

@@ -62,6 +62,17 @@ describe("registry edit", () => {
     );
   });
 
+  test("registers a markdown content file when asked", () => {
+    const next = addVariantToRegistry(registrySource, "backend-staff", "baseline", "md");
+
+    expect(next).toContain('import resumeBackendStaff from "@/resumes/backend-staff.md";');
+    expect(next).toContain('resumeFile: "resumes/backend-staff.md"');
+    // The slug is taken whichever format registered it.
+    expect(() => addVariantToRegistry(next, "backend-staff", "baseline")).toThrow(
+      "already registered",
+    );
+  });
+
   test("names the drift when an anchor is missing", () => {
     expect(() => addVariantToRegistry("// empty file", "x", "baseline")).toThrow(
       DriftError,
@@ -75,6 +86,12 @@ describe("gitignore edit", () => {
   test("adds the un-ignore line after the default one", () => {
     expect(addVariantToGitignore(gitignore, "backend-staff")).toBe(
       "resumes/*.json\n!resumes/default.json\n!resumes/backend-staff.json\n",
+    );
+  });
+
+  test("un-ignores a markdown content file by its own extension", () => {
+    expect(addVariantToGitignore(gitignore, "backend-staff", "md")).toBe(
+      "resumes/*.json\n!resumes/default.json\n!resumes/backend-staff.md\n",
     );
   });
 

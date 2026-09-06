@@ -1,3 +1,8 @@
+// The variant registry: the one place that defines public URL paths and binds
+// each content file to a template and theme. A content file is JSON or
+// markdown in the dialect (docs/markdown-dialect.md); `lib/resume-content.ts`
+// turns either into validated content.
+
 import defaultResume from "@/resumes/default.json";
 import type { ResumeTemplateId } from "@/templates";
 
@@ -7,7 +12,9 @@ export type ResumeVariant = {
   id: string;
   slug: string;
   pathname: `/${string}`;
+  /** Repo-relative path, `.json` or `.md`; the extension says how `resume` reads. */
   resumeFile: string;
+  /** The content file as imported: a JSON object, or markdown text. */
   resume: unknown;
   templateId: ResumeTemplateId;
   themeId: ResumeThemeId;
