@@ -9,6 +9,8 @@ Versions are 0.x semver read as severity, not compatibility: a minor bump means 
 
 ## Unreleased
 
+## 0.2.1 — 2026-09-07
+
 ### Added
 
 - **Kernel** · Not breaking · `check` fails when `package.json`'s `version` lags the newest release heading in `CHANGELOG.md`, and `resume --version` reads `package.json`, the one place the version lives; `package.json` now says 0.2.0 to match the tag. `cli/check/version.ts`, `cli/check/index.ts`, `cli/index.ts`, `package.json`, `README.md`, `AGENTS.md`.
