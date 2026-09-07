@@ -95,7 +95,7 @@ Within an entry, each field has one notation:
 | `summary` | A paragraph of plain text before the bullets |
 | `bullets` | `- ` list items |
 
-The organization-and-date line counts only as the first non-blank line after the `### ` heading, and only when it consists of nothing but those two forms. Either half may stand alone. A kind whose entries lack a field rejects that notation: an `**Organization**` under `education` is an error, and so is a paragraph under `projects`.
+The organization-and-date line counts only as the first non-blank line after the `### ` heading, and only when it consists of nothing but those two forms. Either half may stand alone. Between the two, the parser accepts `·`, `—`, `-`, `|`, or `,`, with or without surrounding spaces, so a file written in another markdown resume convention parses without edits; the writer always produces `·`. A kind whose entries lack a field rejects that notation: an `**Organization**` under `education` is an error, and so is a paragraph under `projects`.
 
 Bullets are one line each. A bullet an editor has hard-wrapped, with its continuation lines indented, reads as one bullet. Both `- ` and `* ` mark a bullet. `**bold**` inside a bullet is the one inline convention the schema allows; it passes through untouched.
 

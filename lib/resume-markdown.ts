@@ -148,8 +148,11 @@ const kindShapes: Map<string, KindShape> = new Map(
 const HEADING = /^(#{1,6})\s+(.*?)\s*$/;
 const KIND_MARKER = /^<!--\s*kind:\s*([\w-]+)\s*-->$/;
 const BULLET = /^\s*[-*]\s+(.*)$/;
-/** `**organization** · *dateRange*`, either half optional. */
-const META = /^(?:\*\*(.+?)\*\*)?(?:\s*·\s*)?(?:\*([^*].*?)\*)?$/;
+/**
+ * `**organization** · *dateRange*`, either half optional. The separator may also be `—`, `-`, `|`, or `,`
+ * (surrounding spaces optional); the writer emits `·`.
+ */
+const META = /^(?:\*\*(.+?)\*\*)?(?:\s*[·—|,-]\s*)?(?:\*([^*].*?)\*)?$/;
 
 type OpenSection = {
   heading: string;

@@ -9,6 +9,10 @@ Versions are 0.x semver read as severity, not compatibility: a minor bump means 
 
 ## Unreleased
 
+### Changed
+
+- **Surface** · Not breaking · The markdown parser accepts `—`, `-`, `|`, and `,` as well as `·` between `**organization**` and `*dateRange*` on an entry's meta line, surrounding spaces optional, so a hand-written file from another markdown resume convention parses without edits. The writer still emits `·`. `lib/resume-markdown.ts`, `docs/markdown-dialect.md`.
+
 ## 0.2.0 — 2026-09-07
 
 ### Added

@@ -256,6 +256,22 @@ describe("parseResumeMarkdown", () => {
     expect(parseClean(resumeToMarkdown(resume))).toEqual(resume);
   });
 
+  test.each(["·", "—", "-", "|", ","])("accepts %s between organization and date range", (separator) => {
+    const expected = {
+      header: minimalHeader,
+      sections: [
+        {
+          kind: "experiences",
+          label: "Experience",
+          entries: [{ title: "Lead", organization: "Org", dateRange: "2020–2021", bullets: ["x"] }],
+        },
+      ],
+    };
+    for (const line of [`**Org** ${separator} *2020–2021*`, `**Org**${separator}*2020–2021*`]) {
+      expect(parseClean(`${frontmatter}\n\n## Experience\n\n### Lead\n${line}\n\n- x\n`)).toEqual(expected);
+    }
+  });
+
   test("the worked example in docs/markdown-dialect.md is the demo content", () => {
     const section = dialect.slice(dialect.indexOf("## Worked example"));
     const fence = /```markdown\n([\s\S]*?)```/.exec(section);
