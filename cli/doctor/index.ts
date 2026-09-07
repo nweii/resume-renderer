@@ -5,7 +5,6 @@
 // Network checks skip with a note when offline, being behind upstream is
 // information, and doctor itself never changes anything anywhere.
 
-import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 
 import type { Cli } from "incur";
@@ -14,12 +13,9 @@ import { checkContract, describeContractFailures } from "../check/contract";
 import { checkVariants, describeVariantFailures } from "../check/variants";
 import { runWrangler } from "../deploy/wrangler";
 import {
-  compareVersions,
   hasUpstreamRemote,
-  parseVersion,
-  readMarker,
+  reviewUpstream,
   UPSTREAM_REMOTE,
-  upstreamReleases,
 } from "../update";
 import {
   checkWranglerConfig,
@@ -79,17 +75,7 @@ function upstreamFinding(): Finding {
       detail: `No "${UPSTREAM_REMOTE}" remote, so there is nothing to compare against. Nothing is wrong; add one (git remote add ${UPSTREAM_REMOTE} <url>) to review upstream releases.`,
     };
 
-  const fetch = spawnSync("git", ["fetch", "--tags", UPSTREAM_REMOTE], {
-    encoding: "utf8",
-  });
-  const offline = fetch.status !== 0;
-
-  const marker = readMarker();
-  const markerVersion = marker ? parseVersion(marker) : null;
-  const unreviewed = upstreamReleases().filter(
-    (release) =>
-      !markerVersion || compareVersions(release.version, markerVersion) > 0,
-  );
+  const { offline, reviewed: marker, releases: unreviewed } = reviewUpstream();
 
   if (offline && unreviewed.length === 0)
     return {
@@ -113,7 +99,7 @@ function upstreamFinding(): Finding {
   return {
     check,
     status: "info",
-    detail: `${unreviewed.length} release${unreviewed.length === 1 ? "" : "s"} since the last review${marker ? ` (${marker})` : ""}.${staleNote} Not a failure — run \`resume update\` to read and port them.`,
+    detail: `${unreviewed.length} release${unreviewed.length === 1 ? "" : "s"} ${marker ? `since ${marker}, the last release reviewed` : "never reviewed"}.${staleNote} Not a failure — run \`resume update\` to read and port them.`,
   };
 }
 

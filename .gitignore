@@ -57,7 +57,8 @@ next-env.d.ts
 working/
 
 # upstream review marker — per-copy state naming the newest upstream release
-# the operator reviewed. Written by `bun run cli update --reviewed <tag>`;
+# the operator reviewed. Seeded by `bun run cli setup` with the release the
+# copy started from, advanced by `bun run cli update --reviewed <tag>`;
 # meaningful only to this copy, so never committed.
 .upstream-reviewed
 

@@ -26,6 +26,7 @@ import {
   runWrangler,
 } from "../deploy/wrangler";
 import { classifyDeployments } from "../doctor/checks";
+import { MARKER_FILE, readMarker, seedMarker } from "../update";
 import {
   defaultWorkerName,
   DriftError,
@@ -184,11 +185,17 @@ export function registerSetup(cli: Cli.Cli) {
         deployed: authenticated && !needsName && isDeployed(),
       };
       const stages = planStages(state);
+      // A fresh copy starts current with upstream: the marker names the
+      // release it was created from, so the first `update` lists only what
+      // came after. Seeded once, never rewritten.
+      const seeded = seedMarker(REPO_ROOT);
+      const reviewed = readMarker(REPO_ROOT);
       console.log(
         [
           `    Worker name: ${workerName}${unnamed ? " (the template default — this copy was never named)" : ""}`,
           `    Cloudflare auth: ${authenticated ? "logged in" : "not logged in"}`,
           `    Worker deployed: ${state.deployed ? "yes" : authenticated ? "no" : "unknown until logged in"}`,
+          `    Upstream reviewed through: ${seeded ? `${seeded} (seeded from CHANGELOG.md into ${MARKER_FILE})` : (reviewed ?? "unknown — no release heading in CHANGELOG.md to seed from")}`,
           stages.length === 0
             ? "    Nothing to do — this copy is fully set up."
             : `    Remaining: ${stages.join(", ")}`,

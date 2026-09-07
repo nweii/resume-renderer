@@ -48,7 +48,8 @@ Read AGENTS.md, CONTEXT.md, and lib/schema.ts before you change anything.
    browser opens once to approve the host. Relay any prompt it asks. Then
    give me the URL.
 7. Add this repo as a remote named upstream, so you can port its later
-   changes into my copy.
+   changes into my copy. `bun run cli update` then lists only the releases
+   newer than the one my copy started from.
 
 Ask me first before anything that spends money or needs my login.
 ```

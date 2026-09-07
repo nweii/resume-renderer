@@ -11,7 +11,14 @@ Versions are 0.x semver read as severity, not compatibility: a minor bump means 
 
 ### Changed
 
+- **Kernel** · Not breaking · `update` returns each release's changelog section once, in `releases[].section`; the message carries only the summary line (with the tags) and the closing instruction. Output for two releases halves. `cli/update/index.ts`.
+- **Kernel** · Not breaking · `update` and `doctor` fetch upstream's tags into `refs/remotes/upstream/tags/*` (`git fetch --no-tags upstream '+refs/tags/*:refs/remotes/upstream/tags/*'`) and read release changelogs from those refs, instead of importing upstream's tags into the copy's own `refs/tags/*` and listing everything there. A copy's own version-shaped tags no longer read as upstream releases, a tag named like an upstream release no longer makes the fetch fail, and `git push --tags` from a copy never publishes upstream's tags. `doctor` reads the same `reviewUpstream()` the command does. `cli/update/index.ts`, `cli/doctor/index.ts`.
+- **Kernel** · Not breaking · A fresh copy starts current with upstream. `setup` seeds `.upstream-reviewed` with the release the copy was created from, read from the newest release heading in the copy's own `CHANGELOG.md`, and a first `update` on a copy without a marker seeds it the same way; `doctor` reads the same starting point without writing. The first review no longer lists the release the copy already has. `doctor` and `update` now say "never reviewed" in the same words. `cli/update/index.ts`, `cli/setup/index.ts`, `cli/doctor/index.ts`, `README.md`, `AGENTS.md`, `.gitignore`.
 - **Surface** · Not breaking · The markdown parser accepts `—`, `-`, `|`, and `,` as well as `·` between `**organization**` and `*dateRange*` on an entry's meta line, surrounding spaces optional, so a hand-written file from another markdown resume convention parses without edits. The writer still emits `·`. `lib/resume-markdown.ts`, `docs/markdown-dialect.md`.
+
+### Port
+
+If your copy took the CLI, copy `cli/update/index.ts` whole and re-apply the one-line `reviewUpstream()` call in `cli/doctor/index.ts`'s upstream finding, then the `seedMarker` call in `cli/setup/index.ts`'s detect stage. After porting, delete any upstream tags the old fetch imported into your copy (`git tag -d v0.1.0 v0.2.0`, or whichever names match upstream's releases); they are dead weight and `git push --tags` would publish them. Your `.upstream-reviewed` is unaffected: if it exists it stays authoritative, and if it does not, the next `update` seeds it from the newest release heading in your `CHANGELOG.md`, which is right only if that heading is still upstream's release. If your copy has cut releases of its own, seed it by hand with `bun run cli update --reviewed <tag>` before running `update`. No content, template, or schema change here.
 
 ## 0.2.0 — 2026-09-07
 
