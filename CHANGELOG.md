@@ -9,6 +9,8 @@ Versions are 0.x semver read as severity, not compatibility: a minor bump means 
 
 ## Unreleased
 
+## 0.2.0 — 2026-09-07
+
 ### Added
 
 - **Surface** · Not breaking · Docs only: `VISION.md` states the core idea and the three tenets that govern judgment calls; AGENTS.md points agents at it. `VISION.md`, `AGENTS.md`.
