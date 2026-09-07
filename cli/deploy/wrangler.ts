@@ -5,21 +5,27 @@
 
 import { spawnSync } from "node:child_process";
 
+import { repoRoot } from "../repo";
+
 export type RunResult = {
   ok: boolean;
   output: string;
 };
 
-/** `bun run build`, streamed to the terminal so build progress stays visible. */
+/** `bun run build` in the target repo, streamed so build progress stays visible. */
 export function runBuild(): boolean {
-  const result = spawnSync("bun", ["run", "build"], { stdio: "inherit" });
+  const result = spawnSync("bun", ["run", "build"], {
+    stdio: "inherit",
+    cwd: repoRoot(),
+  });
   return result.status === 0;
 }
 
-/** Run wrangler via bun's package runner, capturing everything it prints. */
+/** Run wrangler in the target repo via bun's package runner, capturing everything it prints. */
 export function runWrangler(args: string[]): RunResult {
   const result = spawnSync("bun", ["x", "wrangler", ...args], {
     encoding: "utf8",
+    cwd: repoRoot(),
   });
   return {
     ok: result.status === 0,

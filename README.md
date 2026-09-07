@@ -106,7 +106,7 @@ bun run check                                # the working tree
 bun run check --range origin/main..HEAD      # every commit a push would land
 ```
 
-It makes two judgements.
+It makes these judgements.
 
 Every variant registered in `lib/resume-variants.ts` must parse against the schema. A failure names the file, where in it, and what was wrong, so an agent can fix it without opening a browser. A JSON file is located by path; a markdown file by line and heading:
 
@@ -124,6 +124,10 @@ no-changelog: comments only, invisible from a copy of this repo
 A missing decision fails. An explicit "nothing to port" passes. What matters is that somebody chose, because `CHANGELOG.md` is the only thing a copy of this repo can read to find out what changed. The trailer needs a reason after the colon; a bare `no-changelog:` does not count.
 
 `CHANGELOG.md` itself and `.claude/` are outside the contract. Everything else counts as source, documentation included, because a copy reads the same documentation.
+
+`package.json` must carry the version of the newest release heading in `CHANGELOG.md`. `resume --version` reads that field, so a release that forgets to bump it fails here before it is tagged.
+
+Every command reads the repo at the working directory's git root, not the checkout the CLI's source was loaded from. A copy that has no `cli/` of its own can run this repo's against itself: `cd <copy> && bun run <path-to-this-repo>/cli/index.ts doctor` examines the copy.
 
 The CLI is built on [incur](https://github.com/wevm/incur), so an agent can discover it without being told. `bun run cli --llms` prints the command manifest, `bun run check --schema` prints one command's arguments as JSON Schema, and `--format json` makes any output machine-readable. Commands live one folder deep under `cli/`, which is where the next one goes.
 
@@ -304,7 +308,7 @@ The HTML page points at its siblings in two ways. The head carries `<link rel="a
 
 A variant is one whole content file. It is bound to a template and a theme, at its own URL.
 
-`bun run cli variant create <slug>` does the whole registration in one step: it writes a schema-valid placeholder file to `resumes/<slug>.json` (or `resumes/<slug>.md` in the markdown dialect, with `--markdown`), adds the registry entry in `lib/resume-variants.ts` (pass `--template` to bind a template other than `baseline`), and adds the `.gitignore` un-ignore line, so the new route builds immediately. Replace the placeholder content, then run `bun run check`. `bun run cli variant list` prints every registered variant with its slug and template.
+`bun run cli variant create <slug>` does the whole registration in one step: it writes a schema-valid placeholder file to `resumes/<slug>.json` (or `resumes/<slug>.md` in the markdown dialect, with `--markdown`), adds the registry entry in `lib/resume-variants.ts` (pass `--template` to bind a template other than `baseline`; the theme defaults to the template's id, and `--theme` picks another), and adds the `.gitignore` un-ignore line, so the new route builds immediately. Replace the placeholder content, then run `bun run check`. `bun run cli variant list` prints every registered variant with its slug, template, and theme.
 
 Deleting a variant is manual for now: reverse the three edits `create` makes. Delete the content file, remove the entry and its import from `lib/resume-variants.ts`, and remove its `!resumes/<slug>.…` line from `.gitignore`. Delete its working copy too, if one exists. `bun run check` confirms nothing dangles.
 

@@ -11,11 +11,12 @@ import {
 } from "./changelog";
 import { checkContract, describeContractFailures } from "./contract";
 import { checkVariants, describeVariantFailures } from "./variants";
+import { checkVersion, describeVersionFailures } from "./version";
 
 export function registerCheck(cli: Cli.Cli) {
   return cli.command("check", {
     description:
-      "Validate every registered variant against the schema, enforce the changelog contract, and confirm the generated schema contract is fresh.",
+      "Validate every registered variant against the schema, enforce the changelog contract, confirm the generated schema contract is fresh, and confirm package.json's version matches the newest changelog release. Reads the repo at the working directory's git root.",
     options: z.object({
       range: z
         .string()
@@ -31,14 +32,16 @@ export function registerCheck(cli: Cli.Cli) {
         description: "Check every commit a push would land",
       },
     ],
-    run(c) {
-      const variants = checkVariants();
+    async run(c) {
+      const variants = await checkVariants();
       const changelog = checkChangelog(c.options.range);
-      const contract = checkContract();
+      const contract = await checkContract();
+      const version = checkVersion();
       const problems = [
         ...describeVariantFailures(variants),
         ...describeChangelogFailures(changelog),
         ...describeContractFailures(contract),
+        ...describeVersionFailures(version),
       ];
 
       // The envelope drops `hint`, so the message carries the whole report and
@@ -54,7 +57,7 @@ export function registerCheck(cli: Cli.Cli) {
           retryable: true,
         });
 
-      return { variants, changelog, contract };
+      return { variants, changelog, contract, version };
     },
   });
 }

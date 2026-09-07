@@ -1,5 +1,6 @@
-// Covers the two judgements `check` makes: whether canonical content parses,
-// and whether a diff put an entry under `## Unreleased`.
+// Covers the judgements `check` makes: whether canonical content parses,
+// whether a diff put an entry under `## Unreleased`, and whether package.json
+// keeps pace with the newest changelog release.
 
 import { describe, expect, test } from "bun:test";
 
@@ -9,6 +10,7 @@ import {
   unreleasedRange,
 } from "./changelog";
 import { checkVariants, describeVariantFailures } from "./variants";
+import { checkVersion, describeVersionFailures, latestRelease } from "./version";
 
 const validVariant = {
   id: "sample",
@@ -28,14 +30,14 @@ const validVariant = {
 };
 
 describe("variant validation", () => {
-  test("passes the registered variants as shipped", () => {
-    const report = checkVariants();
+  test("passes the registered variants as shipped", async () => {
+    const report = await checkVariants();
 
     expect(report.failures).toEqual([]);
     expect(report.checked).toContain("default");
   });
 
-  test("names the file and the exact path of a bad field", () => {
+  test("names the file and the exact path of a bad field", async () => {
     const broken = {
       ...validVariant,
       resume: {
@@ -44,7 +46,7 @@ describe("variant validation", () => {
       },
     };
 
-    const report = checkVariants([broken]);
+    const report = await checkVariants([broken]);
     const [problem] = describeVariantFailures(report);
 
     expect(report.failures).toHaveLength(1);
@@ -52,7 +54,7 @@ describe("variant validation", () => {
     expect(problem).toContain("sections.0.bullets.0");
   });
 
-  test("reports a markdown variant by line and heading, not a JSON path", () => {
+  test("reports a markdown variant by line and heading, not a JSON path", async () => {
     const broken = {
       ...validVariant,
       resumeFile: "resumes/sample.md",
@@ -71,14 +73,14 @@ describe("variant validation", () => {
       ].join("\n"),
     };
 
-    const [problem] = describeVariantFailures(checkVariants([broken]));
+    const [problem] = describeVariantFailures(await checkVariants([broken]));
 
     expect(problem).toContain("resumes/sample.md");
     expect(problem).toContain("line 10 (## Experience)");
     expect(problem).not.toContain("sections.");
   });
 
-  test("validates a markdown variant through the schema like a JSON one", () => {
+  test("validates a markdown variant through the schema like a JSON one", async () => {
     const markdown = {
       ...validVariant,
       resumeFile: "resumes/sample.md",
@@ -98,10 +100,10 @@ describe("variant validation", () => {
       ].join("\n"),
     };
 
-    expect(checkVariants([markdown]).failures).toEqual([]);
+    expect((await checkVariants([markdown])).failures).toEqual([]);
   });
 
-  test("names an unknown section kind rather than silently skipping it", () => {
+  test("names an unknown section kind rather than silently skipping it", async () => {
     const broken = {
       ...validVariant,
       resume: {
@@ -110,7 +112,7 @@ describe("variant validation", () => {
       },
     };
 
-    const [problem] = describeVariantFailures(checkVariants([broken]));
+    const [problem] = describeVariantFailures(await checkVariants([broken]));
 
     expect(problem).toContain("sections.0.kind");
     expect(problem).toContain("No matching discriminator");
@@ -166,5 +168,24 @@ describe("changelog parsing", () => {
 
   test("rejects an untouched changelog", () => {
     expect(addsUnreleasedEntry(changelog, "")).toBe(false);
+  });
+});
+
+describe("version", () => {
+  test("reads the newest release heading, skipping Unreleased", () => {
+    expect(latestRelease("## Unreleased\n\n## 0.2.0 — 2026-09-07\n\n## 0.1.0 — 2026-08-09\n")).toBe("0.2.0");
+    expect(latestRelease("## v1.0.0\n")).toBe("1.0.0");
+    expect(latestRelease("## Unreleased\n")).toBeNull();
+  });
+
+  test("package.json matches the newest release as shipped", () => {
+    expect(checkVersion().matches).toBe(true);
+  });
+
+  test("names both versions when they disagree", () => {
+    const [problem] = describeVersionFailures({ version: "0.1.0", released: "0.2.0", matches: false });
+    expect(problem).toContain("0.1.0");
+    expect(problem).toContain("0.2.0");
+    expect(problem).toContain("package.json");
   });
 });

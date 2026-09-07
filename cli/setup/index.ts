@@ -12,7 +12,7 @@
 
 import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
-import { basename, join } from "node:path";
+import { basename } from "node:path";
 import { createInterface } from "node:readline/promises";
 
 import type { Cli } from "incur";
@@ -26,6 +26,7 @@ import {
   runWrangler,
 } from "../deploy/wrangler";
 import { classifyDeployments } from "../doctor/checks";
+import { repoPath, repoRoot } from "../repo";
 import { MARKER_FILE, readMarker, seedMarker } from "../update";
 import {
   defaultWorkerName,
@@ -39,7 +40,6 @@ import {
   writeWorkerName,
 } from "./state";
 
-const REPO_ROOT = new URL("../..", import.meta.url).pathname;
 
 /** True when wrangler reports working Cloudflare credentials. `wrangler
  * whoami` exits zero even when logged out, so judge the output, not the
@@ -66,6 +66,7 @@ function isDeployed(): boolean {
 function runLogin(): boolean {
   const result = spawnSync("bun", ["x", "wrangler", "login"], {
     stdio: "inherit",
+    cwd: repoRoot(),
   });
   return result.status === 0;
 }
@@ -144,7 +145,7 @@ export function registerSetup(cli: Cli.Cli) {
     async run(c) {
       // Stage 1 of 4 — detect state. Everything after this only runs when
       // its stage is missing, which is what makes a rerun a repair.
-      const wranglerPath = join(REPO_ROOT, WRANGLER_FILE);
+      const wranglerPath = repoPath(WRANGLER_FILE);
       if (!existsSync(wranglerPath))
         return c.error({
           code: "NO_WRANGLER_CONFIG",
@@ -188,8 +189,8 @@ export function registerSetup(cli: Cli.Cli) {
       // A fresh copy starts current with upstream: the marker names the
       // release it was created from, so the first `update` lists only what
       // came after. Seeded once, never rewritten.
-      const seeded = seedMarker(REPO_ROOT);
-      const reviewed = readMarker(REPO_ROOT);
+      const seeded = seedMarker(repoRoot());
+      const reviewed = readMarker(repoRoot());
       console.log(
         [
           `    Worker name: ${workerName}${unnamed ? " (the template default — this copy was never named)" : ""}`,
@@ -245,7 +246,7 @@ export function registerSetup(cli: Cli.Cli) {
         stageLine(3, 4, "Worker name");
         let name = c.options.name ?? null;
         if (name === null) {
-          const fallback = defaultWorkerName(basename(REPO_ROOT));
+          const fallback = defaultWorkerName(basename(repoRoot()));
           name = c.options.yes
             ? fallback
             : await ask(

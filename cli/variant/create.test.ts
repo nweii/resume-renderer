@@ -73,6 +73,15 @@ describe("registry edit", () => {
     );
   });
 
+  test("binds the theme to the template's id unless one is given", () => {
+    expect(addVariantToRegistry(registrySource, "x", "playroom")).toContain(
+      'templateId: "playroom",\n    themeId: "playroom",',
+    );
+    expect(addVariantToRegistry(registrySource, "x", "playroom", "json", "night")).toContain(
+      'templateId: "playroom",\n    themeId: "night",',
+    );
+  });
+
   test("names the drift when an anchor is missing", () => {
     expect(() => addVariantToRegistry("// empty file", "x", "baseline")).toThrow(
       DriftError,

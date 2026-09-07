@@ -12,6 +12,7 @@ import type { Cli } from "incur";
 import { checkContract, describeContractFailures } from "../check/contract";
 import { checkVariants, describeVariantFailures } from "../check/variants";
 import { runWrangler } from "../deploy/wrangler";
+import { repoPath, repoRoot } from "../repo";
 import {
   hasUpstreamRemote,
   reviewUpstream,
@@ -27,8 +28,8 @@ import {
 
 const CONFIG_FILE = "wrangler.jsonc";
 
-function variantsFinding(): Finding {
-  const report = checkVariants();
+async function variantsFinding(): Promise<Finding> {
+  const report = await checkVariants();
   const problems = describeVariantFailures(report);
   if (problems.length > 0)
     return {
@@ -48,8 +49,8 @@ function variantsFinding(): Finding {
   };
 }
 
-function contractFinding(): Finding {
-  const report = checkContract();
+async function contractFinding(): Promise<Finding> {
+  const report = await checkContract();
   const problems = describeContractFailures(report);
   if (problems.length > 0)
     return {
@@ -75,7 +76,7 @@ function upstreamFinding(): Finding {
       detail: `No "${UPSTREAM_REMOTE}" remote, so there is nothing to compare against. Nothing is wrong; add one (git remote add ${UPSTREAM_REMOTE} <url>) to review upstream releases.`,
     };
 
-  const { offline, reviewed: marker, releases: unreviewed } = reviewUpstream();
+  const { offline, reviewed: marker, releases: unreviewed } = reviewUpstream(repoRoot());
 
   if (offline && unreviewed.length === 0)
     return {
@@ -106,13 +107,17 @@ function upstreamFinding(): Finding {
 export function registerDoctor(cli: Cli.Cli) {
   return cli.command("doctor", {
     description:
-      "Diagnose the environment: variants, the generated schema contract, wrangler.jsonc, Cloudflare auth, whether the Worker exists, and upstream staleness. Read-only everywhere; each problem names its fix; network checks skip gracefully offline.",
+      "Diagnose the environment: variants, the generated schema contract, wrangler.jsonc, Cloudflare auth, whether the Worker exists, and upstream staleness. Reads the repo at the working directory's git root. Read-only everywhere; each problem names its fix; network checks skip gracefully offline.",
     examples: [{ description: "Check the whole environment before working" }],
-    run(c) {
-      const findings: Finding[] = [variantsFinding(), contractFinding()];
+    async run(c) {
+      const findings: Finding[] = [
+        await variantsFinding(),
+        await contractFinding(),
+      ];
 
-      const config = existsSync(CONFIG_FILE)
-        ? readFileSync(CONFIG_FILE, "utf8")
+      const configPath = repoPath(CONFIG_FILE);
+      const config = existsSync(configPath)
+        ? readFileSync(configPath, "utf8")
         : null;
       const configFinding = checkWranglerConfig(config);
       findings.push(configFinding);

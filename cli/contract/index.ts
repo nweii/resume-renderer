@@ -6,7 +6,8 @@ import { writeFileSync } from "node:fs";
 
 import type { Cli } from "incur";
 
-import { CONTRACT_FILE, CONTRACT_PATH, renderContract } from "./generate";
+import { repoPath } from "../repo";
+import { CONTRACT_FILE, renderContract } from "./generate";
 
 export function registerContract(cli: Cli.Cli) {
   return cli.command("contract", {
@@ -14,9 +15,9 @@ export function registerContract(cli: Cli.Cli) {
     examples: [
       { description: "Regenerate the contract after editing the schema" },
     ],
-    run() {
-      const content = renderContract();
-      writeFileSync(CONTRACT_PATH, content);
+    async run() {
+      const content = await renderContract();
+      writeFileSync(repoPath(CONTRACT_FILE), content);
       return { file: CONTRACT_FILE, bytes: content.length };
     },
   });

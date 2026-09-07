@@ -8,17 +8,15 @@
 
 import { z } from "zod";
 
-import { resumeSchema, sectionSchema } from "@/lib/schema";
+import { loadRepoModule } from "../repo";
 
 export const CONTRACT_FILE = "docs/schema-contract.md";
 
-/** Absolute path to the contract, independent of the caller's cwd. */
-export const CONTRACT_PATH = new URL(
-  `../../${CONTRACT_FILE}`,
-  import.meta.url,
-).pathname;
-
-export function renderContract(): string {
+/** Renders the contract from the target repo's own schema. */
+export async function renderContract(): Promise<string> {
+  const { resumeSchema, sectionSchema } = await loadRepoModule<
+    typeof import("@/lib/schema")
+  >("lib/schema.ts");
   const resume = z.toJSONSchema(resumeSchema, { io: "input" }) as JsonSchema;
   const definitions = resume.$defs ?? {};
   const header = resume.properties?.header ?? {};

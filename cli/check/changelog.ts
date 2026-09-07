@@ -5,6 +5,8 @@
 import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 
+import { repoPath, repoRoot } from "../repo";
+
 const CHANGELOG = "CHANGELOG.md";
 
 /** The trailer that says "I decided this needs no entry, and here is why". */
@@ -37,7 +39,7 @@ export type ChangelogReport = {
 };
 
 function git(args: string[]): string {
-  const result = spawnSync("git", args, { encoding: "utf8" });
+  const result = spawnSync("git", args, { encoding: "utf8", cwd: repoRoot() });
   if (result.status !== 0) {
     throw new Error(
       `git ${args.join(" ")} failed: ${result.stderr?.trim() || "unknown error"}`,
@@ -48,7 +50,7 @@ function git(args: string[]): string {
 
 /** Like `git`, but an absent path is an empty result rather than a failure. */
 function gitOrEmpty(args: string[]): string {
-  const result = spawnSync("git", args, { encoding: "utf8" });
+  const result = spawnSync("git", args, { encoding: "utf8", cwd: repoRoot() });
   return result.status === 0 ? result.stdout : "";
 }
 
@@ -125,7 +127,7 @@ function workingTreeChangeSet(): ChangeSet {
     scope: "working tree",
     sourceFiles: [...new Set(changed)].filter(isSource).sort(),
     hasUnreleasedEntry: addsUnreleasedEntry(
-      existsSync(CHANGELOG) ? readFileSync(CHANGELOG, "utf8") : "",
+      existsSync(repoPath(CHANGELOG)) ? readFileSync(repoPath(CHANGELOG), "utf8") : "",
       git(["diff", "HEAD", "--unified=0", "--", CHANGELOG]),
     ),
   };

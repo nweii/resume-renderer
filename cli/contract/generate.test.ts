@@ -6,8 +6,8 @@ import { expect, test } from "bun:test";
 import { checkContract } from "../check/contract";
 import { renderContract } from "./generate";
 
-test("contract covers every section kind with fields and optionality", () => {
-  const contract = renderContract();
+test("contract covers every section kind with fields and optionality", async () => {
+  const contract = await renderContract();
   expect(contract).toContain("## Section kinds (4)");
   for (const kind of ["skills", "projects", "experiences", "education"]) {
     expect(contract).toContain(`- ${kind}({`);
@@ -19,6 +19,6 @@ test("contract covers every section kind with fields and optionality", () => {
   expect(contract).toContain("/* Provenance; not rendered */");
 });
 
-test("committed contract is fresh", () => {
-  expect(checkContract().fresh).toBe(true);
+test("committed contract is fresh", async () => {
+  expect((await checkContract()).fresh).toBe(true);
 });

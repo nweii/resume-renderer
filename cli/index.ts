@@ -8,6 +8,8 @@
 
 import { Cli } from "incur";
 
+import pkg from "../package.json";
+
 import { registerCheck } from "./check";
 import { registerContract } from "./contract";
 import { registerDeploy, registerPreview } from "./deploy";
@@ -17,7 +19,8 @@ import { registerUpdate } from "./update";
 import { registerVariant } from "./variant";
 
 const cli = Cli.create("resume", {
-  version: "0.1.0",
+  // The one place the version lives; `check` fails when it lags the changelog.
+  version: pkg.version,
   description:
     "Operate the resume renderer: validate content and the changelog contract, and review upstream releases.",
   sync: {

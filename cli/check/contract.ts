@@ -4,22 +4,18 @@
 
 import { existsSync, readFileSync } from "node:fs";
 
-import {
-  CONTRACT_FILE,
-  CONTRACT_PATH,
-  renderContract,
-} from "../contract/generate";
+import { CONTRACT_FILE, renderContract } from "../contract/generate";
+import { repoPath } from "../repo";
 
 export type ContractReport = {
   file: string;
   fresh: boolean;
 };
 
-export function checkContract(): ContractReport {
-  const committed = existsSync(CONTRACT_PATH)
-    ? readFileSync(CONTRACT_PATH, "utf8")
-    : undefined;
-  return { file: CONTRACT_FILE, fresh: committed === renderContract() };
+export async function checkContract(): Promise<ContractReport> {
+  const path = repoPath(CONTRACT_FILE);
+  const committed = existsSync(path) ? readFileSync(path, "utf8") : undefined;
+  return { file: CONTRACT_FILE, fresh: committed === (await renderContract()) };
 }
 
 /** One line, addressed to whoever edited the schema. */

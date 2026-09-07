@@ -5,16 +5,14 @@
 // either file has drifted from the shape they expect.
 
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
-import { join } from "node:path";
 
-import { resumeToMarkdown } from "@/lib/resume-markdown";
 import { resumeSchema, type Resume } from "@/lib/schema";
-import type { ResumeTemplateId } from "@/templates";
+
+import { loadRepoModule, repoPath } from "../repo";
 
 export const REGISTRY_FILE = "lib/resume-variants.ts";
 export const GITIGNORE_FILE = ".gitignore";
-
-const REPO_ROOT = new URL("../..", import.meta.url).pathname;
+export const TEMPLATES_FILE = "templates/index.ts";
 
 /** The content file's format, by extension. `md` follows docs/markdown-dialect.md. */
 export type ContentFormat = "json" | "md";
@@ -31,12 +29,16 @@ export function slugToIdentifier(slug: string): string {
 }
 
 /**
- * Minimal placeholder content. `resumeSchema.parse` proves the scaffold is
+ * Minimal placeholder content. `schema.parse` proves the scaffold is
  * schema-valid at run time, so a schema change that invalidates this shape
  * fails here, loudly, instead of leaving `check` to find the broken file.
+ * `createVariant` passes the target repo's schema; the default is this one's.
  */
-export function scaffoldResume(slug: string): Resume {
-  return resumeSchema.parse({
+export function scaffoldResume(
+  slug: string,
+  schema: typeof resumeSchema = resumeSchema,
+): Resume {
+  return schema.parse({
     header: {
       name: "Scaffold Name",
       subtitle: [`Placeholder content for the ${slug} variant`],
@@ -63,14 +65,16 @@ const ENTRY_ANCHOR = "} satisfies Record<string, ResumeVariant>;";
 
 /**
  * Returns the registry source with the new variant's import and entry added.
- * Pure text transform; throws `DriftError` when an anchor is missing and a
- * plain `Error` when the slug is already registered.
+ * The theme defaults to the template's id, since a template's tokens are
+ * what its theme provides. Pure text transform; throws `DriftError` when an
+ * anchor is missing and a plain `Error` when the slug is already registered.
  */
 export function addVariantToRegistry(
   source: string,
   slug: string,
-  templateId: ResumeTemplateId,
+  templateId: string,
   format: ContentFormat = "json",
+  themeId: string = templateId,
 ): string {
   if (new RegExp(`resumeFile: "resumes/${slug}\\.(?:json|md)"`).test(source)) {
     throw new Error(`"${slug}" is already registered in ${REGISTRY_FILE}.`);
@@ -107,7 +111,7 @@ export function addVariantToRegistry(
     `    resumeFile: "resumes/${slug}.${format}",`,
     `    resume: ${identifier},`,
     `    templateId: "${templateId}",`,
-    `    themeId: "baseline",`,
+    `    themeId: "${themeId}",`,
     `  },`,
     "",
   ].join("\n");
@@ -147,40 +151,61 @@ export type CreateResult = {
   next: string;
 };
 
-/** Orchestrates the three writes. Validates everything before writing anything. */
-export function createVariant(
+/**
+ * Orchestrates the three writes in the target repo, through that repo's own
+ * template registry, schema, and markdown writer. Validates everything before
+ * writing anything.
+ */
+export async function createVariant(
   slug: string,
-  templateId: ResumeTemplateId,
+  templateId: string,
   format: ContentFormat = "json",
-): CreateResult {
+  themeId: string = templateId,
+): Promise<CreateResult> {
   if (!SLUG_PATTERN.test(slug)) {
     throw new Error(
       `"${slug}" is not a valid slug. Use lowercase letters, digits, and single hyphens, e.g. backend-staff.`,
     );
   }
 
+  const { resumeTemplates } = await loadRepoModule<typeof import("@/templates")>(
+    TEMPLATES_FILE,
+  );
+  if (!(templateId in resumeTemplates)) {
+    throw new Error(
+      `"${templateId}" is not a registered template. ${TEMPLATES_FILE} registers: ${Object.keys(resumeTemplates).join(", ")}.`,
+    );
+  }
+
   const resumeFile = `resumes/${slug}.${format}`;
-  const resumePath = join(REPO_ROOT, resumeFile);
+  const resumePath = repoPath(resumeFile);
   if (existsSync(resumePath)) {
     throw new Error(
       `${resumeFile} already exists. Delete it first, or pick another slug.`,
     );
   }
 
-  const registryPath = join(REPO_ROOT, REGISTRY_FILE);
-  const gitignorePath = join(REPO_ROOT, GITIGNORE_FILE);
+  const registryPath = repoPath(REGISTRY_FILE);
+  const gitignorePath = repoPath(GITIGNORE_FILE);
   const registry = addVariantToRegistry(
     readFileSync(registryPath, "utf8"),
     slug,
     templateId,
     format,
+    themeId,
   );
   const gitignore = addVariantToGitignore(
     readFileSync(gitignorePath, "utf8"),
     slug,
     format,
   );
-  const scaffold = scaffoldResume(slug);
+  const { resumeSchema: schema } = await loadRepoModule<typeof import("@/lib/schema")>(
+    "lib/schema.ts",
+  );
+  const { resumeToMarkdown } = await loadRepoModule<
+    typeof import("@/lib/resume-markdown")
+  >("lib/resume-markdown.ts");
+  const scaffold = scaffoldResume(slug, schema);
   const resume =
     format === "md"
       ? resumeToMarkdown(scaffold)
