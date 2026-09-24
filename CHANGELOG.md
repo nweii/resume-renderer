@@ -9,6 +9,8 @@ Versions are 0.x semver read as severity, not compatibility: a minor bump means 
 
 ## Unreleased
 
+## 0.3.0 — 2026-09-23
+
 ### Added
 
 - **Kernel** · Breaking · Two general section kinds, `list` (a label plus bullets) and `entries` (a label plus entries with title, and optional organization, dateRange, summary, bullets), so a section the named kinds do not cover renders under its own label. Every template must handle both. `lib/schema.ts`, `templates/baseline/index.tsx`, `docs/schema-contract.md`, `README.md`, `CONTEXT.md`, `AGENTS.md`.
