@@ -58,7 +58,7 @@ export const sectionKindLabels: Record<Section["kind"], readonly string[]> = {
  * The kinds a section's structure picks when its label is not in the table:
  * any `### ` entry makes it `entries`, bullets alone (or nothing) make it `list`.
  */
-const structuralKinds ={ flat: "list", entries: "entries" } as const satisfies Record<
+const structuralKinds = { flat: "list", entries: "entries" } as const satisfies Record<
   string,
   Section["kind"]
 >;
