@@ -10,7 +10,8 @@
 // from the same vocabulary of fields needs no new code here. Only a field with
 // no notation yet (title, organization, dateRange, summary, bullets) does.
 // The one thing here that knows what content means is `sectionKindLabels`,
-// the label-to-kind table; it is the adopter's to edit.
+// the label-to-kind table; it is the adopter's to edit. A label outside it
+// falls back to the section's structure, which picks one of `structuralKinds`.
 
 import { z } from "zod";
 
@@ -22,8 +23,8 @@ import { resumeSchema, sectionSchema, type Resume, type Section } from "@/lib/sc
  * overrides so agents can parse without knowing which template emitted it):
  * - frontmatter — the header, keys as in the schema
  * - `# name` — H1 echoes the name so any markdown theme previews it
- * - `## label` — H2 is a section label; `<!-- kind: x -->` beneath it when the
- *   label alone does not say the kind
+ * - `## label` — H2 is a section label; `<!-- kind: x -->` beneath it when
+ *   neither the label nor the section's structure says the kind
  * - `### title` — H3 is an entry, with an optional `**organization** · *dateRange*`
  *   line beneath it, then a summary paragraph, then bullets
  * - `- text` — bullets within entries or flat sections
@@ -38,16 +39,29 @@ export function resumeToMarkdown(resume: Resume): string {
 
 /**
  * Section labels that name their kind on their own, normalized (lowercase,
- * single spaces, no trailing punctuation). A label outside this table needs
- * an explicit `<!-- kind: x -->` marker. Adopters extend this with the labels
- * their variants use; a new section kind gets a row, and TypeScript insists.
+ * single spaces, no trailing punctuation). A label outside this table takes
+ * its kind from the section's structure (`structuralKinds`), unless an
+ * explicit `<!-- kind: x -->` marker says otherwise. Adopters extend this with
+ * the labels their variants use; a new section kind gets a row, and
+ * TypeScript insists. The general kinds have no labels: structure finds them.
  */
 export const sectionKindLabels: Record<Section["kind"], readonly string[]> = {
   skills: ["skills", "skill", "core skills", "tools", "tools and skills", "skills and tools"],
   projects: ["projects", "project", "selected projects", "selected project", "selected work"],
   experiences: ["experience", "experiences", "work experience", "work", "employment", "professional experience"],
   education: ["education", "education and training", "certifications"],
+  list: [],
+  entries: [],
 };
+
+/**
+ * The kinds a section's structure picks when its label is not in the table:
+ * any `### ` entry makes it `entries`, bullets alone (or nothing) make it `list`.
+ */
+const structuralKinds ={ flat: "list", entries: "entries" } as const satisfies Record<
+  string,
+  Section["kind"]
+>;
 
 export function resolveSectionKind(label: string): Section["kind"] | undefined {
   const normalized = label.toLowerCase().replace(/\s+/g, " ").replace(/[:.]+$/, "").trim();
@@ -55,6 +69,15 @@ export function resolveSectionKind(label: string): Section["kind"] | undefined {
     if (labels.includes(normalized)) return kind as Section["kind"];
   }
   return undefined;
+}
+
+/**
+ * The kind a section gets with no marker: its label's, else its structure's.
+ * The writer and the parser both call this, so the writer adds a marker
+ * exactly when the parser would otherwise land on a different kind.
+ */
+function impliedKind(label: string, hasEntries: boolean): Section["kind"] {
+  return resolveSectionKind(label) ?? (hasEntries ? structuralKinds.entries : structuralKinds.flat);
 }
 
 // ---------------------------------------------------------------------------
@@ -71,8 +94,11 @@ type EntryFields = {
 };
 
 function renderSection(section: Section): string {
+  // An entry section writes one `### ` heading per entry, so it reads back as
+  // having entries only when it has at least one.
+  const hasEntries = "entries" in section && section.entries.length > 0;
   const head =
-    resolveSectionKind(section.label) === section.kind
+    impliedKind(section.label, hasEntries) === section.kind
       ? `## ${section.label}`
       : `## ${section.label}\n<!-- kind: ${section.kind} -->`;
   if ("entries" in section) {
@@ -176,9 +202,7 @@ class Parser {
   private section: OpenSection | undefined;
   /** The nearest `## ` heading, kept for issue attribution even when skipped. */
   private sectionHeading: string | undefined;
-  /** Line of a `## ` heading whose label named no kind, until a marker or content decides. */
-  private unresolved: number | undefined;
-  /** Set once a section's kind is unknown; its lines are ignored to the next `## `. */
+  /** Set once a marker names a kind the schema lacks; the section's lines are ignored to the next `## `. */
   private skipping = false;
   private entry: OpenEntry | undefined;
   private sawTitle = false;
@@ -253,7 +277,6 @@ class Parser {
     const marker = KIND_MARKER.exec(text.trim());
     if (marker) return this.parseKindMarker(marker[1]);
     this.awaitingMarker = false;
-    this.settleLabel();
 
     if (this.skipping) return;
 
@@ -277,7 +300,6 @@ class Parser {
     this.awaitingMeta = false;
     this.last = "other";
     if (level === 2) return this.openSection(title);
-    this.settleLabel();
     if (level === 1) {
       if (this.sectionHeading) {
         return this.fail(
@@ -303,16 +325,24 @@ class Parser {
   private openSection(label: string) {
     this.closeSection();
     this.sectionHeading = `## ${label}`;
+    // A marker on the next line may still replace this kind.
     this.awaitingMarker = true;
-    const kind = resolveSectionKind(label);
-    if (kind) return this.startSection(label, kind);
-    // The label alone says nothing; a marker on the next line may still.
-    this.unresolved = this.line;
+    this.startSection(label, impliedKind(label, this.sectionHasEntry()));
+  }
+
+  /** Whether any `### ` heading sits between the current `## ` heading and the next one. */
+  private sectionHasEntry(): boolean {
+    for (let index = this.line; index < this.lines.length; index += 1) {
+      const heading = HEADING.exec(this.lines[index].trimEnd());
+      if (!heading) continue;
+      if (heading[1].length <= 2) return false;
+      if (heading[1].length === 3) return true;
+    }
+    return false;
   }
 
   private startSection(label: string, kind: string) {
     this.skipping = false;
-    this.unresolved = undefined;
     this.section = {
       heading: this.sectionHeading ?? `## ${label}`,
       shape: kindShapes.get(kind)!,
@@ -322,25 +352,12 @@ class Parser {
     };
   }
 
-  /** No marker followed an unresolved label: report it and skip the section. */
-  private settleLabel() {
-    if (this.unresolved === undefined) return;
-    this.issues.push({
-      line: this.unresolved,
-      heading: this.sectionHeading,
-      message: `\`${this.sectionHeading}\` does not name a section kind; put \`<!-- kind: … -->\` on the next line, one of: ${[...kindShapes.keys()].join(", ")}`,
-    });
-    this.unresolved = undefined;
-    this.skipping = true;
-  }
-
   private parseKindMarker(kind: string) {
     if (!this.awaitingMarker || !this.sectionHeading) {
       return this.fail("`<!-- kind: … -->` goes on the line right after a `## ` heading");
     }
     this.awaitingMarker = false;
     if (!kindShapes.has(kind)) {
-      this.unresolved = undefined;
       this.section = undefined;
       this.skipping = true;
       return this.fail(`\`${kind}\` is not a section kind; one of: ${[...kindShapes.keys()].join(", ")}`);
@@ -448,7 +465,6 @@ class Parser {
   }
 
   private closeSection() {
-    this.settleLabel();
     this.closeEntry();
     const section = this.section;
     this.section = undefined;

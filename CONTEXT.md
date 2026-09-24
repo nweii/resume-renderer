@@ -14,7 +14,7 @@ The closed, discriminated content contract for a document type. It is the bounda
 _Avoid_: data model, shape
 
 **Section kind**:
-One member of a document type's schema union. Templates dispatch over kinds exhaustively, so a kind a template can't render cannot exist.
+One member of a document type's schema union. Templates dispatch over kinds exhaustively, so a kind a template can't render cannot exist. Named kinds (skills, experiences) exist for templates that treat a section specially; the general kinds, `list` and `entries`, hold any section under any label.
 _Avoid_: block, slot, component
 
 **Variant**:

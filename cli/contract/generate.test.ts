@@ -8,8 +8,8 @@ import { renderContract } from "./generate";
 
 test("contract covers every section kind with fields and optionality", async () => {
   const contract = await renderContract();
-  expect(contract).toContain("## Section kinds (4)");
-  for (const kind of ["skills", "projects", "experiences", "education"]) {
+  expect(contract).toContain("## Section kinds (6)");
+  for (const kind of ["skills", "projects", "experiences", "education", "list", "entries"]) {
     expect(contract).toContain(`- ${kind}({`);
   }
   // Required vs optional fields keep their marks.

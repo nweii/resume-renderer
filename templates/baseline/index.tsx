@@ -84,7 +84,9 @@ function Entry({ title, organization, dateRange, summary, bullets }: { title: st
 
 function renderSection(section: ResumeSection, key: number) {
   switch (section.kind) {
+    // `list` is the general kind for any labeled list of bullets; it draws like skills.
     case "skills":
+    case "list":
       return (
         <SectionShell key={key} label={section.label}>
           <BulletList bullets={section.bullets} />
@@ -98,7 +100,9 @@ function renderSection(section: ResumeSection, key: number) {
           </div>
         </SectionShell>
       );
+    // `entries` is the general kind for any labeled list of entries; it draws like experiences.
     case "experiences":
+    case "entries":
       return (
         <SectionShell key={key} label={section.label}>
           <div className="space-y-[8pt]">

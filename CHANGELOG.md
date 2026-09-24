@@ -9,6 +9,45 @@ Versions are 0.x semver read as severity, not compatibility: a minor bump means 
 
 ## Unreleased
 
+### Added
+
+- **Kernel** · Breaking · Two general section kinds, `list` (a label plus bullets) and `entries` (a label plus entries with title, and optional organization, dateRange, summary, bullets), so a section the named kinds do not cover renders under its own label. Every template must handle both. `lib/schema.ts`, `templates/baseline/index.tsx`, `docs/schema-contract.md`, `README.md`, `CONTEXT.md`, `AGENTS.md`.
+- **Kernel** · Not breaking · In markdown, a `## ` label outside `sectionKindLabels` takes its kind from structure (any `### ` entry makes it `entries`, bullets alone make it `list`) instead of failing; an explicit marker and a known label resolve as before. The writer marks a general-kind section only when structure alone would read it back as another kind. `lib/resume-markdown.ts`, `docs/markdown-dialect.md`, `cli/contract/generate.ts`, `skills/resume-intake/SKILL.md`.
+
+### Fixed
+
+- **Surface** · Not breaking · The `organization` field's description states what the field holds instead of how one template renders it. `lib/schema.ts`, `docs/schema-contract.md`.
+
+### Port
+
+Content is unaffected: every existing JSON and markdown file validates and renders as before. The work is in your templates, which dispatch exhaustively over section kinds and will fail to type-check until they handle both new kinds.
+
+Copy `listSection`, `generalEntry`, `entriesSection`, and the shared `organization` field from `lib/schema.ts`, and add the two sections to your `sectionSchema` union. Then give each template in `templates/index.ts` two handlers. The smallest port stacks each new kind onto the named kind with the same shape, as `templates/baseline/index.tsx` does:
+
+```tsx
+case "skills":
+case "list":
+  return (
+    <SectionShell key={key} label={section.label}>
+      <BulletList bullets={section.bullets} />
+    </SectionShell>
+  );
+// …
+case "experiences":
+case "entries":
+  return (
+    <SectionShell key={key} label={section.label}>
+      <div className="space-y-[8pt]">
+        {section.entries.map((entry, index) => <Entry key={index} {...entry} />)}
+      </div>
+    </SectionShell>
+  );
+```
+
+An `entries` entry may carry every entry field, and its `bullets` are optional, so its handler must render an organization, a summary, and an entry with no bullets. If your experiences handler assumes bullets are present, guard it.
+
+For markdown, copy `lib/resume-markdown.ts` whole if yours has not diverged. If it has, the change is local: add `list: []` and `entries: []` rows to `sectionKindLabels`, add `structuralKinds` and `impliedKind`, call `impliedKind` in `renderSection` and in the parser's `openSection` (with `sectionHasEntry`, which looks ahead for a `### ` heading), and delete the parser's `unresolved` field and `settleLabel`. If your copy renamed the general kinds, change the two strings in `structuralKinds`. Copy the "Sections: `##`" part of `docs/markdown-dialect.md`, keeping your own label table. Run `bun run cli contract` and commit `docs/schema-contract.md`.
+
 ## 0.2.1 — 2026-09-07
 
 ### Added

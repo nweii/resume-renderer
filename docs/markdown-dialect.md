@@ -63,7 +63,11 @@ An optional `# Name` line may follow the frontmatter. It exists so a markdown th
 
 ## Sections: `##`
 
-Each `## ` heading opens a section. The heading text is the section's `label`, rendered as written. The section's `kind` comes from the label through the table in `sectionKindLabels` (`lib/resume-markdown.ts`), matched case-insensitively with trailing punctuation ignored:
+Each `## ` heading opens a section. The heading text is the section's `label`, rendered as written. The section's `kind` is decided in this order:
+
+1. A kind marker on the line right after the heading, as an HTML comment. Editors render nothing for it.
+2. The label, through the table in `sectionKindLabels` (`lib/resume-markdown.ts`), matched case-insensitively with trailing punctuation ignored.
+3. The section's structure. Any `### ` entry makes it `entries`; bullets alone, or nothing, make it `list`.
 
 | Kind | Labels |
 | --- | --- |
@@ -72,18 +76,31 @@ Each `## ` heading opens a section. The heading text is the section's `label`, r
 | `experiences` | Experience, Experiences, Work experience, Work, Employment, Professional experience |
 | `education` | Education, Education and training, Certifications |
 
-Any other label needs the kind stated on the next line, as an HTML comment. Editors render nothing for it:
+`list` and `entries` are the general kinds. They have no labels in the table, so any heading outside it renders without a marker:
+
+```markdown
+## Awards
+
+- Regional design award, 2022
+
+## Volunteering
+
+### Kitchen coordinator
+**Eastside Community Kitchen** · *2020–Present*
+```
+
+A marker is needed only when neither the label nor the structure gives the kind you want. It always wins, so a label that is in the table can still be re-kinded:
 
 ```markdown
 ## Community
 <!-- kind: projects -->
 ```
 
-A marker always wins over the label, so a label that is in the table can still be re-kinded. Add your own labels to the table rather than marking every section.
+Add your own labels to the table rather than marking every section. The writer adds a marker exactly when a section would otherwise read back as a different kind: a `list` under a label in the table, or an `entries` section with no entries.
 
 ## What each kind holds
 
-The schema decides what goes under a section, and the parser reads the schema. A kind with a section-level `bullets` field (`skills`) is a flat list: bullets straight under the `## ` heading, no `### ` entries. A kind with `entries` takes `### ` entries and nothing else at section level.
+The schema decides what goes under a section, and the parser reads the schema. A kind with a section-level `bullets` field (`skills`, `list`) is a flat list: bullets straight under the `## ` heading, no `### ` entries. A kind with `entries` takes `### ` entries and nothing else at section level, so bullets or text above a section's first `### ` entry are an error.
 
 Within an entry, each field has one notation:
 
@@ -99,7 +116,7 @@ The organization-and-date line counts only as the first non-blank line after the
 
 Bullets are one line each. A bullet an editor has hard-wrapped, with its continuation lines indented, reads as one bullet. Both `- ` and `* ` mark a bullet. `**bold**` inside a bullet is the one inline convention the schema allows; it passes through untouched.
 
-An entry with no bullets is written with none. For a kind that requires `bullets`, the parser supplies an empty list; for a kind where they are optional (`education`), the field is absent.
+An entry with no bullets is written with none. For a kind that requires `bullets`, the parser supplies an empty list; for a kind where they are optional (`education`, `entries`), the field is absent.
 
 ## What the dialect cannot say
 

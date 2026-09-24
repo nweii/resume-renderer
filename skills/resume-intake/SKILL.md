@@ -41,6 +41,8 @@ Go through the section kinds from the contract, one at a time. For each kind:
 3. Ask for what is missing: date ranges, organizations, outcomes. One batch of questions per section, not one per field.
 4. Draft the entries in the user's wording. Read them back for approval before moving on.
 
+The general kinds, `list` and `entries`, are not topics to ask about one by one. After the named kinds, ask what else belongs on the resume (awards, volunteering, publications), and put each answer in whichever general kind fits its shape, under the label the user chooses.
+
 Order the sections the way the user wants them read; the file's order is the render order.
 
 ### 6. Validate

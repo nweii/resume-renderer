@@ -280,6 +280,113 @@ describe("parseResumeMarkdown", () => {
     expect(parseClean(fence[1])).toEqual(master);
   });
 
+  describe("an unfamiliar label takes its kind from structure", () => {
+    test("bullets alone make a list, `###` entries make entries, and both keep their headings", () => {
+      const resume = parseClean(
+        [
+          frontmatter,
+          "",
+          "## Awards",
+          "",
+          "- **Design award,** 2022",
+          "- Fellowship, 2019",
+          "",
+          "## Volunteering",
+          "",
+          "### Kitchen coordinator",
+          "**Eastside Community Kitchen** · *2020–Present*",
+          "",
+          "Runs weekend meal service.",
+          "",
+          "- Scheduled 30 volunteers",
+          "",
+          "### Tutor",
+          "*2018*",
+          "",
+        ].join("\n"),
+      );
+      expect(resume).toEqual({
+        header: minimalHeader,
+        sections: [
+          { kind: "list", label: "Awards", bullets: ["**Design award,** 2022", "Fellowship, 2019"] },
+          {
+            kind: "entries",
+            label: "Volunteering",
+            entries: [
+              {
+                title: "Kitchen coordinator",
+                organization: "Eastside Community Kitchen",
+                dateRange: "2020–Present",
+                summary: "Runs weekend meal service.",
+                bullets: ["Scheduled 30 volunteers"],
+              },
+              { title: "Tutor", dateRange: "2018" },
+            ],
+          },
+        ],
+      });
+      expect(resumeSchema.safeParse(resume).success).toBe(true);
+    });
+
+    test("an empty section under an unfamiliar label is an empty list", () => {
+      expect(parseClean(`${frontmatter}\n\n## Awards\n\n## Skills\n\n- a\n`)).toEqual({
+        header: minimalHeader,
+        sections: [
+          { kind: "list", label: "Awards", bullets: [] },
+          { kind: "skills", label: "Skills", bullets: ["a"] },
+        ],
+      });
+    });
+
+    test("a known label still names its kind over structure", () => {
+      expect(parseClean(`${frontmatter}\n\n## Skills\n\n- a\n`)).toEqual({
+        header: minimalHeader,
+        sections: [{ kind: "skills", label: "Skills", bullets: ["a"] }],
+      });
+    });
+
+    test("a marker still wins over structure", () => {
+      expect(parseClean(`${frontmatter}\n\n## Community\n<!-- kind: projects -->\n\n### P\n\n- z\n`)).toEqual({
+        header: minimalHeader,
+        sections: [{ kind: "projects", label: "Community", entries: [{ title: "P", bullets: ["z"] }] }],
+      });
+    });
+
+    test("round-trips general kinds under unfamiliar labels with no marker", () => {
+      const resume = buildResume({
+        sections: [
+          { kind: "list", label: "Awards", bullets: ["A", "**B** c"] },
+          {
+            kind: "entries",
+            label: "Volunteering",
+            entries: [
+              { title: "Coordinator", organization: "Kitchen", dateRange: "2020", summary: "Did things.", bullets: ["x"] },
+              { title: "Tutor" },
+            ],
+          },
+        ],
+      });
+      const md = resumeToMarkdown(resume);
+      expect(md).not.toContain("<!-- kind:");
+      expect(parseClean(md)).toEqual(resume);
+    });
+
+    test("round-trips general kinds whose structure alone would read back as another kind, by marking them", () => {
+      const resume = buildResume({
+        sections: [
+          { kind: "list", label: "Skills", bullets: ["A"] },
+          { kind: "entries", label: "Experience", entries: [{ title: "Role", bullets: ["x"] }] },
+          { kind: "entries", label: "Volunteering", entries: [] },
+        ],
+      });
+      const md = resumeToMarkdown(resume);
+      expect(md).toContain("## Skills\n<!-- kind: list -->\n");
+      expect(md).toContain("## Experience\n<!-- kind: entries -->\n");
+      expect(md).toContain("## Volunteering\n<!-- kind: entries -->\n");
+      expect(parseClean(md)).toEqual(resume);
+    });
+  });
+
   test("an explicit kind marker wins over the label", () => {
     const resume = parseClean(
       `${frontmatter}\n\n## Experience\n<!-- kind: projects -->\n\n### P\n\n- z\n`,
@@ -330,11 +437,10 @@ describe("parseResumeMarkdown", () => {
       expect(issue.message).toContain("contact.email");
     });
 
-    test("a label that names no kind, with the marker as the way out", () => {
-      const [issue] = issuesOf(`${frontmatter}\n\n## Community\n\n- a\n`);
-      expect(issue).toMatchObject({ line: 8, heading: "## Community" });
-      expect(issue.message).toContain("<!-- kind:");
-      expect(issue.message).toContain("projects");
+    test("bullets and entries mixed at section level under an unfamiliar label", () => {
+      const [issue] = issuesOf(`${frontmatter}\n\n## Awards\n\n- stray\n\n### Prize\n`);
+      expect(issue).toMatchObject({ line: 10, heading: "## Awards" });
+      expect(issue.message).toContain("###");
     });
 
     test("a marker naming a kind the schema lacks", () => {
@@ -378,8 +484,8 @@ describe("parseResumeMarkdown", () => {
     });
 
     test("every problem is reported, not only the first", () => {
-      const issues = issuesOf(`${frontmatter}\n\n## Community\n\n- a\n\n## Skills\n\n### Nope\n`);
-      expect(issues.map((issue) => issue.line)).toEqual([8, 14]);
+      const issues = issuesOf(`${frontmatter}\n\n## Community\n\n- a\n\n### B\n\n## Skills\n\n### Nope\n`);
+      expect(issues.map((issue) => issue.line)).toEqual([10, 16]);
     });
   });
 });

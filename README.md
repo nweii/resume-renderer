@@ -19,7 +19,7 @@ bun run check      # content and changelog checks
 
 Edit `resumes/default.json`. The page reloads as you save. If you would rather write markdown, `bun run cli variant create <slug> --markdown` gives you a variant whose content file is `resumes/<slug>.md` in the dialect described in [`docs/markdown-dialect.md`](docs/markdown-dialect.md); it renders the same page.
 
-The content in the repo is a fictional person, Mira Sedgewick. It uses every section kind. Replace it with your own.
+The content in the repo is a fictional person, Mira Sedgewick. It uses every named section kind. Replace it with your own.
 
 ## Hand it to your agent
 
@@ -227,12 +227,19 @@ The top level looks like this:
 }
 ```
 
-There are four section kinds. Each one has its own entry shape:
+There are six section kinds. Four are named, and each one has its own entry shape:
 
 - `skills` — `bullets: string[]`
 - `projects` — `entries: { title, dateRange?, bullets }[]`
 - `experiences` — `entries: { title, organization?, dateRange?, summary?, bullets }[]`
 - `education` — `entries: { title, dateRange?, bullets? }[]`
+
+Two are general, for any section the named kinds do not cover, such as awards or volunteering. Every template renders them.
+
+- `list` — `bullets: string[]`
+- `entries` — `entries: { title, organization?, dateRange?, summary?, bullets? }[]`
+
+In a markdown content file, a heading the dialect does not recognize takes one of these two from its structure, so `## Awards` over bullets needs no extra notation.
 
 Every section and entry can carry optional `source` and `derivedFrom` fields. Nothing reads them today. They are a place for a future authoring tool to record where content came from.
 
@@ -276,6 +283,8 @@ The agent feedback toolbar (`Agentation` in `app/layout.tsx`) runs in developmen
 To add a route, copy the `default` entry. Point `resume` at another imported content file and `resumeFile` at its path; a `.md` import is the file's text (the `[loader]` table in `bunfig.toml` and the `*.md` rule in `next.config.ts` make it so). Then change `slug` and `pathname`, and change `templateId` or `themeId` if you want. The static export finds it through `generateStaticParams()`.
 
 ## Add a section kind
+
+A section that fits a bullet list or a list of entries already renders as `list` or `entries`. Add a named kind when a template should treat that section differently.
 
 All templates and the markdown dialect share the schema. Each one must handle every kind you add. The discriminated union keeps them in step.
 

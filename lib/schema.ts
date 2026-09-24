@@ -66,17 +66,19 @@ const projectsSection = z.object({
   ...provenance,
 });
 
+// Who a title was held with. When absent (e.g. a fellowship whose title
+// already names its host), the title stands alone and may include its own
+// " at " phrasing. How the two are laid out is each template's choice.
+const organization = z
+  .string()
+  .optional()
+  .describe(
+    "The employer, client, or institution the title was held with; omit when the title names its own",
+  );
+
 const experienceEntry = z.object({
   title: z.string(),
-  // When `organization` is set, the template renders `{title} at {organization}`
-  // with "at" weakened. When absent (e.g. the VfA fellowship entry), the
-  // title stands alone and may include its own " at " phrasing.
-  organization: z
-    .string()
-    .optional()
-    .describe(
-      "When set, renders `{title} at {organization}`; when absent, title stands alone",
-    ),
+  organization,
   dateRange: z.string().optional(),
   summary: z.string().optional(),
   bullets: z.array(bullet),
@@ -108,11 +110,48 @@ const educationSection = z.object({
   ...provenance,
 });
 
+// The two general kinds hold any section the named kinds above do not cover
+// (awards, volunteering, publications), under whatever label the content
+// gives it. They are the two shapes every named kind is built from: a list of
+// bullets, and a list of entries in the widest entry shape.
+const listSection = z.object({
+  kind: z
+    .literal("list")
+    .describe(
+      "A labeled flat list of bullets, for a section no named kind covers; in markdown, a heading outside the label table over bullets alone",
+    ),
+  label: z.string(),
+  bullets: z.array(bullet),
+  ...provenance,
+});
+
+const generalEntry = z.object({
+  title: z.string(),
+  organization,
+  dateRange: z.string().optional(),
+  summary: z.string().optional(),
+  bullets: z.array(bullet).optional(),
+  ...provenance,
+});
+
+const entriesSection = z.object({
+  kind: z
+    .literal("entries")
+    .describe(
+      "Labeled entries in the widest entry shape, for a section no named kind covers; in markdown, a heading outside the label table over `###` entries",
+    ),
+  label: z.string(),
+  entries: z.array(generalEntry),
+  ...provenance,
+});
+
 export const sectionSchema = z.discriminatedUnion("kind", [
   skillsSection,
   projectsSection,
   experiencesSection,
   educationSection,
+  listSection,
+  entriesSection,
 ]);
 
 export const resumeSchema = z.object({
@@ -126,3 +165,5 @@ export type SkillsSection = z.infer<typeof skillsSection>;
 export type ProjectsSection = z.infer<typeof projectsSection>;
 export type ExperiencesSection = z.infer<typeof experiencesSection>;
 export type EducationSection = z.infer<typeof educationSection>;
+export type ListSection = z.infer<typeof listSection>;
+export type EntriesSection = z.infer<typeof entriesSection>;

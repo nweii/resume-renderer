@@ -38,6 +38,8 @@ export async function renderContract(): Promise<string> {
     "",
     "A content file is this shape as JSON, or as markdown in the dialect stated in `docs/markdown-dialect.md`, where each field below has one notation.",
     "",
+    "In markdown, a section's kind comes from a `<!-- kind: … -->` marker under its heading first, then from its label, then from its structure.",
+    "",
     "## Document shape",
     "",
     `- resume(${formatObject(resume, definitions, 1)})`,
