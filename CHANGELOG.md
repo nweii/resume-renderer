@@ -9,6 +9,18 @@ Versions are 0.x semver read as severity, not compatibility: a minor bump means 
 
 ## Unreleased
 
+### Security
+
+- **Surface** · Not breaking · Next.js and `eslint-config-next` 16.2.4 → 16.4.2, which pulls `sharp` 0.35.5, past the October 2026 Next.js advisories (`use cache` RCE, SVG-through-`sharp` RCE CVE-2026-96889, Server Actions DoS). `package.json`, `bun.lock`.
+
+### Fixed
+
+- **Surface** · Not breaking · `@types/bun` is a dev dependency, so `next build`'s type check resolves `bun:test` in test files; the CLI test helper's `json()` returns `unknown`. `package.json`, `bun.lock`, `cli/repo.test.ts`.
+
+### Port
+
+A static export runs no Next.js server, so none of the advisories is reachable on a deployed copy; the bump is hygiene for any copy that adds a server runtime. Run `bun add next@16.4.2` and `bun add -d eslint-config-next@16.4.2 @types/bun` (flip `frozenLockfile` off for the install, as AGENTS.md describes). If `next build` then fails its type check on a test file, add `@types/bun` if you skipped it, and type any test helper that parses CLI JSON as `unknown`.
+
 ## 0.3.0 — 2026-09-23
 
 ### Added
