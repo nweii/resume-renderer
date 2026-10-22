@@ -53,7 +53,7 @@ function run(args: string[], cwd: string = scratch) {
   return {
     status: result.status,
     output: `${result.stdout}${result.stderr}`,
-    json: () => JSON.parse(result.stdout) as Record<string, unknown>,
+    json: () => JSON.parse(result.stdout) as unknown,
   };
 }
 
